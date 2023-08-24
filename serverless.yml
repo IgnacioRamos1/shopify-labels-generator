@@ -1,0 +1,22 @@
+service: shopify-csv-generator
+
+provider:
+  name: aws
+  runtime: python3.11
+  stage: dev
+  region: sa-east-1
+
+functions:
+  csv-generator:
+    handler: handler.lambda_handler
+    events:
+      - http:
+          path: csv-generator
+          method: get
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    requirementsFile: requirements.txt

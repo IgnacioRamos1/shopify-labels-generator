@@ -1,0 +1,7 @@
+.vscode
+node_modules
+.serverless/
+package-lock.json
+package.json
+node_modules
+.vscode/
