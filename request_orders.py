@@ -26,11 +26,13 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
             order_dict['number'] = order['customer']['default_address']['address1']
             order_dict['apartment'] = order['customer']['default_address']['address2']
             order_dict['city'] = order['customer']['default_address']['city']
-            order_dict['province_code'] = order['customer']['default_address']['province']
+            order_dict['province_code'] = order['customer']['default_address']['province_code']
             order_dict['country'] = order['customer']['default_address']['country']
             order_dict['zip_code'] = order['customer']['default_address']['zip']
             order_dict['phone'] = order['customer']['default_address']['phone']
             orders_list.append(order_dict)
+        
+        print(order_dict)
         return shop_name, orders_list
 
 async def request_orders(credentials):
