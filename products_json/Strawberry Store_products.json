@@ -1,0 +1,43 @@
+{
+    "MiniMop": {
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
+    },
+    "Head Pro LEDLIGHT": {
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
+    },
+    "SolarReflector PRO 2x1  Carga Solar y Sensor de Movimiento": {
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
+    },
+    "Tu Companero de Cocina Perfecto Premium Grinder": {
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
+    },
+    "Descorchador Premium": {
+        "name": "Descorchador Premium",
+        "tipo_producto": "CP",
+        "largo": 300,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 6500
+    }
+}

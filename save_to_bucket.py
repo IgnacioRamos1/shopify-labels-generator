@@ -6,6 +6,25 @@ import boto3
 from datetime import datetime
 import asyncio
 
+import json
+import os
+
+
+def load_product_attributes(shop_name):
+    """Load product attributes from the store's corresponding JSON file."""
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(base_path, 'products_json', f"{shop_name}_products.json")
+    
+    with open(filename, 'r') as f:
+        return json.load(f)
+    
+
+def bucket_exists(bucket_name):
+    """Check if S3 bucket exists."""
+    s3 = boto3.client('s3', region_name='sa-east-1')
+    buckets = s3.list_buckets()
+    return any(bucket['Name'] == bucket_name for bucket in buckets.get('Buckets', []))
+
 
 def save_to_s3(bucket_name, content, item_name):
     # Convert the bucket name to a valid S3 bucket name
@@ -14,12 +33,15 @@ def save_to_s3(bucket_name, content, item_name):
     # Inicializar el cliente de S3
     s3 = boto3.client('s3', region_name='sa-east-1')
 
-    # Verificar si el bucket existe
-    try:
-        s3.head_bucket(Bucket=bucket_name)
-    except:
-        # Si el bucket no existe, lo creamos especificando la ubicación
-        s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'sa-east-1'})
+    # Check if the bucket exists
+    if not bucket_exists(bucket_name):
+        print(f"Bucket {bucket_name} doesn't exist")
+        try:
+            s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'sa-east-1'})
+            print(f"Bucket {bucket_name} created")
+        except Exception as e:
+            print(f"Error creating bucket: {e}")
+            return
 
     # Definir el nombre del archivo basado en la fecha y nombre del producto
     date_str = datetime.now().strftime('%Y-%m-%d')
@@ -32,8 +54,11 @@ def save_to_s3(bucket_name, content, item_name):
 
 
 async def async_save_to_s3(shop, product, grouped_data):
-    csv_output = generate_csv_from_orders({shop: {product: grouped_data[shop][product]}})
-    save_to_s3(shop, csv_output, product)
+    # Load product attributes for the current shop
+    product_attributes = load_product_attributes(shop)
+    csv_output = generate_csv_from_orders({shop: {product: grouped_data[shop][product]}}, product_attributes)
+    result = save_to_s3(shop, csv_output, product)
+    print(result)
 
 
 async def process_orders(credentials):

@@ -2,7 +2,7 @@ import pandas as pd
 from clean_text import clean_text, clean_phone
 
 
-def generate_csv_from_orders(grouped_orders):
+def generate_csv_from_orders(grouped_orders, product_attributes):
 # Define the columns
     columns = [
         "tipo_producto(obligatorio)", "largo(obligatorio en CM)", "ancho(obligatorio en CM)", 
@@ -30,16 +30,23 @@ def generate_csv_from_orders(grouped_orders):
     valor_del_contenido = 1000
 
     # Populate the DataFrame
-    for shop, items in grouped_orders.items():
-        for family, orders in items.items():
+    for items in grouped_orders.values():
+        for orders in items.values():
             for order in orders:
+                # Get the attributes for the current order from the JSON data
+                attributes = product_attributes.get(clean_text(order['item']))
+                if not attributes:
+                    print(f"Original: {repr(order['item'])}")
+                    print(f"Cleaned: {repr(clean_text(order['item']))}")
+                    continue
+
                 row_data = {
-                    "tipo_producto(obligatorio)": tipo_producto,
-                    "largo(obligatorio en CM)": largo * order["quantity"],
-                    "ancho(obligatorio en CM)": ancho * order["quantity"],
-                    "altura(obligatorio en CM)": altura * order["quantity"],
-                    "peso(obligatorio en KG)": peso * order["quantity"],
-                    "valor_del_contenido(obligatorio en pesos argentinos)": valor_del_contenido * order["quantity"],
+                    "tipo_producto(obligatorio)": attributes.get("tipo_producto", tipo_producto),
+                    "largo(obligatorio en CM)": attributes.get("largo", largo) * order["quantity"],
+                    "ancho(obligatorio en CM)": attributes.get("ancho", ancho) * order["quantity"],
+                    "altura(obligatorio en CM)": attributes.get("altura", altura) * order["quantity"],
+                    "peso(obligatorio en KG)": attributes.get("peso", peso) * order["quantity"],
+                    "valor_del_contenido(obligatorio en pesos argentinos": attributes.get("precio", valor_del_contenido) * order["quantity"],
 
                     "provincia_destino(obligatorio)": order["province_code"],
                     "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",

@@ -14,7 +14,6 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
     
     async with session.get(endpoint, headers=headers, params=params) as response:
         orders = await response.json()
-
         orders_list = []
         for order in orders.get('orders', []):
             order_dict = {}
