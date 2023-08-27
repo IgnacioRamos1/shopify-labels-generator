@@ -19,6 +19,7 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
         for order in orders.get('orders', []):
             order_dict = {}
             order_dict['item'] = order['line_items'][0]['name']
+            order_dict['quantity'] = order['line_items'][0]['quantity']
             order_dict['first_name'] = order['customer']['default_address']['first_name']
             order_dict['last_name'] = order['customer']['default_address']['last_name']
             order_dict['email'] = order['customer']['email']
@@ -32,8 +33,8 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
             order_dict['phone'] = order['customer']['default_address']['phone']
             orders_list.append(order_dict)
         
-        print(order_dict)
         return shop_name, orders_list
+
 
 async def request_orders(credentials):
     async with aiohttp.ClientSession() as session:
