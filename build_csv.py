@@ -21,14 +21,6 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
     # Create an empty DataFrame
     formatted_data = pd.DataFrame(columns=columns)
 
-    # Valores ficticios para los campos que aún no hemos discutido
-    tipo_producto = "CP"
-    largo = 30
-    ancho = 20
-    altura = 10
-    peso = 0.62
-    valor_del_contenido = 1000
-
     # Populate the DataFrame
     for items in grouped_orders.values():
         for orders in items.values():
@@ -39,14 +31,13 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     print(f"Original: {repr(order['item'])}")
                     print(f"Cleaned: {repr(clean_text(order['item']))}")
                     continue
-
                 row_data = {
-                    "tipo_producto(obligatorio)": attributes.get("tipo_producto", tipo_producto),
-                    "largo(obligatorio en CM)": attributes.get("largo", largo) * order["quantity"],
-                    "ancho(obligatorio en CM)": attributes.get("ancho", ancho) * order["quantity"],
-                    "altura(obligatorio en CM)": attributes.get("altura", altura) * order["quantity"],
-                    "peso(obligatorio en KG)": attributes.get("peso", peso) * order["quantity"],
-                    "valor_del_contenido(obligatorio en pesos argentinos": attributes.get("precio", valor_del_contenido) * order["quantity"],
+                    "tipo_producto(obligatorio)": attributes["tipo_producto"],
+                    "largo(obligatorio en CM)": attributes["largo"] * order["quantity"],
+                    "ancho(obligatorio en CM)": attributes["ancho"] * order["quantity"],
+                    "altura(obligatorio en CM)": attributes["alto"] * order["quantity"],
+                    "peso(obligatorio en KG)": attributes["peso"] * order["quantity"],
+                    "valor_del_contenido(obligatorio en pesos argentinos": attributes["precio"] * order["quantity"],
 
                     "provincia_destino(obligatorio)": order["province_code"],
                     "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",
