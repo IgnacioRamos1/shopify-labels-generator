@@ -23,6 +23,10 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
 
     # Populate the DataFrame
     for items in grouped_orders.values():
+        # If item is empty, skip
+        if not items:
+            continue
+
         for orders in items.values():
             for order in orders:
                 # Get the attributes for the current order from the JSON data
@@ -30,6 +34,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                 if not attributes:
                     print(f'No attributes found for item {clean_text(order["item"])}')
                     continue
+
                 row_data = {
                     "tipo_producto(obligatorio)": attributes["tipo_producto"],
                     "largo(obligatorio en CM)": attributes["largo"] * order["quantity"],
