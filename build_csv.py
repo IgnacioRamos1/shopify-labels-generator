@@ -1,5 +1,6 @@
 import pandas as pd
 from clean_text import clean_text, clean_phone
+from fix_postal_code import correct_province_by_postal_code
 
 
 def generate_csv_from_orders(grouped_orders, product_attributes):
@@ -43,7 +44,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     "peso(obligatorio en KG)": attributes["peso"] * order["quantity"],
                     "valor_del_contenido(obligatorio en pesos argentinos": attributes["precio"] * order["quantity"],
 
-                    "provincia_destino(obligatorio)": order["province_code"],
+                    "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"], order["zip_code"]),
                     "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",
 
                     "localidad_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["city"]),
