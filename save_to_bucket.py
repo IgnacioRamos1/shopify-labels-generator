@@ -2,31 +2,11 @@ from request_orders import request_orders
 from filter_orders import filter_and_group_by_family
 from build_csv import generate_csv_from_orders
 from send_email import send_email_with_zip
+from utils import load_product_attributes, create_zip_in_memory, bucket_exists
 
 import boto3
 from datetime import datetime
 import asyncio
-import zipfile
-
-import json
-import os
-import io
-
-
-def load_product_attributes(shop_name):
-    """Load product attributes from the store's corresponding JSON file."""
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    filename = os.path.join(base_path, 'products_json', f"{shop_name}_products.json")
-    
-    with open(filename, 'r') as f:
-        return json.load(f)
-    
-
-def bucket_exists(bucket_name):
-    """Check if S3 bucket exists."""
-    s3 = boto3.client('s3', region_name='sa-east-1')
-    buckets = s3.list_buckets()
-    return any(bucket['Name'] == bucket_name for bucket in buckets.get('Buckets', []))
 
 
 def save_to_s3(bucket_name, content, item_name):
@@ -68,18 +48,6 @@ async def async_save_to_s3(shop, product, grouped_data):
     
     # Return csv data and filename
     return csv_output, file_name
-
-
-def create_zip_in_memory(shop, csv_files):
-    date_str = datetime.now().strftime('%Y-%m-%d')
-    zip_name = f"{shop}-{date_str}.zip"
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
-        for file_name, data in csv_files.items():
-            zip_file.writestr(file_name, data)
-    
-    zip_buffer.seek(0)
-    return zip_name, zip_buffer
 
 
 async def process_orders(credentials):
