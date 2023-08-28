@@ -16,11 +16,11 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
         orders = await response.json()
         orders_list = []
         for order in orders.get('orders', []):
-            print(order['customer'])
             for item in order.get('line_items', []):
                 order_dict = {}
                 order_dict['item'] = item['name']
                 order_dict['item_id'] = item['product_id']
+                order_dict['order_id'] = order['id']
                 order_dict['quantity'] = item['quantity']
                 order_dict['first_name'] = order['customer']['default_address']['first_name']
                 order_dict['last_name'] = order['customer']['default_address']['last_name']

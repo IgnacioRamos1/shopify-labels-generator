@@ -20,6 +20,14 @@ provider:
         - ses:SendEmail
         - ses:SendRawEmail
       Resource: "*"
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:CreateTable
+        - dynamodb:ListTables
+      Resource: "arn:aws:dynamodb:sa-east-1:421852645480:table/*"
+
 
 functions:
   csv-generator:

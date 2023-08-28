@@ -3,11 +3,11 @@ from filter_orders import filter_and_group_by_family
 from build_csv import generate_csv_from_orders
 from send_email import send_email_with_zip
 from utils import load_product_attributes, create_zip_in_memory, bucket_exists
+from dynamodb_cache import check_order_processed, mark_order_as_processed
 
 import boto3
 from datetime import datetime
 import asyncio
-
 
 def save_to_s3(bucket_name, content, item_name):
     # Convert the bucket name to a valid S3 bucket name
@@ -33,8 +33,13 @@ def save_to_s3(bucket_name, content, item_name):
 
     return f"File saved to {bucket_name}/{s3_key}"
 
-
 async def async_save_to_s3(shop, product, grouped_data):
+    # Here, I'm assuming that there's an 'order_id' field in the order data. 
+    # If the field name is different, this needs to be adjusted.
+    order_id = grouped_data[shop][product][0]["order_id"]
+    if check_order_processed(shop, order_id):
+        return None, None
+
     # Load product attributes for the current shop
     product_attributes = load_product_attributes(shop)
     csv_output = generate_csv_from_orders({shop: {product: grouped_data[shop][product]}}, product_attributes)
@@ -45,10 +50,10 @@ async def async_save_to_s3(shop, product, grouped_data):
     
     # Save to S3
     save_to_s3(shop, csv_output, product)
+    mark_order_as_processed(shop, order_id)
     
     # Return csv data and filename
     return csv_output, file_name
-
 
 async def process_orders(credentials):
     # Get orders
@@ -69,7 +74,8 @@ async def process_orders(credentials):
     completed_tasks = await asyncio.gather(*tasks)
     
     for csv_data, file_name in completed_tasks:
-        in_memory_csvs[file_name] = csv_data
+        if csv_data and file_name:
+            in_memory_csvs[file_name] = csv_data
 
     # Create ZIP from in-memory CSVs
     zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
