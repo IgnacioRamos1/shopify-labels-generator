@@ -35,30 +35,27 @@ def save_to_s3(bucket_name, content, item_name):
 
     # Check if the bucket exists
     if not bucket_exists(bucket_name):
-        print(f"Bucket {bucket_name} doesn't exist")
         try:
             s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'sa-east-1'})
-            print(f"Bucket {bucket_name} created")
         except Exception as e:
-            print(f"Error creating bucket: {e}")
-            return
+            return f"Error creating bucket: {e}"
 
     # Definir el nombre del archivo basado en la fecha y nombre del producto
     date_str = datetime.now().strftime('%Y-%m-%d')
     file_name = f"{bucket_name} - {date_str} - {item_name}.csv"
+    s3_key = f"{date_str}/{file_name}"  # Aquí estamos definiendo la estructura de carpeta/nombre_del_archivo
 
     # Subir el contenido al bucket
-    s3.put_object(Bucket=bucket_name, Key=file_name, Body=content)
+    s3.put_object(Bucket=bucket_name, Key=s3_key, Body=content)
 
-    return f"File saved to {bucket_name}/{file_name}"
+    return f"File saved to {bucket_name}/{s3_key}"
 
 
 async def async_save_to_s3(shop, product, grouped_data):
     # Load product attributes for the current shop
     product_attributes = load_product_attributes(shop)
     csv_output = generate_csv_from_orders({shop: {product: grouped_data[shop][product]}}, product_attributes)
-    result = save_to_s3(shop, csv_output, product)
-    print(result)
+    save_to_s3(shop, csv_output, product)
 
 
 async def process_orders(credentials):

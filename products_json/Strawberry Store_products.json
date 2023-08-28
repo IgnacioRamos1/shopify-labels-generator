@@ -1,5 +1,6 @@
 {
-    "MiniMop": {
+    "8642028077371": {
+        "nombre": "MiniMop",
         "tipo_producto": "CP",
         "largo": 30,
         "ancho": 20,
@@ -7,7 +8,8 @@
         "peso": 0.62,
         "precio": 1000
     },
-    "Head Pro LEDLIGHT": {
+    "8634662093115": {
+        "nombre": "Head Pro LEDLIGHT",
         "tipo_producto": "CP",
         "largo": 30,
         "ancho": 20,
@@ -15,7 +17,8 @@
         "peso": 0.62,
         "precio": 1000
     },
-    "SolarReflector PRO 2x1  Carga Solar y Sensor de Movimiento": {
+    "8545710866747": {
+        "nombre": "SolarReflector PRO 2x1  Carga Solar y Sensor de Movimiento",
         "tipo_producto": "CP",
         "largo": 30,
         "ancho": 20,
@@ -23,7 +26,8 @@
         "peso": 0.62,
         "precio": 1000
     },
-    "Tu Companero de Cocina Perfecto Premium Grinder": {
+    "8385355022651": {
+        "nombre": "Tu Companero de Cocina Perfecto Premium Grinder",
         "tipo_producto": "CP",
         "largo": 30,
         "ancho": 20,
@@ -31,13 +35,22 @@
         "peso": 0.62,
         "precio": 1000
     },
-    "Descorchador Premium": {
-        "name": "Descorchador Premium",
+    "8383176376635": {
+        "nombre": "Descorchador Premium",
         "tipo_producto": "CP",
         "largo": 300,
         "ancho": 20,
         "alto": 10,
         "peso": 0.62,
         "precio": 6500
+    },
+        "8444169290043": {
+        "nombre": "FlameDiffuser Humidificador",
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
     }
 }

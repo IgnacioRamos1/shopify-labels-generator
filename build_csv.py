@@ -26,10 +26,9 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
         for orders in items.values():
             for order in orders:
                 # Get the attributes for the current order from the JSON data
-                attributes = product_attributes.get(clean_text(order['item']))
+                attributes = product_attributes.get(str(order['item_id']))
                 if not attributes:
-                    print(f"Original: {repr(order['item'])}")
-                    print(f"Cleaned: {repr(clean_text(order['item']))}")
+                    print(f'No attributes found for item {clean_text(order["item"])}')
                     continue
                 row_data = {
                     "tipo_producto(obligatorio)": attributes["tipo_producto"],
