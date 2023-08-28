@@ -33,27 +33,32 @@ def save_to_s3(bucket_name, content, item_name):
 
     return f"File saved to {bucket_name}/{s3_key}"
 
+
 async def async_save_to_s3(shop, product, grouped_data):
-    # Here, I'm assuming that there's an 'order_id' field in the order data. 
-    # If the field name is different, this needs to be adjusted.
-    order_id = grouped_data[shop][product][0]["order_id"]
-    if check_order_processed(shop, order_id):
+    # Filtrar órdenes que ya han sido procesadas
+    unprocessed_orders = [order for order in grouped_data[shop][product] if not check_order_processed(shop, order["order_id"])]
+
+    # Si todas las órdenes para este grupo han sido procesadas anteriormente, regresar
+    if not unprocessed_orders:
         return None, None
 
-    # Load product attributes for the current shop
     product_attributes = load_product_attributes(shop)
-    csv_output = generate_csv_from_orders({shop: {product: grouped_data[shop][product]}}, product_attributes)
-    
+    csv_output = generate_csv_from_orders({shop: {product: unprocessed_orders}}, product_attributes)
+
     # Define filename based on shop, date, and product
     date_str = datetime.now().strftime('%Y-%m-%d')
     file_name = f"{shop} - {date_str} - {product}.csv"
     
     # Save to S3
     save_to_s3(shop, csv_output, product)
-    mark_order_as_processed(shop, order_id)
+    
+    # Marcar cada orden como procesada
+    for order in unprocessed_orders:
+        mark_order_as_processed(shop, order["order_id"])
     
     # Return csv data and filename
     return csv_output, file_name
+
 
 async def process_orders(credentials):
     # Get orders
