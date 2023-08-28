@@ -2,7 +2,7 @@ import boto3
 import base64
 
 
-def send_email_with_zip(zip_buffer, zip_name, from_email, to_email):
+def send_email(zip_buffer, zip_name, from_email, to_email, shop):
     """
     Send the in-memory ZIP file as an email attachment using AWS SES.
     """
@@ -13,7 +13,7 @@ def send_email_with_zip(zip_buffer, zip_name, from_email, to_email):
     attachment = base64.b64encode(zip_buffer.getvalue()).decode('utf-8')
     
     msg = {
-        'Data': f"""Subject: {subject}
+        'Data': f"""Subject: {shop} CSV Files
 From: {from_email}
 To: {to_email}
 MIME-Version: 1.0

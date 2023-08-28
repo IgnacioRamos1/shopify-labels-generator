@@ -1,7 +1,7 @@
 from request_orders import request_orders
 from filter_orders import filter_and_group_by_family
 from build_csv import generate_csv_from_orders
-from send_email import send_email_with_zip
+from send_email import send_email
 from utils import load_product_attributes, create_zip_in_memory, bucket_exists
 from dynamodb_cache import check_order_processed, mark_order_as_processed
 
@@ -60,28 +60,30 @@ async def process_orders(credentials):
     total_orders = await request_orders(credentials)
     grouped_orders = filter_and_group_by_family(total_orders)
     
-    # List to store async tasks and in-memory CSV data
-    tasks = []
-    in_memory_csvs = {}  # To store csv data in memory
-    
-    # For each shop and product, create a task to generate and save the CSV asynchronously
-    for shop in grouped_orders:
-        for product in grouped_orders[shop]:
-            task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders))
-            tasks.append(task)
-
-    # Await all tasks to complete
-    completed_tasks = await asyncio.gather(*tasks)
-    
-    for csv_data, file_name in completed_tasks:
-        if csv_data and file_name:
-            in_memory_csvs[file_name] = csv_data
-
-    # Create ZIP from in-memory CSVs
-    zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
-
     # TODO: Save emails to parameter store
     from_email = "envioshopify@gmail.com"
     to_email = "iramosibx@gmail.com"
 
-    send_email_with_zip(zip_buffer, zip_name, from_email, to_email)
+    # For each shop, process orders, generate ZIP and send email
+    for shop in grouped_orders:
+        # List to store async tasks and in-memory CSV data
+        tasks = []
+        in_memory_csvs = {}  # To store csv data in memory
+        
+        # For each product of the shop, create a task to generate and save the CSV asynchronously
+        for product in grouped_orders[shop]:
+            task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders))
+            tasks.append(task)
+
+        # Await all tasks to complete
+        completed_tasks = await asyncio.gather(*tasks)
+        
+        for csv_data, file_name in completed_tasks:
+            if csv_data and file_name:
+                in_memory_csvs[file_name] = csv_data
+
+        # Create ZIP from in-memory CSVs
+        zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
+
+        # Send email with ZIP for the current shop
+        send_email(zip_buffer, zip_name, from_email, to_email, shop)
