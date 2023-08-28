@@ -1,13 +1,16 @@
 from request_orders import request_orders
 from filter_orders import filter_and_group_by_family
 from build_csv import generate_csv_from_orders
+from send_email import send_email_with_zip
 
 import boto3
 from datetime import datetime
 import asyncio
+import zipfile
 
 import json
 import os
+import io
 
 
 def load_product_attributes(shop_name):
@@ -55,22 +58,56 @@ async def async_save_to_s3(shop, product, grouped_data):
     # Load product attributes for the current shop
     product_attributes = load_product_attributes(shop)
     csv_output = generate_csv_from_orders({shop: {product: grouped_data[shop][product]}}, product_attributes)
+    
+    # Define filename based on shop, date, and product
+    date_str = datetime.now().strftime('%Y-%m-%d')
+    file_name = f"{shop} - {date_str} - {product}.csv"
+    
+    # Save to S3
     save_to_s3(shop, csv_output, product)
+    
+    # Return csv data and filename
+    return csv_output, file_name
+
+
+def create_zip_in_memory(shop, csv_files):
+    date_str = datetime.now().strftime('%Y-%m-%d')
+    zip_name = f"{shop}-{date_str}.zip"
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
+        for file_name, data in csv_files.items():
+            zip_file.writestr(file_name, data)
+    
+    zip_buffer.seek(0)
+    return zip_name, zip_buffer
 
 
 async def process_orders(credentials):
-    # Obtener las órdenes
+    # Get orders
     total_orders = await request_orders(credentials)
     grouped_orders = filter_and_group_by_family(total_orders)
     
-    # Lista para almacenar las tareas asincrónicas
+    # List to store async tasks and in-memory CSV data
     tasks = []
+    in_memory_csvs = {}  # To store csv data in memory
     
-    # Para cada tienda y producto, crea una tarea para generar y guardar el CSV de manera asincrónica
+    # For each shop and product, create a task to generate and save the CSV asynchronously
     for shop in grouped_orders:
         for product in grouped_orders[shop]:
             task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders))
             tasks.append(task)
 
-    # Ejecuta todas las tareas en paralelo
-    await asyncio.gather(*tasks)
+    # Await all tasks to complete
+    completed_tasks = await asyncio.gather(*tasks)
+    
+    for csv_data, file_name in completed_tasks:
+        in_memory_csvs[file_name] = csv_data
+
+    # Create ZIP from in-memory CSVs
+    zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
+
+    # TODO: Save emails to parameter store
+    from_email = "envioshopify@gmail.com"
+    to_email = "iramosibx@gmail.com"
+
+    send_email_with_zip(zip_buffer, zip_name, from_email, to_email)

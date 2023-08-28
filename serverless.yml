@@ -15,6 +15,11 @@ provider:
         - s3:HeadBucket
         - s3:CreateBucket
       Resource: "arn:aws:s3:::*"
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource: "*"
 
 functions:
   csv-generator:
