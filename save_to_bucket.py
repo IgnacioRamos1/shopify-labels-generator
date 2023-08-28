@@ -36,7 +36,7 @@ def save_to_s3(bucket_name, content, item_name):
 
 async def async_save_to_s3(shop, product, grouped_data):
     # Filtrar órdenes que ya han sido procesadas
-    unprocessed_orders = [order for order in grouped_data[shop][product] if not check_order_processed(shop, order["order_id"])]
+    unprocessed_orders = [order for order in grouped_data[shop][product] if not check_order_processed(shop, order["order_id"], order["item_id"])]
 
     # Si todas las órdenes para este grupo han sido procesadas anteriormente, regresar
     if not unprocessed_orders:
@@ -54,7 +54,7 @@ async def async_save_to_s3(shop, product, grouped_data):
     
     # Marcar cada orden como procesada
     for order in unprocessed_orders:
-        mark_order_as_processed(shop, order["order_id"])
+        mark_order_as_processed(shop, order["order_id"], order["item_id"])
     
     # Return csv data and filename
     return csv_output, file_name

@@ -7,6 +7,7 @@ REGION = "sa-east-1"
 # Crea el cliente de DynamoDB
 dynamodb_client = boto3.client('dynamodb', region_name=REGION)
 
+
 def initialize_cache_table(shop_name):
     """
     Inicializa la tabla de caché para una tienda específica en DynamoDB.
@@ -27,11 +28,19 @@ def initialize_cache_table(shop_name):
             {
                 'AttributeName': 'order_id',
                 'KeyType': 'HASH'
+            },
+            {
+                'AttributeName': 'product_id',
+                'KeyType': 'RANGE'
             }
         ],
         AttributeDefinitions=[
             {
                 'AttributeName': 'order_id',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'product_id',
                 'AttributeType': 'S'
             }
         ],
@@ -51,7 +60,8 @@ def initialize_cache_table(shop_name):
     return table_name
 
 
-def check_order_processed(shop_name, order_id):
+
+def check_order_processed(shop_name, order_id, product_id):
     """
     Comprueba si un pedido específico ya ha sido procesado.
     """
@@ -60,14 +70,14 @@ def check_order_processed(shop_name, order_id):
     response = dynamodb_client.get_item(
         TableName=table_name,
         Key={
-            'order_id': {'S': str(order_id)}
+            'order_id': {'S': str(order_id)},
+            'product_id': {'S': str(product_id)}
         }
     )
     
     return 'Item' in response
 
-
-def mark_order_as_processed(shop_name, order_id):
+def mark_order_as_processed(shop_name, order_id, product_id):
     """
     Marca un pedido como procesado.
     """
@@ -75,6 +85,7 @@ def mark_order_as_processed(shop_name, order_id):
     dynamodb_client.put_item(
         TableName=table_name,
         Item={
-            'order_id': {'S': str(order_id)}
+            'order_id': {'S': str(order_id)},
+            'product_id': {'S': str(product_id)}
         }
     )
