@@ -10,6 +10,8 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
     params = {
         'financial_status': 'paid',
         'fulfillment_status': 'unfulfilled',
+        #TODO: Fijarme de si hace falta o no, lo puedo eliminar o agregar la fecha de cuando implemente el script en la tienda
+        'created_at_min': '2023-08-27T00:00:00-03:00',
     }
     
     async with session.get(endpoint, headers=headers, params=params) as response:

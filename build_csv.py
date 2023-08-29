@@ -42,7 +42,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     "ancho(obligatorio en CM)": attributes["ancho"] * order["quantity"],
                     "altura(obligatorio en CM)": attributes["alto"] * order["quantity"],
                     "peso(obligatorio en KG)": attributes["peso"] * order["quantity"],
-                    "valor_del_contenido(obligatorio en pesos argentinos": attributes["precio"] * order["quantity"],
+                    "valor_del_contenido(obligatorio en pesos argentinos)": attributes["precio"] * order["quantity"],
 
                     "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"], order["zip_code"]),
                     "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",
