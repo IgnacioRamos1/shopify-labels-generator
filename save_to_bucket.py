@@ -62,7 +62,7 @@ async def async_save_to_s3(shop, product, grouped_data):
 
 async def process_orders(credentials):
     # Get orders
-    total_orders = await request_orders(credentials)
+    total_orders, total_orders_count = await request_orders(credentials)
     grouped_orders = filter_and_group_by_family(total_orders)
     
     # TODO: Save emails to parameter store
@@ -91,4 +91,4 @@ async def process_orders(credentials):
         zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
 
         # Send email with ZIP for the current shop
-        send_email(zip_buffer, zip_name, from_email, to_email, shop)
+        send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count[shop])

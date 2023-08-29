@@ -17,8 +17,6 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
         orders_list = []
         for order in orders.get('orders', []):
             for item in order.get('line_items', []):
-                if order['customer']['default_address']['first_name'] == 'Nerina':
-                    print(item)
                 order_dict = {}
                 order_dict['item'] = item['name']
                 order_dict['item_id'] = item['product_id']
@@ -36,7 +34,6 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
                 order_dict['zip_code'] = order['customer']['default_address']['zip']
                 order_dict['phone'] = order['customer']['default_address']['phone']
                 orders_list.append(order_dict)
-        print(orders_list)
         return shop_name, orders_list
 
 
@@ -46,5 +43,10 @@ async def request_orders(credentials):
         results = await asyncio.gather(*tasks)
         
     # Convert list of tuples to dictionary
-    orders_by_store = {shop: orders for shop, orders in results}
-    return orders_by_store
+    orders_by_store = {}
+    order_counts_by_store = {}
+    for shop, orders in results:
+        orders_by_store[shop] = orders
+        order_counts_by_store[shop] = len(orders)
+
+    return orders_by_store, order_counts_by_store

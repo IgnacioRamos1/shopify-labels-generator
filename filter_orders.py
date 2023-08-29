@@ -23,5 +23,4 @@ def filter_and_group_by_family(orders_by_shop):
             family_group[family].append(order)
         
         grouped_orders[shop] = family_group
-    print('grouped_orders', grouped_orders)
     return grouped_orders
