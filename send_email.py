@@ -3,17 +3,15 @@ import base64
 
 
 def send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count):
-    """
-    Send the in-memory ZIP file as an email attachment using AWS SES.
-    """
-    ses = boto3.client('ses', region_name='sa-east-1')
-    
-    subject = "CSV Files"
-    body = "Please find attached the CSV files."
-    attachment = base64.b64encode(zip_buffer.getvalue()).decode('utf-8')
-    
-    msg = {
-        'Data': f"""Subject: {shop} CSV Files - {total_orders_count} orders
+    try:
+        ses = boto3.client('ses', region_name='sa-east-1')
+        
+        subject = "CSV Files"
+        body = "Please find attached the CSV files."
+        attachment = base64.b64encode(zip_buffer.getvalue()).decode('utf-8')
+        
+        msg = {
+            'Data': f"""Subject: {shop} CSV Files - {total_orders_count} orders
 From: {from_email}
 To: {to_email}
 MIME-Version: 1.0
@@ -32,12 +30,15 @@ Content-Disposition: attachment; filename="{zip_name}"
 
 {attachment}
 --NextPart--"""
-    }
+        }
 
-    response = ses.send_raw_email(
-        Source=from_email,
-        Destinations=[to_email],
-        RawMessage=msg
-    )
+        response = ses.send_raw_email(
+            Source=from_email,
+            Destinations=[to_email],
+            RawMessage=msg
+        )
 
-    return response
+        return response
+
+    except Exception as e:
+        raise Exception(f"Error in send_email function: {e}")
