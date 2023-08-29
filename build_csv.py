@@ -1,5 +1,5 @@
 import pandas as pd
-from clean_text import clean_text, clean_phone
+from clean_text import clean_text, clean_phone, clean_zip_code
 from fix_postal_code import correct_province_by_postal_code
 
 
@@ -44,7 +44,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     "peso(obligatorio en KG)": attributes["peso"] * order["quantity"],
                     "valor_del_contenido(obligatorio en pesos argentinos)": attributes["precio"] * order["quantity"],
 
-                    "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"], order["zip_code"]),
+                    "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"],clean_zip_code( order["zip_code"])),
                     "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",
 
                     "localidad_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["city"]),
@@ -53,7 +53,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     "piso(opcional solo en caso de no ingresar sucursal de destino)": clean_text(order.get("apartment", "")),
                     "dpto(opcional solo en caso de no ingresar sucursal de destino)": "",
 
-                    "codpostal_destino(obligatorio solo en caso de no ingresar sucursal de destino)": order["zip_code"],
+                    "codpostal_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_zip_code(order["zip_code"]),
                     "destino_nombre(obligatorio)": clean_text(f"{order['first_name']} {order['last_name']}"),
 
                     "destino_email(obligatorio debe ser un email valido)": order["email"],

@@ -71,3 +71,8 @@ def clean_phone(phone):
         phone = "1234567890"
     
     return phone
+
+
+def clean_zip_code(zip_code_str):
+    """Remove all non-numeric characters from the zip code."""
+    return re.sub(r"[^0-9]", "", zip_code_str)

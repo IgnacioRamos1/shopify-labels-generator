@@ -22,5 +22,4 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
-        # This is a placeholder. We will add error notification here.
         raise e
