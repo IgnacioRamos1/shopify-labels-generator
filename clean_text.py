@@ -3,19 +3,24 @@ import unicodedata
 
 
 def clean_text(text):
-    if not text:
-        return ""
+    try:
+        if not text:
+            return ""
 
-    # Convertir 'ñ' a 'n'
-    text = text.replace('ñ', 'n').replace('Ñ', 'N')
+        # Convert 'ñ' to 'n'
+        text = text.replace('ñ', 'n').replace('Ñ', 'N')
 
-    # Eliminar tildes
-    text = ''.join((c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn'))
-    
-    # Eliminar caracteres especiales
-    text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
-    
-    return text
+        # Remove accents
+        text = ''.join((c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn'))
+        
+        # Remove special characters
+        text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+        
+        return text
+
+    except Exception as e:
+        raise Exception(f"Error in clean_text function: {e}")
+
 
 
 def clean_phone(phone):
@@ -24,8 +29,8 @@ def clean_phone(phone):
     and handling special cases.
     """
     
-    # Convert potential scientific notation to full number string
     try:
+        # Convert potential scientific notation to full number string
         phone = "{:.0f}".format(float(phone))
     except ValueError:
         # If it's not a number in scientific notation, proceed as is
