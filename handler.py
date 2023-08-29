@@ -5,6 +5,7 @@ import asyncio
 
 def lambda_handler(event, context):
     try:
+        # TODO: Save credentials to parameter store
         credentials = [
             {
                 'shop_name': 'Strawberry Store',
