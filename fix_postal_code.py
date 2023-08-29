@@ -34,21 +34,25 @@ province_code = {
 
 
 def correct_province_by_postal_code(province, postal_code):
-    # Convert the province code to province name
-    province_name = province_code.get(province, "")
-    
-    # Filter the postal data by the given postal code
-    filtered_data = postal_data[postal_data['CP'] == postal_code]
-    
-    # If there's no match in the data, return the original province
-    if len(filtered_data) == 0:
+    try:
+        # Convert the province code to province name
+        province_name = province_code.get(province, "")
+        
+        # Filter the postal data by the given postal code
+        filtered_data = postal_data[postal_data['CP'] == postal_code]
+        
+        # If there's no match in the data, return the original province
+        if len(filtered_data) == 0:
+            return province
+
+        # If there's a discrepancy between the given province and the data, correct the province
+        if province_name not in filtered_data['provincia'].values:
+            print(f'Mismatch {province_name} {postal_code}')
+            correct_province = filtered_data['provincia'].values[0]
+            # Convert the corrected province name back to province code
+            correct_province_code = [code for code, name in province_code.items() if name == correct_province][0]
+            return correct_province_code
         return province
 
-    # If there's a discrepancy between the given province and the data, correct the province
-    if province_name not in filtered_data['provincia'].values:
-        print(f'Mismatch {province_name} {postal_code}')
-        correct_province = filtered_data['provincia'].values[0]
-        # Convert the corrected province name back to province code
-        correct_province_code = [code for code, name in province_code.items() if name == correct_province][0]
-        return correct_province_code
-    return province
+    except Exception as e:
+        raise Exception(f"Error in correct_province_by_postal_code function: {e}")
