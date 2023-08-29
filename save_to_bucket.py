@@ -2,7 +2,7 @@ from request_orders import request_orders
 from filter_orders import filter_and_group_by_family
 from build_csv import generate_csv_from_orders
 from send_email import send_email
-from utils import load_product_attributes, create_zip_in_memory, bucket_exists
+from utils import load_product_attributes, create_zip_in_memory, bucket_exists, get_parameter
 from dynamodb_cache import check_order_processed, mark_order_as_processed
 
 import boto3
@@ -75,9 +75,8 @@ async def process_orders(credentials):
         total_orders, total_orders_count = await request_orders(credentials)
         grouped_orders = filter_and_group_by_family(total_orders)
         
-        # TODO: Save emails to parameter store
-        from_email = "envioshopify@gmail.com"
-        to_email = "iramosibx@gmail.com"
+        # This email will remain constant as the sender's email
+        from_email = get_parameter('from_email')
 
         # For each shop, process orders, generate ZIP and send email
         for shop in grouped_orders:
@@ -99,6 +98,9 @@ async def process_orders(credentials):
 
             # Create ZIP from in-memory CSVs
             zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
+
+            # Retrieve the email associated with the current shop
+            to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]
 
             # Send email with ZIP for the current shop
             send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count[shop])

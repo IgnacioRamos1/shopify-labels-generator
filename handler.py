@@ -1,19 +1,14 @@
 from save_to_bucket import process_orders
+from utils import get_parameter
 
 import asyncio
+import json
 
 
 def lambda_handler(event, context):
     try:
-        # TODO: Save credentials to parameter store
-        credentials = [
-            {
-                'shop_name': 'Strawberry Store',
-                'shop_url': 'www.strawberrystorearg.com',
-                'access_token': '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'
-            },
-            # Add more stores as needed
-        ]
+        credentials = get_parameter('shopify_credentials')
+        credentials = json.loads(credentials)
 
         asyncio.get_event_loop().run_until_complete(process_orders(credentials))
 

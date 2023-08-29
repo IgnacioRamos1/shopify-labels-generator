@@ -6,6 +6,8 @@ import io
 
 from datetime import datetime
 
+ssm_client = boto3.client('ssm')
+
 
 def load_product_attributes(shop_name):
     try:
@@ -43,3 +45,19 @@ def create_zip_in_memory(shop, csv_files):
 
     except Exception as e:
         raise Exception(f"Error in create_zip_in_memory function: {e}")
+
+
+def get_parameter(name):
+    """Retrieve a parameter from AWS Systems Manager Parameter Store."""
+    try:
+        response = ssm_client.get_parameter(Name=name, WithDecryption=True)
+        return response['Parameter']['Value']
+
+    except ssm_client.exceptions.ParameterNotFound:
+        raise Exception(f"Parameter {name} not found in Parameter Store.")
+    
+    except ssm_client.exceptions.InternalServerError:
+        raise Exception("Internal server error while fetching parameter from Parameter Store.")
+    
+    except Exception as e:
+        raise Exception(f"Error retrieving parameter from Parameter Store: {e}")

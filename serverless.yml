@@ -28,7 +28,11 @@ provider:
         - dynamodb:ListTables
         - dynamodb:DescribeTable
       Resource: "arn:aws:dynamodb:sa-east-1:421852645480:table/*"
-
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+        - ssm:DescribeParameters
+      Resource: "*"
 
 functions:
   csv-generator:
