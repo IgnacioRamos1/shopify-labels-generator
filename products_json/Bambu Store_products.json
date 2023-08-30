@@ -1,0 +1,24 @@
+{
+    "8088278728962": [
+        {
+            "nombre": "Knee Compression",
+            "tipo_producto": "CP",
+            "largo": 10,
+            "ancho": 10,
+            "alto": 10,
+            "peso": 10,
+            "precio": 100
+        }
+    ],
+    "8095462981890": [
+        {
+            "nombre": "Dispensador de Masa",
+            "tipo_producto": "CP",
+            "largo": 10,
+            "ancho": 9,
+            "alto": 8,
+            "peso": 0.1,
+            "precio": 100
+        }
+    ]
+}

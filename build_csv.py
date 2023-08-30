@@ -30,45 +30,49 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
 
         for orders in items.values():
             for order in orders:
-                # Get the list of attributes for the current order from the JSON data
-                attributes_list = product_attributes.get(str(order['item_id']))
-                if not attributes_list:
-                    print(f'No attributes found for item {clean_text(order["item"])}')
-                    continue
+                try:
+                    # Get the list of attributes for the current order from the JSON data
+                    attributes_list = product_attributes.get(str(order['item_id']))
+                    if not attributes_list:
+                        print(f'No attributes found for item {clean_text(order["item"])}')
+                        continue
 
-                # Find the correct attributes by matching product name
-                attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
-                if not attributes:
-                    print(f'No matching attribute found for item {clean_text(order["item"])}')
-                    continue
+                    # Find the correct attributes by matching product name
+                    attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
+                    if not attributes:
+                        print(f'No matching attribute found for item {clean_text(order["item"])}')
+                        continue
 
-                row_data = {
-                    "tipo_producto(obligatorio)": attributes["tipo_producto"],
-                    "largo(obligatorio en CM)": attributes["largo"] * order["quantity"],
-                    "ancho(obligatorio en CM)": attributes["ancho"] * order["quantity"],
-                    "altura(obligatorio en CM)": attributes["alto"] * order["quantity"],
-                    "peso(obligatorio en KG)": attributes["peso"] * order["quantity"],
-                    "valor_del_contenido(obligatorio en pesos argentinos)": attributes["precio"] * order["quantity"],
+                    row_data = {
+                        "tipo_producto(obligatorio)": attributes["tipo_producto"],
+                        "largo(obligatorio en CM)": attributes["largo"] * order["quantity"],
+                        "ancho(obligatorio en CM)": attributes["ancho"] * order["quantity"],
+                        "altura(obligatorio en CM)": attributes["alto"] * order["quantity"],
+                        "peso(obligatorio en KG)": attributes["peso"] * order["quantity"],
+                        "valor_del_contenido(obligatorio en pesos argentinos)": attributes["precio"] * order["quantity"],
 
-                    "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"],clean_zip_code( order["zip_code"])),
-                    "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",
+                        "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"],clean_zip_code( order["zip_code"])),
+                        "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",
 
-                    "localidad_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["city"]),
-                    "calle_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["street"]),
-                    "altura_destino(obligatorio solo en caso de no ingresar sucursal de destino)": order["number"],
-                    "piso(opcional solo en caso de no ingresar sucursal de destino)": clean_text(order.get("apartment", "")),
-                    "dpto(opcional solo en caso de no ingresar sucursal de destino)": "",
+                        "localidad_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["city"]),
+                        "calle_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["street"]),
+                        "altura_destino(obligatorio solo en caso de no ingresar sucursal de destino)": order["number"],
+                        "piso(opcional solo en caso de no ingresar sucursal de destino)": clean_text(order.get("apartment", "")),
+                        "dpto(opcional solo en caso de no ingresar sucursal de destino)": "",
 
-                    "codpostal_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_zip_code(order["zip_code"]),
-                    "destino_nombre(obligatorio)": clean_text(f"{order['first_name']} {order['last_name']}"),
+                        "codpostal_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_zip_code(order["zip_code"]),
+                        "destino_nombre(obligatorio)": clean_text(f"{order['first_name']} {order['last_name']}"),
 
-                    "destino_email(obligatorio debe ser un email valido)": order["email"],
-                    "cod_area_tel(opcional)": "",
-                    "tel(opcional)": "",
-                    "cod_area_cel(obligatorio)": "54",
-                    "cel(obligatorio)": clean_phone(order["phone"])
-                }
-                formatted_data.loc[len(formatted_data)] = row_data
+                        "destino_email(obligatorio debe ser un email valido)": order["email"],
+                        "cod_area_tel(opcional)": "",
+                        "tel(opcional)": "",
+                        "cod_area_cel(obligatorio)": "54",
+                        "cel(obligatorio)": clean_phone(order["phone"])
+                    }
+                    formatted_data.loc[len(formatted_data)] = row_data
+                except Exception as e:
+                    print(f"Error processing order {order['order_id']} for item {order['item_id']}: {str(e)}")
+
 
     # Convert the DataFrame to CSV format
     output = formatted_data.to_csv(index=False, sep=';')

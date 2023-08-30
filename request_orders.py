@@ -11,7 +11,7 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
         params = {
             'financial_status': 'paid',
             'fulfillment_status': 'unfulfilled',
-            'created_at_min': '2023-08-27T00:00:00-03:00',
+            'created_at_min': '2023-08-30T08:45:00-03:00',
         }
         
         async with session.get(endpoint, headers=headers, params=params) as response:

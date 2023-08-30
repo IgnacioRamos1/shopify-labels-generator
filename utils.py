@@ -18,7 +18,7 @@ def load_product_attributes(shop_name):
             return json.load(f)
 
     except Exception as e:
-        raise Exception(f"Error in load_product_attributes function: {e}")
+        raise Exception(f"Error in load_product_attributes function: {e}") 
 
 
 def bucket_exists(bucket_name):

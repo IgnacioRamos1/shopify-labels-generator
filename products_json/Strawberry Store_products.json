@@ -64,5 +64,16 @@
         "peso": 0.62,
         "precio": 1000
     }
-]
+],
+        "8693987541307": [
+            {
+        "nombre": "Guirnalda LED Solar",
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
+            }
+        ]
 }

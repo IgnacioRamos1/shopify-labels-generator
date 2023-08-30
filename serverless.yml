@@ -42,7 +42,7 @@ functions:
       - http:
           path: csv-generator
           method: get
-      - schedule: cron(0 3 * * ? *)
+      - schedule: cron(0 20 * * ? *)
 
 plugins:
   - serverless-python-requirements
