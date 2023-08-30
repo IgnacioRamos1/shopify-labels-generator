@@ -1,0 +1,42 @@
+{
+    "8520180793626": [
+        {
+        "nombre": "Magic Sticks  Impulsa la Creatividad  25 Piezas",
+        "tipo_producto": "CP",
+        "largo": 20,
+        "ancho": 18,
+        "alto": 7,
+        "peso": 0.3,
+        "precio": 1000
+    },
+    {
+        "nombre": "Magic Sticks  Impulsa la Creatividad  42 Piezas",
+        "tipo_producto": "CP",
+        "largo": 25,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.45,
+        "precio": 1000
+    },
+    {
+        "nombre": "Magic Sticks  Impulsa la Creatividad  64 Piezas",
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
+    }
+],
+    "8477393944858": [
+        {
+        "nombre": "Mini Camara de Seguridad",
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
+    }
+]
+}

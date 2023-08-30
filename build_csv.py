@@ -30,10 +30,16 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
 
         for orders in items.values():
             for order in orders:
-                # Get the attributes for the current order from the JSON data
-                attributes = product_attributes.get(str(order['item_id']))
-                if not attributes:
+                # Get the list of attributes for the current order from the JSON data
+                attributes_list = product_attributes.get(str(order['item_id']))
+                if not attributes_list:
                     print(f'No attributes found for item {clean_text(order["item"])}')
+                    continue
+
+                # Find the correct attributes by matching product name
+                attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
+                if not attributes:
+                    print(f'No matching attribute found for item {clean_text(order["item"])}')
                     continue
 
                 row_data = {

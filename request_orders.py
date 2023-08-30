@@ -19,6 +19,8 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
             orders_list = []
             for order in orders.get('orders', []):
                 for item in order.get('line_items', []):
+                    print('item: ', item['name'], 'id: ', item['product_id'])
+
                     order_dict = {}
                     order_dict['item'] = item['name']
                     order_dict['item_id'] = item['product_id']
