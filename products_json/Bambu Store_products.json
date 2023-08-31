@@ -3,11 +3,11 @@
         {
             "nombre": "Knee Compression",
             "tipo_producto": "CP",
-            "largo": 10,
-            "ancho": 10,
-            "alto": 10,
-            "peso": 10,
-            "precio": 100
+            "largo": 20,
+            "ancho": 15,
+            "alto": 7,
+            "peso": 0.12,
+            "precio": 1000
         }
     ],
     "8095462981890": [
@@ -18,7 +18,7 @@
             "ancho": 9,
             "alto": 8,
             "peso": 0.1,
-            "precio": 100
+            "precio": 1000
         }
     ]
 }

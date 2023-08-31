@@ -14,10 +14,10 @@
         {
         "nombre": "Head Pro LEDLIGHT",
         "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
+        "largo": 10,
+        "ancho": 7,
+        "alto": 7,
+        "peso": 0.1,
         "precio": 1000
     }
 ],
@@ -25,10 +25,10 @@
         {
         "nombre": "SolarReflector PRO 2x1  Carga Solar y Sensor de Movimiento",
         "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
+        "largo": 15,
+        "ancho": 10,
+        "alto": 5,
+        "peso": 0.15,
         "precio": 1000
     }
 ],
