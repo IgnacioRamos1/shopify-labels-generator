@@ -1,8 +1,10 @@
 import aiohttp
 import asyncio
+from datetime import datetime
 
-async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
+async def fetch_orders_for_store(session, shop_name, shop_url, access_token, date):
     try:
+        date = datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%dT%H:%M:%S%z')
         endpoint = f"https://{shop_url}/admin/api/2022-01/orders.json"
         headers = {
             "X-Shopify-Access-Token": access_token,
@@ -11,7 +13,7 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
         params = {
             'financial_status': 'paid',
             'fulfillment_status': 'unfulfilled',
-            'created_at_min': '2023-08-30T08:45:00-03:00',
+            'created_at_min': date,
         }
         
         async with session.get(endpoint, headers=headers, params=params) as response:
@@ -48,7 +50,7 @@ async def fetch_orders_for_store(session, shop_name, shop_url, access_token):
 async def request_orders(credentials):
     try:
         async with aiohttp.ClientSession() as session:
-            tasks = [fetch_orders_for_store(session, cred['shop_name'], cred['shop_url'], cred['access_token']) for cred in credentials]
+            tasks = [fetch_orders_for_store(session, cred['shop_name'], cred['shop_url'], cred['access_token'], cred['date']) for cred in credentials]
             results = await asyncio.gather(*tasks)
             
         # Convert list of tuples to dictionary
