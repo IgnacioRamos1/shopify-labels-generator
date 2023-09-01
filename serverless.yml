@@ -37,7 +37,7 @@ provider:
 functions:
   csv-generator:
     handler: handler.lambda_handler
-    timeout: 30
+    timeout: 60
     events:
       - http:
           path: csv-generator
