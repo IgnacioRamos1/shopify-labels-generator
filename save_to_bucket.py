@@ -71,6 +71,7 @@ async def async_save_to_s3(shop, product, grouped_data):
 
 async def process_orders(credentials):
     try:
+        date = datetime.now().strftime('%d-%m-%Y')
         # Get orders
         total_orders, total_orders_count = await request_orders(credentials)
         grouped_orders = filter_and_group_by_family(total_orders)
@@ -93,17 +94,19 @@ async def process_orders(credentials):
             completed_tasks = await asyncio.gather(*tasks)
             
             for csv_data, file_name in completed_tasks:
-                if csv_data and file_name:
+                # Check if CSV has more than just a header
+                if csv_data and file_name and len(csv_data.splitlines()) > 1:
                     in_memory_csvs[file_name] = csv_data
 
-            # Create ZIP from in-memory CSVs
-            zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
+            # Create ZIP from in-memory CSVs only if we have valid CSVs
+            if in_memory_csvs:
+                zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
 
-            # Retrieve the email associated with the current shop
-            to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]
+                # Retrieve the email associated with the current shop
+                to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]
 
-            # Send email with ZIP for the current shop
-            send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count[shop])
+                # Send email with ZIP for the current shop
+                send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count[shop], date)
 
     except Exception as e:
         raise Exception(f"Error in process_orders function: {e}")

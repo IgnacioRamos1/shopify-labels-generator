@@ -2,7 +2,7 @@ import boto3
 import base64
 
 
-def send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count):
+def send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count, date):
     try:
         ses = boto3.client('ses', region_name='sa-east-1')
         
@@ -11,7 +11,7 @@ def send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_co
         attachment = base64.b64encode(zip_buffer.getvalue()).decode('utf-8')
         
         msg = {
-            'Data': f"""Subject: {shop} CSV Files - {total_orders_count} orders
+            'Data': f"""Subject: {shop} CSV Files - {total_orders_count} orders - {date}
 From: {from_email}
 To: {to_email}
 MIME-Version: 1.0
