@@ -46,16 +46,10 @@ async def async_save_to_s3(shop, product, grouped_data, credentials):
 
         # If all orders for this group have been processed before, return
         if not unprocessed_orders:
-            return None, None
+            return None, None, []
 
         product_attributes = load_product_attributes(shop)
         csv_output, not_added = generate_csv_from_orders({shop: {product: unprocessed_orders}}, product_attributes)
-
-        # If there are products not added, send the missing products email
-        if not_added:
-            from_email = get_parameter('from_email')  # assuming you have this utility function to get the sender's email
-            to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]  # the email associated with the shop
-            send_products_missing_email(from_email, to_email, not_added)
 
         # Define filename based on shop, date, and product
         date_str = datetime.now().strftime('%Y-%m-%d')
@@ -68,9 +62,9 @@ async def async_save_to_s3(shop, product, grouped_data, credentials):
         for order in unprocessed_orders:
             if not order.get('exclude', False):
                 mark_order_as_processed(shop, order["order_id"], order["item_id"])
-        
-        # Return csv data and filename
-        return csv_output, file_name
+
+        # Return csv data, filename, and not added products
+        return csv_output, file_name, not_added
 
     except Exception as e:
         raise Exception(f"Error in async_save_to_s3 function: {e}")
@@ -79,46 +73,39 @@ async def async_save_to_s3(shop, product, grouped_data, credentials):
 async def process_orders(credentials):
     try:
         date = datetime.now().strftime('%d-%m-%Y')
-        # Get orders
         total_orders, total_orders_count = await request_orders(credentials)
         grouped_orders = filter_and_group_by_family(total_orders)
-        
-        # This email will remain constant as the sender's email
         from_email = get_parameter('from_email')
 
-        # For each shop, process orders, generate ZIP and send email
-        for shop in grouped_orders:
-            # List to store async tasks and in-memory CSV data
-            tasks = []
-            in_memory_csvs = {}  # To store csv data in memory
-            orders_breakdown = {}  # To store the breakdown of orders by product
+        all_not_added = []  # List to collect all not added products
 
-            # Update the total_orders_count for this shop by excluding orders with 'exclude' key set to True
+        for shop in grouped_orders:
+            tasks = []
+            in_memory_csvs = {}
+            orders_breakdown = {}
             total_orders_count[shop] = sum(1 for order in grouped_orders[shop].values() for item in order if not item.get('exclude', False))
             
-            # For each product of the shop, create a task to generate and save the CSV asynchronously
             for product, orders in grouped_orders[shop].items():
                 orders_breakdown[product] = len([order for order in orders if not order.get('exclude', False)])
                 task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders, credentials))
                 tasks.append(task)
 
-            # Await all tasks to complete
             completed_tasks = await asyncio.gather(*tasks)
             
-            for csv_data, file_name in completed_tasks:
-                # Check if CSV has more than just a header
+            for csv_data, file_name, not_added in completed_tasks:
+                all_not_added.extend(not_added)
                 if csv_data and file_name and len(csv_data.splitlines()) > 1:
                     in_memory_csvs[file_name] = csv_data
 
-            # Create ZIP from in-memory CSVs only if we have valid CSVs
             if in_memory_csvs:
                 zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
-
-                # Retrieve the email associated with the current shop
                 to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]
-
-                # Send email with ZIP for the current shop
                 send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count[shop], date, orders_breakdown)
+
+        # If there are products not added, send the missing products email for all of them
+        if all_not_added:
+            to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]
+            send_products_missing_email(from_email, to_email, all_not_added)
 
     except Exception as e:
         raise Exception(f"Error in process_orders function: {e}")
