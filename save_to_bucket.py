@@ -63,7 +63,7 @@ async def async_save_to_s3(shop, product, grouped_data, credentials):
         
         # Save to S3
         save_to_s3(shop, csv_output, product)
-            
+
         # Mark each order as processed only if it's not marked as 'exclude'
         for order in unprocessed_orders:
             if not order.get('exclude', False):
@@ -91,12 +91,14 @@ async def process_orders(credentials):
             # List to store async tasks and in-memory CSV data
             tasks = []
             in_memory_csvs = {}  # To store csv data in memory
+            orders_breakdown = {}  # To store the breakdown of orders by product
 
             # Update the total_orders_count for this shop by excluding orders with 'exclude' key set to True
             total_orders_count[shop] = sum(1 for order in grouped_orders[shop].values() for item in order if not item.get('exclude', False))
             
             # For each product of the shop, create a task to generate and save the CSV asynchronously
-            for product in grouped_orders[shop]:
+            for product, orders in grouped_orders[shop].items():
+                orders_breakdown[product] = len([order for order in orders if not order.get('exclude', False)])
                 task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders, credentials))
                 tasks.append(task)
 
@@ -116,7 +118,7 @@ async def process_orders(credentials):
                 to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]
 
                 # Send email with ZIP for the current shop
-                send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count[shop], date)
+                send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count[shop], date, orders_breakdown)
 
     except Exception as e:
         raise Exception(f"Error in process_orders function: {e}")

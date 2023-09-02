@@ -2,12 +2,17 @@ import boto3
 import base64
 
 
-def send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count, date):
+def send_email(zip_buffer, zip_name, from_email, to_email, shop, total_orders_count, date, orders_breakdown):
     try:
         ses = boto3.client('ses', region_name='sa-east-1')
         
         subject = "CSV Files"
-        body = "Please find attached the CSV files."
+        
+        # Generate the body based on the orders_breakdown
+        body = "Please find attached the CSV files.\n\nOrder breakdown:\n"
+        for product, count in orders_breakdown.items():
+            body += f"{product}: {count} orders\n"
+        
         attachment = base64.b64encode(zip_buffer.getvalue()).decode('utf-8')
         
         msg = {
