@@ -53,10 +53,10 @@ def send_products_missing_email(from_email, to_email, missing_products):
     try:
         ses = boto3.client('ses', region_name='sa-east-1')
         
-        subject = "Missing Products in JSON"
+        subject = "Missing Products"
         body = "The following products were not found in the JSON and therefore were not added to the CSV:\n\n"
         for prod in missing_products:
-            body += f"Name: {prod['item']}, ID: {prod['item_id']}, Order: {prod['order_id']}\n"
+            body += f"Name: {prod['item']}, ID: {prod['item_id']}, Order: {prod['order_id']}, Reason: {prod['reason']}\n"
         
         msg = {
             'Data': f"""Subject: {subject}
