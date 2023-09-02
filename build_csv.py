@@ -19,6 +19,8 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
         "cod_area_tel(opcional)", "tel(opcional)", "cod_area_cel(obligatorio)", "cel(obligatorio)"
     ]
 
+    not_added_products = []
+
     # Create an empty DataFrame
     formatted_data = pd.DataFrame(columns=columns)
     # Populate the DataFrame
@@ -33,13 +35,25 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     # Get the list of attributes for the current order from the JSON data
                     attributes_list = product_attributes.get(str(order['item_id']))
                     if not attributes_list:
-                        print(f'No attributes found for item {clean_text(order["item"])} {order["item_id"]}')
+                        print(f'No attributes found for item {clean_text(order["item"])} {order["item_id"]} {order["order_id"]}')
+                        order['exclude'] = True
+                        product = {}
+                        product['item'] = clean_text(order['item'])
+                        product['item_id'] = order['item_id']
+                        product['order_id'] = order['order_id']
+                        not_added_products.append(product)
                         continue
 
                     # Find the correct attributes by matching product name
                     attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
                     if not attributes:
                         print(f'No matching attribute found for item {clean_text(order["item"])} {order["item_id"]}')
+                        order['exclude'] = True
+                        product = {}
+                        product['item'] = clean_text(order['item'])
+                        product['item_id'] = order['item_id']
+                        product['order_id'] = order['order_id']
+                        not_added_products.append(product)
                         continue
 
                     row_data = {
@@ -75,4 +89,4 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
 
     # Convert the DataFrame to CSV format
     output = formatted_data.to_csv(index=False, sep=';')
-    return output
+    return output, not_added_products

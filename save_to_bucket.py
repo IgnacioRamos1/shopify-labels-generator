@@ -1,7 +1,7 @@
 from request_orders import request_orders
 from filter_orders import filter_and_group_by_family
 from build_csv import generate_csv_from_orders
-from send_email import send_email
+from send_email import send_email, send_products_missing_email
 from utils import load_product_attributes, create_zip_in_memory, bucket_exists, get_parameter
 from dynamodb_cache import check_order_processed, mark_order_as_processed
 
@@ -39,7 +39,7 @@ def save_to_s3(bucket_name, content, item_name):
         raise Exception(f"Error in save_to_s3 function: {e}")
 
 
-async def async_save_to_s3(shop, product, grouped_data):
+async def async_save_to_s3(shop, product, grouped_data, credentials):
     try:
         # Filter orders that have already been processed
         unprocessed_orders = [order for order in grouped_data[shop][product] if not check_order_processed(shop, order["order_id"], order["item_id"])]
@@ -49,7 +49,13 @@ async def async_save_to_s3(shop, product, grouped_data):
             return None, None
 
         product_attributes = load_product_attributes(shop)
-        csv_output = generate_csv_from_orders({shop: {product: unprocessed_orders}}, product_attributes)
+        csv_output, not_added = generate_csv_from_orders({shop: {product: unprocessed_orders}}, product_attributes)
+
+        # If there are products not added, send the missing products email
+        if not_added:
+            from_email = get_parameter('from_email')  # assuming you have this utility function to get the sender's email
+            to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]  # the email associated with the shop
+            send_products_missing_email(from_email, to_email, not_added)
 
         # Define filename based on shop, date, and product
         date_str = datetime.now().strftime('%Y-%m-%d')
@@ -57,10 +63,11 @@ async def async_save_to_s3(shop, product, grouped_data):
         
         # Save to S3
         save_to_s3(shop, csv_output, product)
-        
-        # Mark each order as processed
+            
+        # Mark each order as processed only if it's not marked as 'exclude'
         for order in unprocessed_orders:
-            mark_order_as_processed(shop, order["order_id"], order["item_id"])
+            if not order.get('exclude', False):
+                mark_order_as_processed(shop, order["order_id"], order["item_id"])
         
         # Return csv data and filename
         return csv_output, file_name
@@ -84,10 +91,13 @@ async def process_orders(credentials):
             # List to store async tasks and in-memory CSV data
             tasks = []
             in_memory_csvs = {}  # To store csv data in memory
+
+            # Update the total_orders_count for this shop by excluding orders with 'exclude' key set to True
+            total_orders_count[shop] = sum(1 for order in grouped_orders[shop].values() for item in order if not item.get('exclude', False))
             
             # For each product of the shop, create a task to generate and save the CSV asynchronously
             for product in grouped_orders[shop]:
-                task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders))
+                task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders, credentials))
                 tasks.append(task)
 
             # Await all tasks to complete
