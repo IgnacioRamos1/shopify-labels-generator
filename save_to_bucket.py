@@ -2,8 +2,9 @@ from request_orders import request_orders
 from filter_orders import filter_and_group_by_family
 from build_csv import generate_csv_from_orders
 from send_email import send_email, send_products_missing_email
-from utils import load_product_attributes, create_zip_in_memory, bucket_exists, get_parameter
+from utils import load_product_attributes, create_zip_in_memory, bucket_exists, get_parameter, generate_presigned_url
 from dynamodb_cache import check_order_processed, mark_order_as_processed
+from send_whatsapp_message import send_whatsapp_message
 
 import boto3
 from datetime import datetime
@@ -93,8 +94,16 @@ async def process_orders(credentials):
             if in_memory_csvs:
                 _, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
                 save_to_s3(shop, zip_buffer.getvalue(), f"{date}.zip")
+                '''
+                Send the ZIP file to the email address associated with the shop
+
                 to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]
                 send_email(zip_buffer, f"{date}.zip", from_email, to_email, shop, total_orders_count[shop], date, orders_breakdown)
+                '''
+                formatted_shop_name = shop.lower().replace(" ", "-")
+                s3_presigned_url = generate_presigned_url(formatted_shop_name, f"{date}.zip")
+                send_whatsapp_message(date, shop, total_orders_count, s3_presigned_url)
+
 
         if all_not_added:
             to_email = [store["email"] for store in credentials if store["shop_name"] == shop][0]
