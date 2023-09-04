@@ -83,10 +83,9 @@ async def process_orders(credentials):
             tasks = []
             in_memory_csvs = {}
             orders_breakdown = {}
-            total_orders_count[shop] = sum(1 for order in grouped_orders[shop].values() for item in order if not item.get('exclude', False))
             
+            # Initiate tasks to save to S3
             for product, orders in grouped_orders[shop].items():
-                orders_breakdown[product] = len([order for order in orders if not order.get('exclude', False)])
                 task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders, credentials))
                 tasks.append(task)
 
@@ -96,6 +95,14 @@ async def process_orders(credentials):
                 all_not_added.extend(not_added)
                 if csv_data and file_name and len(csv_data.splitlines()) > 1:
                     in_memory_csvs[file_name] = csv_data
+
+            # Update the order breakdown based on the CSVs generated
+            for file_name, csv_content in in_memory_csvs.items():
+                product_name = file_name.split('-')[2].strip()  # Extract product name from the filename
+                orders_breakdown[product_name] = len(csv_content.splitlines()) - 1  # Subtract 1 for the header
+
+            # Update total orders count for the shop based on the updated orders_breakdown
+            total_orders_count[shop] = sum(orders_breakdown.values())
 
             if in_memory_csvs:
                 zip_name, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
@@ -108,4 +115,4 @@ async def process_orders(credentials):
             send_products_missing_email(from_email, to_email, all_not_added)
 
     except Exception as e:
-        raise Exception(f"Error in process_orders function: {e}")
+        raise Exception(f"Error in updated_process_orders function: {e}")
