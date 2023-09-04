@@ -17,7 +17,6 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
         "destino_nombre(obligatorio)", "destino_email(obligatorio debe ser un email valido)", 
         "cod_area_tel(opcional)", "tel(opcional)", "cod_area_cel(obligatorio)", "cel(obligatorio)"
     ]
-
     not_added_products = []
     formatted_data = pd.DataFrame(columns=columns)
     for items in grouped_orders.values():
