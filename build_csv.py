@@ -17,6 +17,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
         "destino_nombre(obligatorio)", "destino_email(obligatorio debe ser un email valido)", 
         "cod_area_tel(opcional)", "tel(opcional)", "cod_area_cel(obligatorio)", "cel(obligatorio)"
     ]
+    not_added_orders = []
     not_added_products = []
     formatted_data = pd.DataFrame(columns=columns)
     for items in grouped_orders.values():
@@ -27,17 +28,28 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
             for order in orders:
                 # Check if street or number is missing
                 if not clean_text(order.get("street")) or not clean_text(order.get("number")):
-                    reason = "Missing street" if not order.get("street") else "Missing street number"
+                    reason = "Missing street *(NOT ADDED)*" if not order.get("street") else "Missing street number *(NOT ADDED)*"
                     product = {
                         'item': clean_text(order['item']),
-                        'item_id': order['item_id'],
-                        'order_id': order['order_id'],
+                        'person': clean_text(f"{order['first_name']} {order['last_name']}"),
                         'reason': reason
                     }
-                    not_added_products.append(product)
+                    not_added_orders.append(product)
                     order['exclude'] = True
                     continue
-                
+
+                # Check for floor value length
+                floor_length = len(clean_text(order.get("apartment", "")))
+                if floor_length > 3:
+                    reason = f"Demasiados caracteres en el piso ({floor_length})"
+                    product = {
+                        'item': clean_text(order['item']),
+                        'person': clean_text(f"{order['first_name']} {order['last_name']}"),
+                        'reason': reason
+                    }
+                    not_added_orders.append(product)
+                    continue
+
                 # Check if the product is in the JSON
                 attributes_list = product_attributes.get(str(order['item_id']))
                 if not attributes_list:
@@ -91,4 +103,4 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                 formatted_data.loc[len(formatted_data)] = row_data
 
     output = formatted_data.to_csv(index=False, sep=';')
-    return output, not_added_products
+    return output, not_added_products, not_added_orders
