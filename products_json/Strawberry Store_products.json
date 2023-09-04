@@ -25,10 +25,10 @@
         {
         "nombre": "SolarReflector PRO 2x1  Carga Solar y Sensor de Movimiento",
         "tipo_producto": "CP",
-        "largo": 15,
-        "ancho": 10,
-        "alto": 5,
-        "peso": 0.15,
+        "largo": 20,
+        "ancho": 25,
+        "alto": 7,
+        "peso": 0.16,
         "precio": 1000
     }
 ],
