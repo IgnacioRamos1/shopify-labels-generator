@@ -5,39 +5,41 @@ provider:
   runtime: python3.11
   stage: dev
   region: sa-east-1
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - s3:ListBucket
-        - s3:ListAllMyBuckets
-        - s3:PutObject
-        - s3:GetObject
-        - s3:HeadBucket
-        - s3:CreateBucket
-      Resource: "arn:aws:s3:::*"
-    - Effect: Allow
-      Action:
-        - ses:SendEmail
-        - ses:SendRawEmail
-      Resource: "*"
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-        - dynamodb:GetItem
-        - dynamodb:CreateTable
-        - dynamodb:ListTables
-        - dynamodb:DescribeTable
-      Resource: "arn:aws:dynamodb:sa-east-1:421852645480:table/*"
-    - Effect: Allow
-      Action:
-        - ssm:GetParameter
-        - ssm:DescribeParameters
-      Resource: "*"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:ListBucket
+            - s3:ListAllMyBuckets
+            - s3:PutObject
+            - s3:GetObject
+            - s3:HeadBucket
+            - s3:CreateBucket
+          Resource: "arn:aws:s3:::*"
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+            - ses:SendRawEmail
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:CreateTable
+            - dynamodb:ListTables
+            - dynamodb:DescribeTable
+          Resource: "arn:aws:dynamodb:sa-east-1:421852645480:table/*"
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+            - ssm:DescribeParameters
+          Resource: "*"
 
 functions:
   csv-generator:
     handler: handler.lambda_handler
-    timeout: 60
+    timeout: 30
     events:
       - http:
           path: csv-generator
