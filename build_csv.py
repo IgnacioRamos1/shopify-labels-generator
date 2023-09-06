@@ -4,27 +4,35 @@ from fix_postal_code import correct_province_by_postal_code
 
 
 def generate_csv_from_orders(grouped_orders, product_attributes):
-    columns = [
-        "tipo_producto(obligatorio)", "largo(obligatorio en CM)", "ancho(obligatorio en CM)", 
-        "altura(obligatorio en CM)", "peso(obligatorio en KG)", "valor_del_contenido(obligatorio en pesos argentinos)",
-        "provincia_destino(obligatorio)", "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)",
-        "localidad_destino(obligatorio solo en caso de no ingresar sucursal de destino)", 
-        "calle_destino(obligatorio solo en caso de no ingresar sucursal de destino)", 
-        "altura_destino(obligatorio solo en caso de no ingresar sucursal de destino)", 
-        "piso(opcional solo en caso de no ingresar sucursal de destino)", 
-        "dpto(opcional solo en caso de no ingresar sucursal de destino)", 
-        "codpostal_destino(obligatorio solo en caso de no ingresar sucursal de destino)", 
-        "destino_nombre(obligatorio)", "destino_email(obligatorio debe ser un email valido)", 
-        "cod_area_tel(opcional)", "tel(opcional)", "cod_area_cel(obligatorio)", "cel(obligatorio)"
-    ]
-    not_added_orders = []
-    not_added_products = []
-    formatted_data = pd.DataFrame(columns=columns)
-    for items in grouped_orders.values():
-        if not items:
-            continue
-
-        for orders in items.values():
+    try:
+        columns = [
+            "tipo_producto(obligatorio)",
+            "largo(obligatorio en CM)",
+            "ancho(obligatorio en CM)",
+            "altura(obligatorio en CM)",
+            "peso(obligatorio en KG)",
+            "valor_del_contenido(obligatorio en pesos argentinos)",
+            "provincia_destino(obligatorio)",
+            "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)",
+            "localidad_destino(obligatorio solo en caso de no ingresar sucursal de destino)",
+            "calle_destino(obligatorio solo en caso de no ingresar sucursal de destino)",
+            "altura_destino(obligatorio solo en caso de no ingresar sucursal de destino)",
+            "piso(opcional solo en caso de no ingresar sucursal de destino)",
+            "dpto(opcional solo en caso de no ingresar sucursal de destino)",
+            "codpostal_destino(obligatorio solo en caso de no ingresar sucursal de destino)",
+            "destino_nombre(obligatorio)",
+            "destino_email(obligatorio debe ser un email valido)",
+            "cod_area_tel(opcional)",
+            "tel(opcional)",
+            "cod_area_cel(obligatorio)",
+            "cel(obligatorio)"
+        ]
+        not_added_orders = []
+        not_added_products = []
+        formatted_data = pd.DataFrame(columns=columns)
+        # Iterate over each product and its orders
+        for product, orders in grouped_orders.items():
+            # Iterate over each order
             for order in orders:
                 # Check if street or number is missing
                 if not clean_text(order.get("street")) or not clean_text(order.get("number")):
@@ -48,7 +56,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                         'reason': reason
                     }
                     not_added_orders.append(product)
-                    continue
+                    # No continuamos porque queremos que se corrija manualmente el piso, por lo tanto lo agregamos al CSV
 
                 # Check if the product is in the JSON
                 attributes_list = product_attributes.get(str(order['item_id']))
@@ -61,9 +69,11 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                         'reason': reason
                     }
                     not_added_products.append(product)
-                    order['exclude'] = True
+                    # Mark all orders for this product as 'exclude'
+                    for single_order in grouped_orders[product['item']]:
+                        single_order['exclude'] = True
                     continue
-                
+
                 # Check if the product name matches the JSON
                 attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
                 if not attributes:
@@ -75,7 +85,10 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                         'reason': reason
                     }
                     not_added_products.append(product)
-                    order['exclude'] = True
+
+                    # Mark all orders for this product as 'exclude'
+                    for single_order in grouped_orders[product['item']]:
+                        single_order['exclude'] = True
                     continue
 
                 row_data = {
@@ -85,7 +98,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     "altura(obligatorio en CM)": round(attributes["alto"] * order["quantity"], 2),
                     "peso(obligatorio en KG)": round(attributes["peso"] * order["quantity"], 2),
                     "valor_del_contenido(obligatorio en pesos argentinos)": round(attributes["precio"] * order["quantity"], 2),
-                    "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"],clean_zip_code(order["zip_code"])),
+                    "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"], clean_zip_code(order["zip_code"])),
                     "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",
                     "localidad_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["city"]),
                     "calle_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["street"]),
@@ -100,7 +113,12 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     "cod_area_cel(obligatorio)": "54",
                     "cel(obligatorio)": clean_phone(order["phone"])
                 }
+
+                # Add the row to the DataFrame
                 formatted_data.loc[len(formatted_data)] = row_data
 
-    output = formatted_data.to_csv(index=False, sep=';')
-    return output, not_added_products, not_added_orders
+        output = formatted_data.to_csv(index=False, sep=';')
+        return output, not_added_products, not_added_orders
+
+    except Exception as e:
+        raise Exception(f"Error in generate_csv_from_orders function: {e}")

@@ -1,6 +1,6 @@
 from build_csv import generate_csv_from_orders
 from utils import load_product_attributes, bucket_exists
-from dynamodb_cache import check_order_processed, mark_order_as_processed
+from dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
 
 import boto3
 from datetime import datetime
@@ -10,7 +10,7 @@ def save_to_s3(bucket_name, content, file_name):
     try:
         # Convert the bucket name to a valid S3 bucket name
         bucket_name = bucket_name.lower().replace(" ", "-")
-        
+
         # Initialize the S3 client
         s3 = boto3.client('s3', region_name='sa-east-1')
 
@@ -30,25 +30,47 @@ def save_to_s3(bucket_name, content, file_name):
         raise Exception(f"Error in save_to_s3 function: {e}")
 
 
-async def async_save_to_s3(shop, product, grouped_data):
+def generate_unprocessed_orders_csv(shop, product, grouped_data):
     try:
-        unprocessed_orders = [order for order in grouped_data[shop][product] if not check_order_processed(shop, order["order_id"], order["item_id"])]
+        # Ensure the DynamoDB table exists
+        table_name = get_or_create_table_name(shop)
+
+        # Check if the product exists in the grouped_data
+        if product not in grouped_data:
+            return None, None, [], []
+
+        unprocessed_orders = []
+        # Check if each order has been processed
+        for order in grouped_data[product]:
+            is_processed = check_order_processed(table_name, order["order_id"], order["item_id"])
+            # If the order has not been processed, add it to the list
+            if not is_processed:
+                unprocessed_orders.append(order)
+
+        # Si todas las órdenes ya han sido procesadas, devolver vacío.
         if not unprocessed_orders:
             return None, None, [], []
 
+        # Cargar los atributos del producto
         product_attributes = load_product_attributes(shop)
-        csv_output, not_added_products, not_added_orders = generate_csv_from_orders({shop: {product: unprocessed_orders}}, product_attributes)
+
+        # Llamar a la función que genera el CSV a partir de las órdenes no procesadas pasando cada producto y sus órdenes y los atributos del producto
+        csv_output, not_added_products, not_added_orders = generate_csv_from_orders({product: unprocessed_orders}, product_attributes)
+
+        # Si el output del CSV es 1 (tiene solo el header), significa que no se ha añadido ningún producto.
+        if len(csv_output.splitlines()) <= 1:
+            return None, None, not_added_products, not_added_orders
 
         # Define filename based on shop, date, and product
         date_str = datetime.now().strftime('%Y-%m-%d')
         file_name = f"{shop} - {date_str} - {product}.csv"
-        
+
         # Mark each order as processed only if it's not marked as 'exclude'
         for order in unprocessed_orders:
             if not order.get('exclude', False):
-                mark_order_as_processed(shop, order["order_id"], order["item_id"])
+                mark_order_as_processed(table_name, order["order_id"], order["item_id"])
 
         return csv_output, file_name, not_added_products, not_added_orders
 
     except Exception as e:
-        raise Exception(f"Error in async_save_to_s3 function: {e}")
+        raise Exception(f"Error en la función generate_unprocessed_orders_csv: {e}")

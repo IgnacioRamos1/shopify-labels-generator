@@ -35,16 +35,48 @@ provider:
             - ssm:GetParameter
             - ssm:DescribeParameters
           Resource: "*"
+        - Effect: Allow
+          Action:
+            - secretsmanager:GetSecretValue
+            - secretsmanager:ListSecrets
+            - sqs:SendMessage
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+          Resource: "*"
+
+        - Effect: Allow
+          Action:
+            - sqs:SendMessage
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueUrl
+          Resource: 
+            - "arn:aws:sqs:sa-east-1:*:shop-processor-queue"
 
 functions:
-  csv-generator:
-    handler: handler.lambda_handler
+  triggerProcessing:
+    handler: handler.trigger_shop_processing
     timeout: 30
     events:
-      - http:
-          path: csv-generator
-          method: get
       - schedule: cron(0 20 * * ? *)
+
+  processShop:
+    handler: handler.process_shop
+    timeout: 30
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - ShopProcessorQueue
+              - Arn
+          batchSize: 1  # Procesa un mensaje (tienda) a la vez.
+
+resources:
+  Resources:
+    ShopProcessorQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: shop-processor-queue
 
 plugins:
   - serverless-python-requirements

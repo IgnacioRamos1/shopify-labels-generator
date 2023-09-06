@@ -32,48 +32,15 @@
         "precio": 1000
     }
 ],
-    "8385355022651": [
-        {
-        "nombre": "Tu Companero de Cocina Perfecto Premium Grinder",
-        "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
-        "precio": 1000
-    }
-],
     "8383176376635": [
         {
         "nombre": "Descorchador Premium",
         "tipo_producto": "CP",
-        "largo": 300,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
-        "precio": 6500
-    }
-],
-        "8444169290043": [
-            {
-        "nombre": "FlameDiffuser Humidificador",
-        "tipo_producto": "CP",
         "largo": 30,
         "ancho": 20,
         "alto": 10,
         "peso": 0.62,
         "precio": 1000
     }
-],
-        "8693987541307": [
-            {
-        "nombre": "Guirnalda LED Solar",
-        "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
-        "precio": 1000
-            }
-        ]
+]
 }

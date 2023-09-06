@@ -1,21 +1,46 @@
 from process_orders import process_orders
-from utils import get_parameter
+from utils import get_secret, list_shop_secrets, send_messages_to_sqs
 
-import asyncio
 import json
 
 
-def lambda_handler(event, context):
+def trigger_shop_processing(event, context):
     try:
-        credentials = get_parameter('shopify_credentials')
-        credentials = json.loads(credentials)
+        # Obtener la lista de tiendas desde Secrets Manager
+        shop_names = list_shop_secrets()
 
-        asyncio.get_event_loop().run_until_complete(process_orders(credentials))
+        # Enviar un mensaje a SQS por cada tienda
+        send_messages_to_sqs(shop_names)
+
+        return {
+            'statusCode': 200,
+            'body': f"Triggered processing for {len(shop_names)} shops."
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': str(e)
+        }
+
+
+def process_shop(event, context):
+    try:
+        # Procesar cada mensaje en el evento de SQS
+        for record in event['Records']:
+            message_body = json.loads(record['body'])
+            shop_name = message_body['shop_name']
+
+            # Recuperar las credenciales para esta tienda específica
+            credentials = get_secret(f'shop_secret_{shop_name}')
+            # Procesar órdenes para esta tienda
+            process_orders(credentials)
 
         return {
             'statusCode': 200,
             'body': "CSV files generated and saved to S3"
         }
-
     except Exception as e:
-        raise e
+        return {
+            'statusCode': 500,
+            'body': str(e)
+        }

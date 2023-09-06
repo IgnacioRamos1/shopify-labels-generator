@@ -10,25 +10,14 @@
             "precio": 1000
         }
     ],
-    "8095462981890": [
-        {
-            "nombre": "Dispensador de Masa",
-            "tipo_producto": "CP",
-            "largo": 10,
-            "ancho": 9,
-            "alto": 8,
-            "peso": 0.1,
-            "precio": 1000
-        }
-    ],
     "8037295227138": [
         {
             "nombre": "KneePlaster  Alivia el dolor de Rodilla en Minutos",
             "tipo_producto": "CP",
-            "largo": 10,
-            "ancho": 9,
-            "alto": 8,
-            "peso": 0.1,
+            "largo": 15,
+            "ancho": 10,
+            "alto": 5,
+            "peso": 0.12,
             "precio": 1000
         }
     ]

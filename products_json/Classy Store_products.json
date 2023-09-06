@@ -27,16 +27,5 @@
         "peso": 0.62,
         "precio": 1000
     }
-],
-    "8477393944858": [
-        {
-        "nombre": "Mini Camara de Seguridad",
-        "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
-        "precio": 1000
-    }
 ]
 }

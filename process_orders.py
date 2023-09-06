@@ -3,68 +3,76 @@ from filter_orders import filter_and_group_by_family
 from send_email import send_products_missing_email
 from utils import create_zip_in_memory, get_parameter, generate_presigned_url
 from send_whatsapp_message import send_whatsapp_group_message, send_whatsapp_message
-from save_to_bucket import async_save_to_s3, save_to_s3
+from save_to_bucket import generate_unprocessed_orders_csv, save_to_s3
 
 from datetime import datetime
-import asyncio
 
 
-async def process_orders(credentials):
+def process_orders(credentials):
     try:
         date = datetime.now().strftime('%Y-%m-%d')
-        total_orders, total_orders_count = await request_orders(credentials)
+        total_orders = request_orders(credentials)
         grouped_orders = filter_and_group_by_family(total_orders)
         from_email = get_parameter('from_email')
         to_email = get_parameter('to_email')
 
+        total_orders_count = 0
+
         all_not_added_products = []
         all_not_added_orders = []
 
-        for shop in grouped_orders:
-            tasks = []
-            in_memory_csvs = {}
-            orders_breakdown = {}
-            not_added_orders_for_shop = []  # List to store orders not added for this specific shop
+        in_memory_csvs = {}
 
-            for product, orders in grouped_orders[shop].items():
-                task = asyncio.ensure_future(async_save_to_s3(shop, product, grouped_orders))
-                tasks.append(task)
+        shop = credentials['shop_name']
 
-            completed_tasks = await asyncio.gather(*tasks)
+        # Generate a CSV file for each product.
+        for product in grouped_orders:
+            csv_data, file_name, not_added_products, not_added_orders = generate_unprocessed_orders_csv(shop, product, grouped_orders)
 
-            for csv_data, file_name, not_added_products, not_added_orders in completed_tasks:
-                all_not_added_products.extend(not_added_products)
-                not_added_orders_for_shop.extend(not_added_orders)
-                if csv_data and file_name and len(csv_data.splitlines()) > 1:
-                    in_memory_csvs[file_name] = csv_data
+            # Add the products and orders not added to the global lists
+            all_not_added_products.extend(not_added_products)
+            all_not_added_orders.extend(not_added_orders)
 
-            for file_name, csv_content in in_memory_csvs.items():
-                product_name = file_name.split('-')[2].strip()
-                orders_breakdown[product_name] = len(csv_content.splitlines()) - 1
+            # If there is generated CSV, add it to the in-memory CSVs dictionary.
+            if csv_data and file_name:
+                in_memory_csvs[file_name] = csv_data
+                # Add the number of orders in the CSV to the total orders count
+                total_orders_count += len(csv_data.splitlines()) - 1  # Subtracting 1 for header
 
-            total_orders_count[shop] = sum(orders_breakdown.values())
+        # If no CSVs are generated and there are no missing products or orders, end the execution.
+        if not in_memory_csvs and not all_not_added_products and not all_not_added_orders:
+            return
 
-            all_not_added_orders.extend(not_added_orders_for_shop)
+        # If there are orders or products that have not been added:
+        if all_not_added_products or all_not_added_orders:
+            # Send the unadded orders via WhatsApp.
+            if all_not_added_orders:
+                group_chat_id = credentials['group_chat_id']
+                message = "\n".join([f"{order['person']} - {order['item']} - {order['reason']}" for order in all_not_added_orders])
+                send_whatsapp_message(group_chat_id, message)
 
-            if in_memory_csvs:
-                _, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
-                save_to_s3(shop, zip_buffer.getvalue(), f"{date}.zip")
+            # Send the unadded products by email.
+            if all_not_added_products:
+                send_products_missing_email(from_email, to_email, all_not_added_products, shop)
 
-                # Send the ZIP file to WhatsApp
-                formatted_shop_name = shop.lower().replace(" ", "-")
-                s3_presigned_url = generate_presigned_url(formatted_shop_name, f"{date}.zip")
-                group_chat_id = [store["group_chat_id"] for store in credentials if store["shop_name"] == shop][0]
-                send_whatsapp_group_message(date, shop, total_orders_count, s3_presigned_url, group_chat_id)
-                
-                # Send not added orders message to WhatsApp if there are any
-                if not_added_orders_for_shop:
-                    group_chat_id = [store["group_chat_id"] for store in credentials if store["shop_name"] == shop][0]
-                    message = "\n".join([f"{order['person']} - {order['item']} - {order['reason']}" for order in not_added_orders_for_shop])
-                    send_whatsapp_message(group_chat_id, message)
+        # If no CSVs are generated, end the execution.
+        if not in_memory_csvs:
+            return
 
-        # Send email with not added orders
-        if all_not_added_orders:
-            send_products_missing_email(from_email, to_email, all_not_added_products)
+        # Continue with the process of creating the zip file and sending it via WhatsApp if we get to this point.
+        _, zip_buffer = create_zip_in_memory(shop, in_memory_csvs)
+
+        # Save the ZIP file to S3
+        save_to_s3(shop, zip_buffer.getvalue(), f"{date}.zip")
+
+        formatted_shop_name = shop.lower().replace(" ", "-")
+
+        # Generate a presigned URL for the ZIP file
+        s3_presigned_url = generate_presigned_url(formatted_shop_name, f"{date}.zip")
+
+        # Send the ZIP file via WhatsApp
+        group_chat_id = credentials['group_chat_id']
+        send_whatsapp_group_message(date, shop, total_orders_count, s3_presigned_url, group_chat_id)
 
     except Exception as e:
-        raise Exception(f"Error in process_orders function: {e}")
+        raise Exception(f"Error en la función process_orders: {e}")
