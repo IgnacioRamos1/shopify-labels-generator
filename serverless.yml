@@ -29,6 +29,7 @@ provider:
             - dynamodb:CreateTable
             - dynamodb:ListTables
             - dynamodb:DescribeTable
+            - dynamodb:UpdateTimeToLive
           Resource: "arn:aws:dynamodb:sa-east-1:421852645480:table/*"
         - Effect: Allow
           Action:
@@ -51,7 +52,7 @@ provider:
             - sqs:DeleteMessage
             - sqs:GetQueueUrl
           Resource: 
-            - "arn:aws:sqs:sa-east-1:*:shop-processor-queue"
+            - "arn:aws:sqs:sa-east-1:*:shop-processor-queue"          
 
 functions:
   triggerProcessing:
