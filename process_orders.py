@@ -3,7 +3,8 @@ from filter_orders import filter_and_group_by_family
 from send_email import send_products_missing_email
 from utils import create_zip_in_memory, get_parameter, generate_presigned_url
 from send_whatsapp_message import send_whatsapp_group_message, send_whatsapp_message
-from save_to_bucket import generate_unprocessed_orders_csv, save_to_s3
+from save_to_bucket import save_to_s3
+from generate_unprocessed_orders import generate_unprocessed_orders_csv
 
 from datetime import datetime
 
