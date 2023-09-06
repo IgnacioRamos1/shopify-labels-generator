@@ -53,7 +53,7 @@ def process_orders(credentials):
 
             # Send the unadded products by email.
             if all_not_added_products:
-                send_products_missing_email(from_email, to_email, all_not_added_products, shop)
+                send_products_missing_email(from_email, to_email, all_not_added_products, shop, date)
 
         # If no CSVs are generated, end the execution.
         if not in_memory_csvs:
