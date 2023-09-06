@@ -27,7 +27,8 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
             "cod_area_cel(obligatorio)",
             "cel(obligatorio)"
         ]
-        not_added_orders = []
+        not_added_floor_length = []
+        not_added_missing_street_or_number = []
         not_added_products = []
         formatted_data = pd.DataFrame(columns=columns)
         # Iterate over each product and its orders
@@ -42,7 +43,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                         'person': clean_text(f"{order['first_name']} {order['last_name']}"),
                         'reason': reason
                     }
-                    not_added_orders.append(product)
+                    not_added_missing_street_or_number.append(product)
                     order['exclude'] = True
                     continue
 
@@ -55,7 +56,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                         'person': clean_text(f"{order['first_name']} {order['last_name']}"),
                         'reason': reason
                     }
-                    not_added_orders.append(product)
+                    not_added_floor_length.append(product)
                     # No continuamos porque queremos que se corrija manualmente el piso, por lo tanto lo agregamos al CSV
 
                 # Check if the product is in the JSON
@@ -118,7 +119,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                 formatted_data.loc[len(formatted_data)] = row_data
 
         output = formatted_data.to_csv(index=False, sep=';')
-        return output, not_added_products, not_added_orders
+        return output, not_added_products, not_added_floor_length, not_added_missing_street_or_number
 
     except Exception as e:
         raise Exception(f"Error in generate_csv_from_orders function: {e}")
