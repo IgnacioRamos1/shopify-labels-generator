@@ -3,6 +3,7 @@ import boto3
 
 def send_products_missing_email(from_email, to_email, missing_products, shop, date):
     try:
+        print('Starting send_products_missing_email function')
         ses = boto3.client('ses', region_name='sa-east-1')
 
         subject = f"Missing Products {shop} - {date}"
@@ -27,6 +28,8 @@ Content-Transfer-Encoding: 8bit
             Destinations=[to_email],
             RawMessage=msg
         )
+        print('Response from send_products_missing_email', response)
+        print('Finished send_products_missing_email function')
 
         return response
 

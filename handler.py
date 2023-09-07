@@ -27,6 +27,7 @@ def process_shop(event, context):
     try:
         # Procesar cada mensaje en el evento de SQS
         for record in event['Records']:
+            print('Inicio de procesamiento de tienda')
             message_body = json.loads(record['body'])
             shop_name = message_body['shop_name']
 
@@ -34,6 +35,7 @@ def process_shop(event, context):
             credentials = get_secret(f'shop_secret_{shop_name}')
             # Procesar órdenes para esta tienda
             process_orders(credentials)
+            print('Fin de procesamiento de tienda')
 
         return {
             'statusCode': 200,

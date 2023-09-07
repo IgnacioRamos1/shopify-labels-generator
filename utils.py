@@ -5,7 +5,6 @@ import json
 import os
 import io
 
-from datetime import datetime
 
 ssm_client = boto3.client('ssm')
 
@@ -32,17 +31,17 @@ def bucket_exists(bucket_name):
         raise Exception(f"Error in bucket_exists function: {e}")
 
 
-def create_zip_in_memory(shop, csv_files):
+def create_zip_in_memory(csv_files):
     try:
-        date_str = datetime.now().strftime('%Y-%m-%d')
-        zip_name = f"{shop}-{date_str}.zip"
+        print('Starting create_zip_in_memory function')
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
             for file_name, data in csv_files.items():
                 zip_file.writestr(file_name, data)
 
         zip_buffer.seek(0)
-        return zip_name, zip_buffer
+        print('Finished create_zip_in_memory function')
+        return zip_buffer
 
     except Exception as e:
         raise Exception(f"Error in create_zip_in_memory function: {e}")
@@ -73,7 +72,7 @@ def generate_presigned_url(bucket_name, object_name, expiration=3600):
     :param expiration: Time in seconds for the presigned URL to remain valid
     :return: Presigned URL as string. If error, returns None.
     """
-
+    print('Starting generate_presigned_url function')
     # Generate a presigned URL for the S3 object
     s3_client = boto3.client('s3', region_name='sa-east-1')
     try:
@@ -81,6 +80,7 @@ def generate_presigned_url(bucket_name, object_name, expiration=3600):
                                                     Params={'Bucket': bucket_name,
                                                             'Key': object_name},
                                                     ExpiresIn=expiration)
+        print('Finished generate_presigned_url function')
     except NoCredentialsError:
         return None
 

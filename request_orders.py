@@ -4,6 +4,7 @@ from datetime import datetime
 
 def fetch_orders_for_store(shop_name, shop_url, access_token, date):
     try:
+        print('Starting fetch_orders_for_store function')
         date = datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%dT%H:%M:%S%z')
         endpoint = f"https://{shop_url}/admin/api/2022-01/orders.json"
         headers = {
@@ -17,9 +18,11 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
         }
 
         response = requests.get(endpoint, headers=headers, params=params)
+        print('Request orders response', response)
         orders = response.json()
 
         orders_list = []
+        print('Building orders list')
         for order in orders.get('orders', []):
             for item in order.get('line_items', []):
                 order_dict = {}
@@ -39,19 +42,8 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
                 order_dict['zip_code'] = order['customer']['default_address']['zip']
                 order_dict['phone'] = order['customer']['default_address']['phone']
                 orders_list.append(order_dict)
-
-        return shop_name, orders_list
+        print('Finished building orders list')
+        return orders_list
 
     except Exception as e:
         raise Exception(f"Error in fetch_orders_for_store function for {shop_name}: {e}")
-
-
-def request_orders(credentials):
-    try:
-        shop_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
-
-        # Return all orders for the shop
-        return shop_orders[1]
-
-    except Exception as e:
-        raise Exception(f"Error in request_orders function: {e}")

@@ -7,9 +7,10 @@ token = get_parameter('whatsapp_token')
 
 def send_whatsapp_group_message(date, shop, total_orders_count, s3_presigned_url, group_chat_id):
     try:
+        print('Starting send_whatsapp_group_message function')
         url = "https://api.ultramsg.com/instance60273/messages/document"
 
-        # group_chat_id = "120363150899530481@g.us"
+        group_chat_id = "120363150899530481@g.us"
 
         # The group_chat_id is now coming from the function parameter, so no need to get it again
 
@@ -22,7 +23,8 @@ def send_whatsapp_group_message(date, shop, total_orders_count, s3_presigned_url
 
         headers = {'content-type': 'application/x-www-form-urlencoded'}
 
-        requests.request("POST", url, data=whatsapp_payload, headers=headers)
+        response = requests.request("POST", url, data=whatsapp_payload, headers=headers)
+        print('Response from send_whatsapp_group_message', response)
 
     except Exception as e:
         raise Exception(f"Error in send_whatsapp_message function: {e}")
@@ -30,15 +32,17 @@ def send_whatsapp_group_message(date, shop, total_orders_count, s3_presigned_url
 
 def send_whatsapp_message(group_chat_id, body):
     try:
+        print('Starting send_whatsapp_message function')
         url = "https://api.ultramsg.com/instance60273/messages/chat"
 
-        # group_chat_id = "120363150899530481@g.us"
+        group_chat_id = "120363150899530481@g.us"
 
         payload = f"token={token}&to={group_chat_id}&body={body}"
         payload = payload.encode('utf8').decode('iso-8859-1')
         headers = {'content-type': 'application/x-www-form-urlencoded'}
 
-        requests.request("POST", url, data=payload, headers=headers)
+        response = requests.request("POST", url, data=payload, headers=headers)
+        print('Response from send_whatsapp_message', response)
 
     except Exception as e:
         raise Exception(f"Error in send_whatsapp_message function: {e}")

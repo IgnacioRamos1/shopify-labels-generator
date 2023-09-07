@@ -5,6 +5,7 @@ import boto3
 
 def set_bucket_lifecycle(bucket_name):
     try:
+        print('Starting set_bucket_lifecycle function')
         s3 = boto3.client('s3', region_name='sa-east-1')
 
         lifecycle_policy = {
@@ -27,6 +28,7 @@ def set_bucket_lifecycle(bucket_name):
 
 def save_to_s3(bucket_name, content, file_name):
     try:
+        print('Starting save_to_s3 function')
         # Convert the bucket name to a valid S3 bucket name
         bucket_name = bucket_name.lower().replace(" ", "-")
 
@@ -35,14 +37,18 @@ def save_to_s3(bucket_name, content, file_name):
 
         # Check if the bucket exists
         if not bucket_exists(bucket_name):
+            print('Bucket does not exist, creating it')
             s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'sa-east-1'})
             set_bucket_lifecycle(bucket_name)
+            print('Bucket created')
 
         # Determine the content type based on the file extension
         content_type = 'application/zip' if file_name.endswith('.zip') else 'text/csv'
 
+        print('Uploading file to S3')
         # Upload the content to the bucket
         s3.put_object(Bucket=bucket_name, Key=file_name, Body=content, ContentType=content_type)
+        print('File uploaded to S3')
 
         return f"File saved to {bucket_name}/{file_name}"
 

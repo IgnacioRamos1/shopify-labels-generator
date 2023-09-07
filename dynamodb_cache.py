@@ -19,6 +19,7 @@ def set_ttl_for_table(table_name):
                 'AttributeName': 'expiry_date'
             }
         )
+        print('TTL set successfully!')
     except Exception as e:
         raise Exception(f"Error in set_ttl_for_table function: {e}")
 
