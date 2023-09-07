@@ -75,22 +75,25 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                         single_order['exclude'] = True
                     continue
 
-                # Check if the product name matches the JSON
-                attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
-                if not attributes:
-                    reason = "No matching attribute found for product name"
-                    product = {
-                        'item': clean_text(order['item']),
-                        'item_id': order['item_id'],
-                        'order_id': order['order_id'],
-                        'reason': reason
-                    }
-                    not_added_products.append(product)
+                if len(attributes_list) == 1:
+                    attributes = attributes_list[0]
+                else:
+                    # Check if the product name matches the JSON
+                    attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
+                    if not attributes:
+                        reason = "No matching attribute found for product name"
+                        product = {
+                            'item': clean_text(order['item']),
+                            'item_id': order['item_id'],
+                            'order_id': order['order_id'],
+                            'reason': reason
+                        }
+                        not_added_products.append(product)
 
-                    # Mark all orders for this product as 'exclude'
-                    for single_order in grouped_orders[product['item']]:
-                        single_order['exclude'] = True
-                    continue
+                        # Mark all orders for this product as 'exclude'
+                        for single_order in grouped_orders[product['item']]:
+                            single_order['exclude'] = True
+                        continue
 
                 row_data = {
                     "tipo_producto(obligatorio)": attributes["tipo_producto"],
