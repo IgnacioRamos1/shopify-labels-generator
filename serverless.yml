@@ -3,7 +3,7 @@ service: shopify-csv-generator
 provider:
   name: aws
   runtime: python3.11
-  stage: dev
+  stage: ${opt:stage}
   region: sa-east-1
   iam:
     role:
