@@ -44,7 +44,6 @@ provider:
             - sqs:ReceiveMessage
             - sqs:DeleteMessage
           Resource: "*"
-
         - Effect: Allow
           Action:
             - sqs:SendMessage
@@ -52,7 +51,13 @@ provider:
             - sqs:DeleteMessage
             - sqs:GetQueueUrl
           Resource: 
-            - "arn:aws:sqs:sa-east-1:*:shop-processor-queue"          
+            - "arn:aws:sqs:sa-east-1:*:shop-processor-queue"
+        - Effect: Allow
+          Action:
+            - sns:Publish
+          Resource:
+            Ref: LambdaErrorNotifications
+   
 
 functions:
   triggerProcessing:
@@ -78,6 +83,30 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: shop-processor-queue
+    LambdaErrorNotifications:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "Lambda Error Notifications"
+        TopicName: "LambdaErrorNotifications"
+    LambdaFunctionErrorAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmDescription: "Triggered when the Lambda function has errors"
+        Namespace: "AWS/Lambda"
+        MetricName: "Errors"
+        Statistic: "Sum"
+        Period: 300
+        EvaluationPeriods: 1
+        Threshold: 1
+        ComparisonOperator: "GreaterThanOrEqualToThreshold"
+        AlarmActions:
+          - Ref: LambdaErrorNotifications
+        Dimensions:
+          - Name: "FunctionName"
+            Value:
+              Fn::GetAtt:
+                - "ProcessShopLambdaFunction"
+                - "Arn"
 
 plugins:
   - serverless-python-requirements
