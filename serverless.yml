@@ -63,12 +63,14 @@ functions:
   triggerProcessing:
     handler: handler.trigger_shop_processing
     timeout: 30
+    logRetentionInDays: 5
     events:
       - schedule: cron(0 20 * * ? *)
 
   processShop:
     handler: handler.process_shop
     timeout: 30
+    logRetentionInDays: 5
     events:
       - sqs:
           arn:
