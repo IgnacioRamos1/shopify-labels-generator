@@ -62,14 +62,14 @@ def process_shop(event, context):
             'body': "CSV files generated and saved to S3"
         }
     except Exception as e:
-        error_message = f'Error in store {shop_name} in process_shop function: {e}'
+        error_message = f'Error in process_shop function: {e}'
         logger.error(error_message)
 
         # Publicar mensaje de error en SNS
         sns_client.publish(
             TopicArn='arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications',
             Message=error_message,
-            Subject=f'Error in process_shop function {date}'
+            Subject=f'Error in process_shop function {date} - {shop_name}'
         )
         return {
             'statusCode': 500,

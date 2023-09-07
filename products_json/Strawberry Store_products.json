@@ -9,7 +9,7 @@
         "peso": 0.62,
         "precio": 1000
     }
-],
+    ],
     "8634662093115": [
         {
         "nombre": "Head Pro LEDLIGHT",
@@ -20,7 +20,7 @@
         "peso": 0.1,
         "precio": 1000
     }
-],
+    ],
     "8545710866747": [
         {
         "nombre": "SolarReflector PRO 2x1  Carga Solar y Sensor de Movimiento",
@@ -31,7 +31,7 @@
         "peso": 0.16,
         "precio": 1000
     }
-],
+    ],
     "8383176376635": [
         {
         "nombre": "Descorchador Premium",
@@ -42,5 +42,5 @@
         "peso": 0.45,
         "precio": 1000
     }
-]
+    ]
 }

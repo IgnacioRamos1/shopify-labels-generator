@@ -16,6 +16,7 @@ provider:
             - s3:GetObject
             - s3:HeadBucket
             - s3:CreateBucket
+            - s3:PutBucketLifecycleConfiguration
           Resource: "arn:aws:s3:::*"
         - Effect: Allow
           Action:
