@@ -1,11 +1,13 @@
 from utils import bucket_exists
 
 import boto3
+import time
 
 
-def set_bucket_lifecycle(bucket_name):
+def set_bucket_lifecycle(bucket_name, retries=3, delay=5):
     try:
         print('Starting set_bucket_lifecycle function')
+        print('bucket_name', bucket_name)
         s3 = boto3.client('s3', region_name='sa-east-1')
 
         lifecycle_policy = {
@@ -19,8 +21,18 @@ def set_bucket_lifecycle(bucket_name):
             ]
         }
 
-        s3.put_bucket_lifecycle_configuration(Bucket=bucket_name, LifecycleConfiguration=lifecycle_policy)
-        print('Bucket lifecycle policy set successfully')
+        for i in range(retries):
+            try:
+                s3.put_bucket_lifecycle_configuration(Bucket=bucket_name, LifecycleConfiguration=lifecycle_policy)
+                print('Bucket lifecycle policy set successfully')
+                return
+            except Exception as e:
+                if i < retries - 1:  # i es 0-indexed
+                    print(f"Error setting lifecycle. Retrying in {delay} seconds...")
+                    time.sleep(delay)
+                else:
+                    raise Exception(f"Error setting lifecycle: {e}")
+
     except Exception as e:
         print(f"Error in set_bucket_lifecycle function: {e}")
         raise Exception(f"Error in set_bucket_lifecycle function: {e}")
