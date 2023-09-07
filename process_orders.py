@@ -11,6 +11,7 @@ from datetime import datetime
 
 def process_orders(credentials):
     try:
+        print('Iniciando proceso de ordenes para', credentials['shop_name'])
         date = datetime.now().strftime('%Y-%m-%d')
         print('Inicio de recuperacion de ordenes')
         total_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])

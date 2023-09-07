@@ -81,10 +81,10 @@ def generate_presigned_url(bucket_name, object_name, expiration=3600):
                                                             'Key': object_name},
                                                     ExpiresIn=expiration)
         print('Finished generate_presigned_url function')
-    except NoCredentialsError:
-        return None
+        return response
 
-    return response
+    except NoCredentialsError:
+        raise Exception('Credentials not available')
 
 
 def list_shop_secrets():

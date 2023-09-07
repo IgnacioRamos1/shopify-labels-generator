@@ -2,6 +2,10 @@ from process_orders import process_orders
 from utils import get_secret, list_shop_secrets, send_messages_to_sqs
 
 import json
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
 
 
 def trigger_shop_processing(event, context):
@@ -17,6 +21,7 @@ def trigger_shop_processing(event, context):
             'body': f"Triggered processing for {len(shop_names)} shops."
         }
     except Exception as e:
+        logger.error(f'Error in trigger_shop_processing function: {e}')
         return {
             'statusCode': 500,
             'body': str(e)
@@ -42,6 +47,7 @@ def process_shop(event, context):
             'body': "CSV files generated and saved to S3"
         }
     except Exception as e:
+        logger.error(f'Error in process_shop function: {e}')
         return {
             'statusCode': 500,
             'body': str(e)
