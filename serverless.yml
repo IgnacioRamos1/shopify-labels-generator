@@ -3,7 +3,7 @@ service: shopify-csv-generator
 provider:
   name: aws
   runtime: python3.11
-  stage: dev
+  stage: ${opt:stage}
   region: sa-east-1
   iam:
     role:
@@ -51,7 +51,7 @@ provider:
             - sqs:DeleteMessage
             - sqs:GetQueueUrl
           Resource: 
-            - "arn:aws:sqs:sa-east-1:*:shop-processor-queue"
+            - "arn:aws:sqs:sa-east-1:*:shop-processor-queue-${self:provider.stage}"
         - Effect: Allow
           Action:
             - sns:Publish
@@ -65,7 +65,7 @@ functions:
     timeout: 30
     logRetentionInDays: 5
     events:
-      - schedule: cron(0 20 * * ? *)
+      ${self:custom.cronEvent.${self:provider.stage}}
 
   processShop:
     handler: handler.process_shop
@@ -84,12 +84,12 @@ resources:
     ShopProcessorQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: shop-processor-queue
+        QueueName: shop-processor-queue-${self:provider.stage}
     LambdaErrorNotifications:
       Type: AWS::SNS::Topic
       Properties:
-        DisplayName: "Lambda Error Notifications"
-        TopicName: "LambdaErrorNotifications"
+        DisplayName: "Lambda Error Notifications-${self:provider.stage}"
+        TopicName: "LambdaErrorNotifications-${self:provider.stage}"
     LambdaFunctionErrorAlarm:
       Type: AWS::CloudWatch::Alarm
       Properties:
@@ -116,3 +116,7 @@ plugins:
 custom:
   pythonRequirements:
     requirementsFile: requirements.txt
+  cronEvent:
+    prod:
+      - schedule: cron(0 20 * * ? *)
+    dev: []
