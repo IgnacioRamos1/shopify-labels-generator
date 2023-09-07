@@ -20,7 +20,7 @@ def filter_and_group_by_family(orders):
             # Append the order to the list
             family_group[item_name].append(order)
 
-        print('Finished filter_and_group_by_family function')   
+        print('Finished filter_and_group_by_family function')
 
         return family_group
 
