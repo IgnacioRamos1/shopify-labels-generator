@@ -20,6 +20,6 @@ Create CSV for Correo Argentino containing the orders for all the Shopify Stores
 4. Agregar credenciales a los Secrets de AWS
 5. Obtener el ID del grupo de wpp
 6. Crear JSON con el nombre de la tienda que colocaste en AWS + _products
-7. Deployear cambios a PROD y DEV
-      `sls deploy --stage prod`
+7. Deployear cambios a PROD y DEV\
+      `sls deploy --stage prod`\
       `sls deploy --stage prod`
