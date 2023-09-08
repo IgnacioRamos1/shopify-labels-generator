@@ -1,9 +1,11 @@
 import boto3
 import time
 from datetime import datetime, timedelta
+import os
 
 # Constantes
 REGION = "sa-east-1"
+stage = os.environ['STAGE']
 
 # Crea el cliente de DynamoDB
 dynamodb_client = boto3.client('dynamodb', region_name=REGION)
@@ -113,7 +115,7 @@ def mark_order_as_processed(table_name, order_id, product_id):
 def check_table_exists(shop_name):
     try:
         shop_name = shop_name.replace(" ", "_").replace(".", "_")
-        table_name = f"{shop_name}_order_cache"
+        table_name = f"{shop_name}_order_cache_{stage}"
 
         # Check if the table already exists
         existing_tables = dynamodb_client.list_tables()["TableNames"]
@@ -128,7 +130,7 @@ def check_table_exists(shop_name):
 def get_or_create_table_name(shop_name):
     try:
         shop_name = shop_name.replace(" ", "_").replace(".", "_")
-        table_name = f"{shop_name}_order_cache"
+        table_name = f"{shop_name}_order_cache_{stage}"
 
         if not check_table_exists(shop_name):
             # Here, create the table because it doesn't exist.

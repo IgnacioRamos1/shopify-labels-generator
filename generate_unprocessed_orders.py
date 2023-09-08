@@ -17,15 +17,12 @@ def generate_unprocessed_orders_csv(shop, product, grouped_data):
         unprocessed_orders = []
         # Check if each order has been processed
         print('Checking if order has been processed')
-        print('Grouped data', grouped_data)
         for order in grouped_data[product]:
             is_processed = check_order_processed(table_name, order["order_id"], order["item_id"])
             # If the order has not been processed, add it to the list
             if not is_processed:
                 unprocessed_orders.append(order)
         print('Finished checking if order has been processed')
-
-        print('Unprocessed orders', unprocessed_orders)
 
         # Si todas las órdenes ya han sido procesadas, devolver vacío.
         if not unprocessed_orders:

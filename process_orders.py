@@ -7,6 +7,9 @@ from save_to_bucket import save_to_s3
 from generate_unprocessed_orders import generate_unprocessed_orders_csv
 
 from datetime import datetime
+import os
+
+stage = os.environ['STAGE']
 
 
 def process_orders(credentials):
@@ -96,6 +99,7 @@ def process_orders(credentials):
         print('ZIP guardado en S3')
 
         formatted_shop_name = shop.lower().replace(" ", "-")
+        formatted_shop_name = f'{formatted_shop_name}-{stage}'
 
         print('Generando URL presignada')
         # Generate a presigned URL for the ZIP file

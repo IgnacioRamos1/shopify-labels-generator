@@ -2,6 +2,9 @@ from utils import bucket_exists
 
 import boto3
 import time
+import os
+
+stage = os.environ['STAGE']
 
 
 def set_bucket_lifecycle(bucket_name, retries=3, delay=5):
@@ -42,6 +45,7 @@ def save_to_s3(bucket_name, content, file_name):
     try:
         print('Starting save_to_s3 function')
         # Convert the bucket name to a valid S3 bucket name
+        bucket_name = f'{bucket_name}-{stage}'
         bucket_name = bucket_name.lower().replace(" ", "-")
 
         # Initialize the S3 client
