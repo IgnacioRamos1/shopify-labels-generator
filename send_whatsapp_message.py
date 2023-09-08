@@ -1,5 +1,5 @@
 import requests
-from utils import get_parameter
+from utils import get_parameter, ApiException
 from urllib.parse import quote
 import os
 
@@ -30,7 +30,11 @@ def send_whatsapp_group_message(date, shop, total_orders_count, s3_presigned_url
         headers = {'content-type': 'application/x-www-form-urlencoded'}
 
         response = requests.request("POST", url, data=whatsapp_payload, headers=headers)
-        print('Response from send_whatsapp_group_message', response)
+
+        if response.status_code != 200:
+            raise ApiException(f"Error sending whatsapp group message: {response.text}")
+
+        print('Finished send_whatsapp_group_message function')
 
     except Exception as e:
         raise Exception(f"Error in send_whatsapp_message function: {e}")
@@ -50,7 +54,11 @@ def send_whatsapp_message(group_chat_id, body):
         headers = {'content-type': 'application/x-www-form-urlencoded'}
 
         response = requests.request("POST", url, data=payload, headers=headers)
-        print('Response from send_whatsapp_message', response)
+
+        if response.status_code != 200:
+            raise ApiException(f"Error sending whatsapp message: {response.text}")
+
+        print('Finished send_whatsapp_message function')
 
     except Exception as e:
         raise Exception(f"Error in send_whatsapp_message function: {e}")

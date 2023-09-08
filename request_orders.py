@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+from utils import ApiException
 
 
 def fetch_orders_for_store(shop_name, shop_url, access_token, date):
@@ -17,13 +18,32 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
             'created_at_min': date,
         }
 
-        response = requests.get(endpoint, headers=headers, params=params)
-        print('Request orders response', response)
-        orders = response.json()
+        all_orders = []
+        # Loop through all pages of orders
+        all_orders = []
+        while endpoint:
+            response = requests.get(endpoint, headers=headers, params=params)
+
+            # Check for errors
+            if response.status_code != 200:
+                raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
+
+            orders = response.json().get('orders', [])
+            all_orders.extend(orders)
+
+            # Check for the next page link
+            link_header = response.headers.get('Link', '')
+            if 'rel="next"' in link_header:
+                # Extract the URL for the next page
+                endpoint = link_header.split(';')[0].strip('<>')
+                # Clear out the params since the next page URL already contains all the necessary information
+                params = {}
+            else:
+                endpoint = None
 
         orders_list = []
         print('Building orders list')
-        for order in orders.get('orders', []):
+        for order in all_orders:
             for item in order.get('line_items', []):
                 order_dict = {}
                 order_dict['item'] = item['name']

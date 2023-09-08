@@ -28,7 +28,10 @@ Content-Transfer-Encoding: 8bit
             Destinations=[to_email],
             RawMessage=msg
         )
-        print('Response from send_products_missing_email', response)
+
+        if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+            raise Exception(f"Error sending email: {response}")
+
         print('Finished send_products_missing_email function')
 
         return response

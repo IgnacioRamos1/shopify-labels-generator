@@ -9,5 +9,16 @@
         "peso": 0.3,
         "precio": 1000
     }
+    ],
+    "8406762520865": [
+        {
+        "nombre": "Whitening Pen  Blanqueador de Dientes Instantaneo",
+        "tipo_producto": "CP",
+        "largo": 25,
+        "ancho": 3,
+        "alto": 15,
+        "peso": 0.3,
+        "precio": 1000
+    }
     ]
 }

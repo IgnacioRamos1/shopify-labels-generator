@@ -14,12 +14,12 @@ sns_client = boto3.client('sns')
 
 date = datetime.now().strftime('%Y-%m-%d')
 
+stage = os.environ['STAGE']
+sns_topic_arn = f'arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications-{stage}'
+
 
 def trigger_shop_processing(event, context):
     try:
-        stage = os.environ['STAGE']
-        sns_topic_arn = f'arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications-{stage}'
-
         # Obtener la lista de tiendas desde Secrets Manager
         shop_names = list_shop_secrets()
 
@@ -71,7 +71,7 @@ def process_shop(event, context):
 
         # Publicar mensaje de error en SNS
         sns_client.publish(
-            TopicArn='arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications',
+            TopicArn=sns_topic_arn,
             Message=error_message,
             Subject=f'Error in process_shop function {date} - {shop_name}'
         )

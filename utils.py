@@ -9,6 +9,10 @@ import io
 ssm_client = boto3.client('ssm')
 
 
+class ApiException(Exception):
+    pass
+
+
 def load_product_attributes(shop_name):
     try:
         base_path = os.path.dirname(os.path.abspath(__file__))

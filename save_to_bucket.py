@@ -10,7 +10,6 @@ stage = os.environ['STAGE']
 def set_bucket_lifecycle(bucket_name, retries=3, delay=5):
     try:
         print('Starting set_bucket_lifecycle function')
-        print('bucket_name', bucket_name)
         s3 = boto3.client('s3', region_name='sa-east-1')
 
         lifecycle_policy = {
