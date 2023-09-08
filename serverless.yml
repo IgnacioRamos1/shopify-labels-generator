@@ -56,13 +56,25 @@ provider:
           Action:
             - sns:Publish
           Resource:
-            Ref: LambdaErrorNotifications
+            Fn::Join:
+              - ":"
+              - - "arn:aws:sns"
+                - Ref: "AWS::Region"
+                - Ref: "AWS::AccountId"
+                - 
+                  Fn::Join:
+                    - "-"
+                    - - "LambdaErrorNotifications"
+                      - ${self:provider.stage}
 
 functions:
   triggerProcessing:
     handler: handler.trigger_shop_processing
     timeout: 30
     logRetentionInDays: 5
+    environment:
+      STAGE: ${self:provider.stage}
+      SQS_QUEUE_NAME: shop-processor-queue-${self:provider.stage}
     events:
       ${self:custom.cronEvent.${self:provider.stage}}
 
@@ -70,6 +82,8 @@ functions:
     handler: handler.process_shop
     timeout: 30
     logRetentionInDays: 5
+    environment:
+      STAGE: ${self:provider.stage}
     events:
       - sqs:
           arn:

@@ -116,7 +116,7 @@ def get_sqs_queue_url(queue_name):
 def send_messages_to_sqs(shop_names):
     try:
         sqs = boto3.client('sqs')
-        queue_name = get_parameter('sqs_queue_name')
+        queue_name = os.environ['SQS_QUEUE_NAME']
         queue_url = get_sqs_queue_url(queue_name)
 
         # Dividir shop_names en grupos de 10

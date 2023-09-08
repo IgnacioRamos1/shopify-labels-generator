@@ -1,6 +1,7 @@
 from process_orders import process_orders
 from utils import get_secret, list_shop_secrets, send_messages_to_sqs
 
+import os
 import json
 import logging
 import boto3
@@ -16,6 +17,9 @@ date = datetime.now().strftime('%Y-%m-%d')
 
 def trigger_shop_processing(event, context):
     try:
+        stage = os.environ['STAGE']
+        sns_topic_arn = f'arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications-{stage}'
+
         # Obtener la lista de tiendas desde Secrets Manager
         shop_names = list_shop_secrets()
 
@@ -32,7 +36,7 @@ def trigger_shop_processing(event, context):
 
         # Publicar mensaje de error en SNS
         sns_client.publish(
-            TopicArn='arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications',
+            TopicArn=sns_topic_arn,
             Message=error_message,
             Subject=f'Error in trigger_shop_processing function {date}'
         )
