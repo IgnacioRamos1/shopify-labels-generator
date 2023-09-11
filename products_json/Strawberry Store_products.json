@@ -3,10 +3,10 @@
         {
         "nombre": "MiniMop",
         "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
+        "largo": 25,
+        "ancho": 6,
+        "alto": 7,
+        "peso": 0.2,
         "precio": 1000
     }
     ],
