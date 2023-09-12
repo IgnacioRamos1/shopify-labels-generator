@@ -20,5 +20,27 @@
             "peso": 0.12,
             "precio": 1000
         }
+    ],
+    "8064524943618": [
+        {
+            "nombre": "MagicBrush 360   El cepillo ideal para ninos  Celeste",
+            "tipo_producto": "CP",
+            "largo": 16,
+            "ancho": 5,
+            "alto": 3,
+            "peso": 0.04,
+            "precio": 1000
+        }
+    ],
+    "8147201261826": [
+        {
+            "nombre": "Collar Amor Eterno  100 idiomas diferentes  Oro Rosa",
+            "tipo_producto": "CP",
+            "largo": 5,
+            "ancho": 5,
+            "alto": 5,
+            "peso": 0.03,
+            "precio": 1000
+        }
     ]
 }
