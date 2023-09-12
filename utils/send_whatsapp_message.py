@@ -1,5 +1,5 @@
 import requests
-from utils import get_parameter, ApiException
+from utils.utils import get_parameter, ApiException
 from urllib.parse import quote
 import os
 

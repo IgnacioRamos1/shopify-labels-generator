@@ -1,4 +1,4 @@
-from utils import bucket_exists
+from utils.utils import bucket_exists
 
 import boto3
 import time

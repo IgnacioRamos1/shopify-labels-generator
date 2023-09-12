@@ -1,5 +1,5 @@
-from process_orders import process_orders
-from utils import get_secret, list_shop_secrets, send_messages_to_sqs
+from builder.process_orders import process_orders
+from utils.utils import get_secret, list_shop_secrets, send_messages_to_sqs
 
 import os
 import json

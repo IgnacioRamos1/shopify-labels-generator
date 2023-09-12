@@ -1,4 +1,4 @@
-from clean_text import clean_text
+from utils.clean_text import clean_text
 
 
 def filter_and_group_by_family(orders):

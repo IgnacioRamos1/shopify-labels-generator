@@ -16,7 +16,7 @@ class ApiException(Exception):
 def load_product_attributes(shop_name):
     try:
         base_path = os.path.dirname(os.path.abspath(__file__))
-        filename = os.path.join(base_path, 'products_json', f"{shop_name}_products.json")
+        filename = os.path.join(base_path, '..', 'products_json', f"{shop_name}_products.json")
 
         with open(filename, 'r') as f:
             return json.load(f)

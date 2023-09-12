@@ -1,6 +1,6 @@
 import pandas as pd
-from clean_text import clean_text, clean_phone, clean_zip_code
-from fix_postal_code import correct_province_by_postal_code
+from utils.clean_text import clean_text, clean_phone, clean_zip_code
+from utils.fix_postal_code import correct_province_by_postal_code
 
 
 def generate_csv_from_orders(grouped_orders, product_attributes):

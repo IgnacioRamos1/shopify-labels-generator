@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from utils import ApiException
+from utils.utils import ApiException
 
 
 def fetch_orders_for_store(shop_name, shop_url, access_token, date):
