@@ -16,6 +16,7 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
             'financial_status': 'paid',
             'fulfillment_status': 'unfulfilled',
             'created_at_min': date,
+            'limit': 250,
         }
 
         all_orders = []
@@ -34,11 +35,13 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
             # Check for the next page link
             link_header = response.headers.get('Link', '')
             if 'rel="next"' in link_header:
+                print('Fetching next page')
                 # Extract the URL for the next page
                 endpoint = link_header.split(';')[0].strip('<>')
                 # Clear out the params since the next page URL already contains all the necessary information
                 params = {}
             else:
+                print('No more pages')
                 endpoint = None
 
         orders_list = []
