@@ -27,5 +27,16 @@
         "peso": 0.62,
         "precio": 1000
     }
+    ],
+    "8486547095834": [
+        {
+        "nombre": "Head Pro LEDLIGHT",
+        "tipo_producto": "CP",
+        "largo": 10,
+        "ancho": 7,
+        "alto": 7,
+        "peso": 0.1,
+        "precio": 1000
+    }
     ]
 }
