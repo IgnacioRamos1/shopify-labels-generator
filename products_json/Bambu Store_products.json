@@ -42,5 +42,16 @@
             "peso": 0.03,
             "precio": 1000
         }
+    ],
+    "8072989442306": [
+        {
+            "nombre": "FingerLed  Llega a todos lados 2 guantes  Par 2 Guantes Mano Derecha e Izquierda",
+            "tipo_producto": "CP",
+            "largo": 15,
+            "ancho": 10,
+            "alto": 4,
+            "peso": 0.05,
+            "precio": 1000
+        }
     ]
 }
