@@ -42,5 +42,34 @@
         "peso": 0.45,
         "precio": 1000
     }
+    ],
+    "8428883870011": [
+        {
+        "nombre": "Barra Led 2X1  Luz Calida  50 cm",
+        "tipo_producto": "CP",
+        "largo": 50,
+        "ancho": 6,
+        "alto": 6,
+        "peso": 0.25,
+        "precio": 1000
+    },
+    {
+        "nombre": "Barra Led 2X1  Luz Calida  30 cm",
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 6,
+        "alto": 6,
+        "peso": 0.15,
+        "precio": 1000
+    },
+    {
+        "nombre": "Barra Led 2X1  Luz Calida  20 cm",
+        "tipo_producto": "CP",
+        "largo": 20,
+        "ancho": 6,
+        "alto": 6,
+        "peso": 0.12,
+        "precio": 1000
+    }
     ]
 }

@@ -9,5 +9,16 @@
             "peso": 0.12,
             "precio": 1000
         }
+    ],
+    "8671081824562": [
+        {
+            "nombre": "Shaver Pro",
+            "tipo_producto": "CP",
+            "largo": 10,
+            "ancho": 7,
+            "alto": 5,
+            "peso": 0.08,
+            "precio": 1000
+        }
     ]
 }

@@ -38,5 +38,16 @@
         "peso": 0.1,
         "precio": 1000
     }
+    ],
+    "8619089789210": [
+        {
+        "nombre": "Magic Blocks  Impulsa la Creatividad",
+        "tipo_producto": "CP",
+        "largo": 22,
+        "ancho": 18,
+        "alto": 10,
+        "peso": 1.5,
+        "precio": 1000
+        }
     ]
 }
