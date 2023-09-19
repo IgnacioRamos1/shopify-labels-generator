@@ -1,1 +1,13 @@
-{}
+{
+    "8706864677170": [
+        {
+            "nombre": "Knee Compression",
+            "tipo_producto": "CP",
+            "largo": 20,
+            "ancho": 15,
+            "alto": 7,
+            "peso": 0.12,
+            "precio": 1000
+        }
+    ]
+}
