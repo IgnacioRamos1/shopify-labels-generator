@@ -71,5 +71,16 @@
         "peso": 0.12,
         "precio": 1000
     }
+    ],
+    "8821239644475": [
+        {
+        "nombre": "Mopa 360 Premium",
+        "tipo_producto": "CP",
+        "largo": 42,
+        "ancho": 25,
+        "alto": 25,
+        "peso": 1,
+        "precio": 1000
+    }
     ]
 }

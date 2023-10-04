@@ -1,0 +1,1 @@
+{"shop_name": "MeLoLlevo Store", "shop_url": "melollevoarg.com", "access_token": "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", "date":"07-09-2023", "group_chat_id": "120363169244440733@g.us"}
