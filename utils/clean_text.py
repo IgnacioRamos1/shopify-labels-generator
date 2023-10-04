@@ -2,6 +2,20 @@ import re
 import unicodedata
 
 
+def clean_email(email):
+    try:
+        if not email:
+            return ""
+
+        # Remove accents
+        email = ''.join((c for c in unicodedata.normalize('NFD', email) if unicodedata.category(c) != 'Mn'))
+
+        return email
+    
+    except Exception as e:
+        raise Exception(f"Error in clean_email function: {e}")
+
+
 def clean_text(text):
     try:
         if not text:

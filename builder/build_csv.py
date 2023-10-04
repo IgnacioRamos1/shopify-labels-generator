@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.clean_text import clean_text, clean_phone, clean_zip_code
+from utils.clean_text import clean_text, clean_phone, clean_zip_code, clean_email
 from utils.fix_postal_code import correct_province_by_postal_code
 
 
@@ -111,7 +111,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     "dpto(opcional solo en caso de no ingresar sucursal de destino)": "",
                     "codpostal_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_zip_code(order["zip_code"]),
                     "destino_nombre(obligatorio)": clean_text(f"{order['first_name']} {order['last_name']}"),
-                    "destino_email(obligatorio debe ser un email valido)": order["email"],
+                    "destino_email(obligatorio debe ser un email valido)": clean_email(order["email"]),
                     "cod_area_tel(opcional)": "",
                     "tel(opcional)": "",
                     "cod_area_cel(obligatorio)": "54",
