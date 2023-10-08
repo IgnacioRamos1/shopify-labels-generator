@@ -12,7 +12,7 @@ stage = os.environ['STAGE']
 def send_whatsapp_group_message(date, shop, total_orders_count, s3_presigned_url, group_chat_id):
     try:
         print('Starting send_whatsapp_group_message function')
-        url = "https://api.ultramsg.com/instance60273/messages/document"
+        url = "https://api.ultramsg.com/instance64344/messages/document"
 
         if stage == 'dev':
             # Si estamos en dev, enviar el mensaje al grupo de testeo
@@ -43,7 +43,7 @@ def send_whatsapp_group_message(date, shop, total_orders_count, s3_presigned_url
 def send_whatsapp_message(group_chat_id, body):
     try:
         print('Starting send_whatsapp_message function')
-        url = "https://api.ultramsg.com/instance60273/messages/chat"
+        url = "https://api.ultramsg.com/instance64344/messages/chat"
 
         if stage == 'dev':
             # Si estamos en dev, enviar el mensaje al grupo de testeo
