@@ -1,1 +1,3 @@
 {"shop_name": "MeLoLlevo Store", "shop_url": "melollevoarg.com", "access_token": "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", "date":"07-09-2023", "group_chat_id": "120363169244440733@g.us"}
+
+{"shop_name":"CompraMelo Store","shop_url":"comprameloahora.com","access_token":"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","date":"18-09-2023","group_chat_id":"120363150864186618@g.us"}
