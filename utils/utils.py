@@ -94,12 +94,14 @@ def generate_presigned_url(bucket_name, object_name, expiration=3600):
 def list_shop_secrets():
     try:
         client = boto3.client('secretsmanager', region_name='sa-east-1')
-        response = client.list_secrets()
-
+        paginator = client.get_paginator('list_secrets')
         shop_secrets = []
-        for secret in response['SecretList']:
-            if secret['Name'].startswith('shop_secret_'):
-                shop_secrets.append(secret['Name'].replace('shop_secret_', ''))
+
+        # Itera a través de todas las páginas de la respuesta paginada
+        for page in paginator.paginate():
+            for secret in page['SecretList']:
+                if secret['Name'].startswith('shop_secret_'):
+                    shop_secrets.append(secret['Name'].replace('shop_secret_', ''))
 
         return shop_secrets
 
