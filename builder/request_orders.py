@@ -63,7 +63,10 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
                 order_dict['province_code'] = order['customer']['default_address']['province_code']
                 order_dict['country'] = order['customer']['default_address']['country']
                 order_dict['zip_code'] = order['customer']['default_address']['zip']
-                order_dict['phone'] = order['customer']['default_address']['phone']
+                if not order['customer']['default_address']['phone']:
+                    order_dict['phone'] = '0'
+                else:
+                    order_dict['phone'] = order['customer']['default_address']['phone']
                 orders_list.append(order_dict)
         print('Finished building orders list')
         return orders_list
