@@ -32,6 +32,33 @@ province_code = {
     "Z": "Santa Cruz"
 }
 
+new_province_code = {
+    "A": "Salta",
+    "B": "Buenos Aires",
+    "C": "Ciudad Autonoma de Buenos Aires",
+    "D": "San Luis",
+    "E": "Entre Rios",
+    "F": "La Rioja",
+    "G": "Santiago Del Estero",
+    "H": "Chaco",
+    "J": "San Juan",
+    "K": "Catamarca",
+    "L": "La Pampa",
+    "M": "Mendoza",
+    "N": "Misiones",
+    "P": "Formosa",
+    "Q": "Neuquen",
+    "R": "Rio Negro",
+    "S": "Santa Fe",
+    "T": "Tucuman",
+    "U": "Chubut",
+    "V": "Tierra Del Fuego",
+    "W": "Corrientes",
+    "X": "Cordoba",
+    "Y": "Jujuy",
+    "Z": "Santa Cruz"
+}
+
 
 def correct_province_by_postal_code(province, postal_code):
     try:
@@ -66,7 +93,7 @@ def new_correct_province_by_postal_code(province, postal_code):
         postal_code_int = int(postal_code)
 
         # Convert the province code to province name
-        province_name = province_code.get(province, "")
+        province_name = new_province_code.get(province, "")
 
         # Filter the postal data by the given postal code
         filtered_data = postal_data[postal_data['CP'] == postal_code_int]
