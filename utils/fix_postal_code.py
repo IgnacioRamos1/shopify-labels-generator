@@ -58,3 +58,28 @@ def correct_province_by_postal_code(province, postal_code):
 
     except Exception as e:
         raise Exception(f"Error in correct_province_by_postal_code function: {e}")
+
+
+def new_correct_province_by_postal_code(province, postal_code):
+    try:
+        # Convert the postal_code to integer
+        postal_code_int = int(postal_code)
+
+        # Convert the province code to province name
+        province_name = province_code.get(province, "")
+
+        # Filter the postal data by the given postal code
+        filtered_data = postal_data[postal_data['CP'] == postal_code_int]
+
+        # If there's no match in the data, return the original province
+        if len(filtered_data) == 0:
+            return province_name
+
+        # If there's a discrepancy between the given province and the data, correct the province
+        if province_name not in filtered_data['Provincia'].values:
+            correct_province = filtered_data['Provincia'].values[0]
+            return correct_province
+        return province_name
+
+    except Exception as e:
+        raise Exception(f"Error in correct_province_by_postal_code function: {e}")

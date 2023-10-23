@@ -82,5 +82,27 @@
         "peso": 1,
         "precio": 1000
     }
+    ],
+    "8088278728962": [
+        {
+            "nombre": "Knee Compression",
+            "tipo_producto": "CP",
+            "largo": 20,
+            "ancho": 15,
+            "alto": 7,
+            "peso": 0.12,
+            "precio": 1000
+        }
+    ],
+    "8064524943618": [
+        {
+            "nombre": "MagicBrush 360   El cepillo ideal para ninos  Celeste",
+            "tipo_producto": "CP",
+            "largo": 16,
+            "ancho": 5,
+            "alto": 3,
+            "peso": 0.04,
+            "precio": 1000
+        }
     ]
 }

@@ -1,0 +1,182 @@
+import pandas as pd
+from utils.clean_text import clean_text, new_clean_phone, clean_zip_code, clean_email
+from utils.fix_postal_code import new_correct_province_by_postal_code
+from utils.utils import get_secret
+
+
+def new_generate_csv_from_orders(grouped_orders, product_attributes, shop):
+    try:
+        columns = [
+            "productos.descripcion",
+            "caja",
+            "tipo_operacion",
+            "sector",
+            "cliente_id",
+            "servicio_id",
+            "codigo_sucursal",
+            "datosEnvios.pago_en",
+            "datosEnvios.valor_declarado",
+            "datosEnvios.contrareembolso",
+            "datosEnvios.confirmada",
+            "trabajo",
+            "remito",
+            "sender.empresa",
+            "sender.remitente",
+            "sender.calle",
+            "sender.altura",
+            "sender.localidad",
+            "sender.provincia",
+            "sender.cp",
+            "comprador.apellido_nombre",
+            "comprador.calle",
+            "comprador.altura",
+            "comprador.piso",
+            "comprador.dpto",
+            "comprador.localidad",
+            "comprador.provincia",
+            "comprador.cp",
+            "comprador.celular",
+            "comprador.email",
+            "comprador.other_info",
+            "comprador.fecha_servicio",
+            "comprador.hora_desde",
+            "comprador.hora_hasta",
+            "comprador.obs1",
+            "datosEnvios.bultos",
+            "datosEnvios.peso",
+            "datosEnvios.observaciones",
+            "datosEnvios.guiaAgente",
+        ]
+
+        not_added_floor_length = []
+        not_added_missing_street_or_number = []
+        not_added_products = []
+        formatted_data = pd.DataFrame(columns=columns)
+
+        order_counter = 0
+
+
+        # Remove spaces from the shop name
+        shop = shop.replace(" ", "")
+        # Get the secret for the shop
+        credentials = get_secret(f'mp_secret_{shop}')
+
+        # Iterate over each product and its orders
+        for product, orders in grouped_orders.items():
+            # Iterate over each order
+            for order in orders:
+                # Check if street or number is missing
+                if not clean_text(order.get("street")) or not clean_text(order.get("number")):
+                    reason = "Missing street *(NOT ADDED)*" if not order.get("street") else "Missing street number *(NOT ADDED)*"
+                    product = {
+                        'item': clean_text(order['item']),
+                        'person': clean_text(f"{order['first_name']} {order['last_name']}"),
+                        'reason': reason
+                    }
+                    not_added_missing_street_or_number.append(product)
+                    order['exclude'] = True
+                    continue
+
+                # Check if the product is in the JSON
+                attributes_list = product_attributes.get(str(order['item_id']))
+                if not attributes_list:
+                    reason = "No attributes found in JSON file"
+                    product = {
+                        'item': clean_text(order['item']),
+                        'item_id': order['item_id'],
+                        'order_id': order['order_id'],
+                        'reason': reason
+                    }
+                    not_added_products.append(product)
+                    # Mark all orders for this product as 'exclude'
+                    for single_order in grouped_orders[product['item']]:
+                        single_order['exclude'] = True
+                    continue
+
+                if len(attributes_list) == 1:
+                    attributes = attributes_list[0]
+                else:
+                    # Check if the product name matches the JSON
+                    attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
+                    if not attributes:
+                        reason = "No matching attribute found for product name"
+                        product = {
+                            'item': clean_text(order['item']),
+                            'item_id': order['item_id'],
+                            'order_id': order['order_id'],
+                            'reason': reason
+                        }
+                        not_added_products.append(product)
+
+                        # Mark all orders for this product as 'exclude'
+                        for single_order in grouped_orders[product['item']]:
+                            single_order['exclude'] = True
+                        continue
+
+                order_counter += 1
+
+                row_data = {
+                    "tipo_operacion": "ENTREGA",
+                    "sector": "OP",
+                    "cliente_id": "1009",
+                    "servicio_id": "2",
+                    "codigo_sucursal": "1697740981",
+                    "datosEnvios.pago_en": "ORIGEN",
+                    "datosEnvios.valor_declarado": round(attributes["precio"] * order["quantity"], 2),
+                    "datosEnvios.confirmada": "1",
+                    "trabajo": "",
+                    "remito": "",
+                    "sender.empresa": "Strawberry Store",
+                    "sender.remitente": "Bautista Gonzalez Blanco",
+                    "sender.calle": "Albarellos",
+                    "sender.altura": "1916",
+                    "sender.localidad": "MARTINEZ",
+                    "sender.provincia": "BUENOS AIRES",
+                    "sender.cp": "1640",
+                    "comprador.apellido_nombre": clean_text(f"{order['last_name']} {order['first_name']}"),
+                    "comprador.calle": clean_text(order["street"]),
+                    "comprador.altura": clean_text(str(order["number"])),
+                    "comprador.dpto": "",
+                    "comprador.localidad": clean_text(order["city"]),
+                    "comprador.provincia": new_correct_province_by_postal_code(order["province_code"], clean_zip_code(order["zip_code"])),
+                    "comprador.cp": clean_zip_code(order["zip_code"]),
+                    "comprador.celular": new_clean_phone(order["phone"]),
+                    "comprador.email": clean_email(order["email"]),
+                    "comprador.fecha_servicio": "",
+                    "comprador.hora_desde": "",
+                    "comprador.hora_hasta": "",
+                    "comprador.obs1": "",
+                    "datosEnvios.bultos": order["quantity"],
+                    "datosEnvios.peso": round(attributes["peso"] * order["quantity"], 2),
+                    "datosEnvios.observaciones": "",
+                    "datosEnvios.guiaAgente": order_counter,
+                }
+
+                apartment = clean_text(order.get("apartment", ""))
+                if len(apartment) > 3:
+                    row_data["comprador.other_info"] = apartment
+                    row_data["comprador.piso"] = ""
+                else:
+                    row_data["comprador.other_info"] = ""
+                    row_data["comprador.piso"] = apartment
+                
+                # Find the product price using the name of the product from the attributes
+                product_name = clean_text(order['item'])
+                for product in credentials['products']:
+                    if product['name'] == product_name:
+                        # Round the price to a whole number
+                        product_price = round(float(product['price']), 0)
+                        break
+                else:
+                    product_price = 0
+                
+                row_data["datosEnvios.contrareembolso"] = product_price * order["quantity"]
+
+                # Add the row to the DataFrame
+                formatted_data.loc[len(formatted_data)] = row_data
+
+        output = formatted_data.to_csv(index=False, sep=';')
+        return output, not_added_products, not_added_floor_length, not_added_missing_street_or_number
+
+    except Exception as e:
+        raise Exception(f"Error in generate_csv_from_orders function: {e}")

@@ -1,4 +1,5 @@
 from builder.build_csv import generate_csv_from_orders
+from builder.new_build_csv import new_generate_csv_from_orders
 from utils.utils import load_product_attributes
 from storage.dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
 
@@ -32,10 +33,17 @@ def generate_unprocessed_orders_csv(shop, product, grouped_data):
         # Cargar los atributos del producto
         product_attributes = load_product_attributes(shop)
 
+        print('nombre del shop en generate_unprocessed_orders_csv', shop)
+
         # Llamar a la función que genera el CSV a partir de las órdenes no procesadas pasando cada producto y sus órdenes y los atributos del producto
-        print('Generando CSV')
-        csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_csv_from_orders({product: unprocessed_orders}, product_attributes)
-        print('CSV generado')
+        if shop == 'Strawberry Store':
+            print('Generando CSV v2.0')
+            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = new_generate_csv_from_orders({product: unprocessed_orders}, product_attributes, shop)
+            print('CSV generado')
+        else:
+            print('Generando CSV')
+            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_csv_from_orders({product: unprocessed_orders}, product_attributes)
+            print('CSV generado')
 
         # Si el output del CSV es 1 (tiene solo el header), significa que no se ha añadido ningún producto.
         if len(csv_output.splitlines()) <= 1:
