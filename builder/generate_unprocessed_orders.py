@@ -1,5 +1,5 @@
 from builder.build_csv import generate_csv_from_orders
-from builder.new_build_csv import new_generate_csv_from_orders
+from new_builder.new_build_csv import new_generate_csv_from_orders
 from utils.utils import load_product_attributes
 from storage.dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
 
@@ -32,8 +32,6 @@ def generate_unprocessed_orders_csv(shop, product, grouped_data):
 
         # Cargar los atributos del producto
         product_attributes = load_product_attributes(shop)
-
-        print('nombre del shop en generate_unprocessed_orders_csv', shop)
 
         # Llamar a la función que genera el CSV a partir de las órdenes no procesadas pasando cada producto y sus órdenes y los atributos del producto
         if shop == 'Strawberry Store':

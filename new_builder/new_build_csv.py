@@ -1,7 +1,8 @@
 import pandas as pd
-from utils.clean_text import clean_text, new_clean_phone, clean_zip_code, clean_email
-from utils.fix_postal_code import new_correct_province_by_postal_code
+from utils.clean_text import clean_text, clean_zip_code, clean_email
 from utils.utils import get_secret
+from .new_clean_text import new_clean_phone
+from .new_fix_postal_code import new_correct_province_by_postal_code
 
 
 def new_generate_csv_from_orders(grouped_orders, product_attributes, shop):

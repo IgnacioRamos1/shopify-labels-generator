@@ -1,42 +1,7 @@
 import re
-import unicodedata
 
 
-def clean_email(email):
-    try:
-        if not email:
-            return ""
-
-        # Remove accents
-        email = ''.join((c for c in unicodedata.normalize('NFD', email) if unicodedata.category(c) != 'Mn'))
-
-        return email
-    
-    except Exception as e:
-        raise Exception(f"Error in clean_email function: {e}")
-
-
-def clean_text(text):
-    try:
-        if not text:
-            return ""
-
-        # Convert 'ñ' to 'n'
-        text = text.replace('ñ', 'n').replace('Ñ', 'N')
-
-        # Remove accents
-        text = ''.join((c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn'))
-
-        # Remove special characters
-        text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
-
-        return text
-
-    except Exception as e:
-        raise Exception(f"Error in clean_text function: {e}")
-
-
-def clean_phone(phone):
+def new_clean_phone(phone):
     """
     Clean the phone number by removing prefixes, non-numeric characters,
     and handling special cases.
@@ -82,17 +47,11 @@ def clean_phone(phone):
 
         if not phone:
             phone = "1234567890"
+        
+        # Replace the first 2 numbers with 11
+        phone = '11' + phone[2:]
 
         return phone
 
     except Exception as e:
         raise Exception(f"Error in clean_phone function: {e}")
-
-
-def clean_zip_code(zip_code_str):
-    """Remove all non-numeric characters from the zip code."""
-    try:
-        return re.sub(r"[^0-9]", "", zip_code_str)
-
-    except Exception as e:
-        raise Exception(f"Error in clean_zip_code function: {e}")
