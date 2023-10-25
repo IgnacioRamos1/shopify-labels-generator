@@ -36,7 +36,7 @@ def generate_unprocessed_orders_csv(shop, product, grouped_data):
         # Llamar a la función que genera el CSV a partir de las órdenes no procesadas pasando cada producto y sus órdenes y los atributos del producto
         if shop == 'Strawberry Store':
             print('Generando CSV v2.0')
-            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = new_generate_csv_from_orders({product: unprocessed_orders}, product_attributes, shop)
+            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = new_generate_csv_from_orders({product: unprocessed_orders}, product_attributes)
             print('CSV generado')
         else:
             print('Generando CSV')

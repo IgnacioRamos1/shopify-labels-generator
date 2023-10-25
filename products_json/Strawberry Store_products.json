@@ -1,48 +1,4 @@
 {
-    "8642028077371": [
-        {
-        "nombre": "MiniMop",
-        "tipo_producto": "CP",
-        "largo": 25,
-        "ancho": 6,
-        "alto": 7,
-        "peso": 0.2,
-        "precio": 1000
-    }
-    ],
-    "8634662093115": [
-        {
-        "nombre": "Head Pro LEDLIGHT",
-        "tipo_producto": "CP",
-        "largo": 10,
-        "ancho": 7,
-        "alto": 7,
-        "peso": 0.1,
-        "precio": 1000
-    }
-    ],
-    "8545710866747": [
-        {
-        "nombre": "SolarReflector PRO 2x1  Carga Solar y Sensor de Movimiento",
-        "tipo_producto": "CP",
-        "largo": 20,
-        "ancho": 25,
-        "alto": 7,
-        "peso": 0.16,
-        "precio": 1000
-    }
-    ],
-    "8383176376635": [
-        {
-        "nombre": "Descorchador Premium",
-        "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 7,
-        "peso": 0.45,
-        "precio": 1000
-    }
-    ],
     "8428883870011": [
         {
         "nombre": "Barra Led 2X1  Luz Calida  50 cm",
@@ -72,18 +28,7 @@
         "precio": 1000
     }
     ],
-    "8821239644475": [
-        {
-        "nombre": "Mopa 360 Premium",
-        "tipo_producto": "CP",
-        "largo": 42,
-        "ancho": 25,
-        "alto": 25,
-        "peso": 1,
-        "precio": 1000
-    }
-    ],
-    "8088278728962": [
+    "8880321757499": [
         {
             "nombre": "Knee Compression",
             "tipo_producto": "CP",
@@ -94,9 +39,18 @@
             "precio": 1000
         }
     ],
-    "8064524943618": [
+    "8880324247867": [
         {
             "nombre": "MagicBrush 360   El cepillo ideal para ninos  Celeste",
+            "tipo_producto": "CP",
+            "largo": 16,
+            "ancho": 5,
+            "alto": 3,
+            "peso": 0.04,
+            "precio": 1000
+        },
+        {
+            "nombre": "MagicBrush 360  El cepillo ideal para ninos  Rosa",
             "tipo_producto": "CP",
             "largo": 16,
             "ancho": 5,

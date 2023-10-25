@@ -5,7 +5,7 @@ from .new_clean_text import new_clean_phone
 from .new_fix_postal_code import new_correct_province_by_postal_code
 
 
-def new_generate_csv_from_orders(grouped_orders, product_attributes, shop):
+def new_generate_csv_from_orders(grouped_orders, product_attributes):
     try:
         columns = [
             "productos.descripcion",
@@ -55,12 +55,6 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, shop):
         formatted_data = pd.DataFrame(columns=columns)
 
         order_counter = 0
-
-
-        # Remove spaces from the shop name
-        shop = shop.replace(" ", "")
-        # Get the secret for the shop
-        credentials = get_secret(f'mp_secret_{shop}')
 
         # Iterate over each product and its orders
         for product, orders in grouped_orders.items():
@@ -151,6 +145,7 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, shop):
                     "datosEnvios.peso": round(attributes["peso"] * order["quantity"], 2),
                     "datosEnvios.observaciones": "",
                     "datosEnvios.guiaAgente": order_counter,
+                    "datosEnvios.contrareembolso": (order["price"]).split(".")[0],
                 }
 
                 apartment = clean_text(order.get("apartment", ""))
@@ -160,18 +155,6 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, shop):
                 else:
                     row_data["comprador.other_info"] = ""
                     row_data["comprador.piso"] = apartment
-                
-                # Find the product price using the name of the product from the attributes
-                product_name = clean_text(order['item'])
-                for product in credentials['products']:
-                    if product['name'] == product_name:
-                        # Round the price to a whole number
-                        product_price = round(float(product['price']), 0)
-                        break
-                else:
-                    product_price = 0
-                
-                row_data["datosEnvios.contrareembolso"] = product_price * order["quantity"]
 
                 # Add the row to the DataFrame
                 formatted_data.loc[len(formatted_data)] = row_data

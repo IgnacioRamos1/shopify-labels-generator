@@ -5,6 +5,7 @@ from utils.utils import create_zip_in_memory, get_parameter, generate_presigned_
 from utils.send_whatsapp_message import send_whatsapp_group_message, send_whatsapp_message
 from storage.save_to_bucket import save_to_s3
 from builder.generate_unprocessed_orders import generate_unprocessed_orders_csv
+from new_builder.new_request_orders import new_fetch_orders_for_store
 
 from datetime import datetime
 import os
@@ -17,7 +18,12 @@ def process_orders(credentials):
         print('Iniciando proceso de ordenes para', credentials['shop_name'])
         date = datetime.now().strftime('%Y-%m-%d')
         print('Inicio de recuperacion de ordenes')
-        total_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
+    
+        if credentials['shop_name'] == 'Strawberry Store':
+            total_orders = new_fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
+        else:
+            total_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
+
         print('Fin de recuperacion de ordenes')
         print('Agrupando ordenes')
         grouped_orders = filter_and_group_by_family(total_orders)
