@@ -141,7 +141,7 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes):
                     "comprador.hora_desde": "",
                     "comprador.hora_hasta": "",
                     "comprador.obs1": "",
-                    "datosEnvios.bultos": order["quantity"],
+                    "datosEnvios.bultos": "1",
                     "datosEnvios.peso": round(attributes["peso"] * order["quantity"], 2),
                     "datosEnvios.observaciones": "",
                     "datosEnvios.guiaAgente": order_counter,
