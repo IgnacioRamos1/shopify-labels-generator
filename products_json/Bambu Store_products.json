@@ -53,5 +53,16 @@
             "peso": 0.05,
             "precio": 1000
         }
+    ],
+    "8210040258818": [
+        {
+            "nombre": "Mosquitos Killer Pro",
+            "tipo_producto": "CP",
+            "largo": 15,
+            "ancho": 10,
+            "alto": 4,
+            "peso": 0.05,
+            "precio": 1000
+        }
     ]
 }
