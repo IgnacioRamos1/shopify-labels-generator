@@ -58,10 +58,10 @@
         {
             "nombre": "Mosquitos Killer Pro",
             "tipo_producto": "CP",
-            "largo": 15,
+            "largo": 10,
             "ancho": 10,
-            "alto": 4,
-            "peso": 0.05,
+            "alto": 20,
+            "peso": 0.15,
             "precio": 1000
         }
     ]
