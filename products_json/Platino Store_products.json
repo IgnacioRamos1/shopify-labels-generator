@@ -27,5 +27,16 @@
         "peso": 0.62,
         "precio": 1000
     }
+    ],
+    "6780539600968": [
+        {
+        "nombre": "The Retro Gamepad  2 Controles",
+        "tipo_producto": "CP",
+        "largo": 17,
+        "ancho": 10,
+        "alto": 10,
+        "peso": 0.4,
+        "precio": 1000
+        }
     ]
 }
