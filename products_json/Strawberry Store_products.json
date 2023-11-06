@@ -68,6 +68,15 @@
             "alto": 5,
             "peso": 0.03,
             "precio": 1000
+        },
+        {
+            "nombre": "Collar Amor Eterno  100 idiomas diferentes  Oro Rosa  Sin estuche",
+            "tipo_producto": "CP",
+            "largo": 5,
+            "ancho": 5,
+            "alto": 5,
+            "peso": 0.03,
+            "precio": 1000
         }
     ]
 }
