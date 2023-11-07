@@ -64,5 +64,16 @@
             "peso": 0.15,
             "precio": 1000
         }
+    ],
+    "8210091901186": [
+        {
+            "nombre": "Soporte de Celular para Retrovisor",
+            "tipo_producto": "CP",
+            "largo": 15,
+            "ancho": 5,
+            "alto": 5,
+            "peso": 0.12,
+            "precio": 1000
+        }
     ]
 }
