@@ -3,6 +3,9 @@ from botocore.exceptions import NoCredentialsError
 import requests
 from io import BytesIO
 import base64
+import os
+
+stage = os.environ['STAGE']
 
 
 def send_products_missing_email(from_email, to_email, missing_products, shop, date):
@@ -44,9 +47,14 @@ Content-Transfer-Encoding: 8bit
         raise Exception(f"Error in send_products_missing_email function: {e}")
 
 
-def send_zip_email(from_email, to_email, shop, date, s3_presigned_url, total_orders_count, floor_errors=None, street_number_errors=None):
+def send_zip_email(from_email, to_email, cc_email, shop, date, s3_presigned_url, total_orders_count, floor_errors=None, street_number_errors=None):
     try:
         print('Starting send_zip_email function')
+
+        if stage == 'dev':
+            to_email = 'iramosibx@gmail.com'
+            cc_email = ''
+
         ses = boto3.client('ses', region_name='sa-east-1')
 
         filename = f"{date}_{shop.replace(' ', '_')}_{total_orders_count}_Ordenes.zip"
@@ -72,6 +80,7 @@ def send_zip_email(from_email, to_email, shop, date, s3_presigned_url, total_ord
             'Data': f"""Subject: {subject}
 From: {from_email}
 To: {to_email}
+CC: {cc_email}
 MIME-Version: 1.0
 Content-type: multipart/mixed; boundary=boundary
 

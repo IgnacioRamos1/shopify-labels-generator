@@ -29,6 +29,7 @@ def process_orders(credentials):
         print('Fin de agrupamiento de ordenes')
         from_email = get_parameter('from_email')
         to_email = credentials['to_email']
+        cc_email = credentials['cc_email']
 
         total_orders_count = 0
 
@@ -88,7 +89,7 @@ def process_orders(credentials):
 
         # Send the ZIP file via Email
         print('Enviando email con ZIP')
-        send_zip_email(from_email, to_email, shop, date, s3_presigned_url, total_orders_count, all_not_added_floor_length, all_not_added_missing_street_or_number)
+        send_zip_email(from_email, to_email, cc_email, shop, date, s3_presigned_url, total_orders_count, all_not_added_floor_length, all_not_added_missing_street_or_number)
         print('Email enviado')
         print('Se ha terminado de procesar las ordenes', shop, date)
 
