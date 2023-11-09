@@ -102,7 +102,7 @@ Content-Disposition: attachment; filename={filename}
 
         response = ses.send_raw_email(
             Source=from_email,
-            Destinations=[to_email],
+            Destinations=[to_email] + cc_email.split(', ') if cc_email else [],
             RawMessage=msg
         )
 
