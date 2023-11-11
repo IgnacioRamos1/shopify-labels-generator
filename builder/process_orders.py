@@ -58,10 +58,11 @@ def process_orders(credentials):
                 # Add the number of orders in the CSV to the total orders count
                 total_orders_count += len(csv_data.splitlines()) - 1  # Subtracting 1 for header
 
+        missing_products_email = get_parameter('to_email')
         # Send the unadded products by email.
         if all_not_added_products:
             print('Hay productos no agregados, enviando email')
-            send_products_missing_email(from_email, to_email, all_not_added_products, shop, date)
+            send_products_missing_email(from_email, missing_products_email, all_not_added_products, shop, date)
             print('Email enviado')
 
         # If no CSVs are generated, end the execution.

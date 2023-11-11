@@ -36,6 +36,8 @@ Content-Transfer-Encoding: 8bit
             RawMessage=msg
         )
 
+        print('response', response)
+
         if response['ResponseMetadata']['HTTPStatusCode'] != 200:
             raise Exception(f"Error sending email: {response}")
 
