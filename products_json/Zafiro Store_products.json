@@ -29,5 +29,16 @@
             "peso": 0.03,
             "precio": 1000
         }
+    ],
+    "8754975605055": [
+        {
+            "nombre": "Collar Mariposa",
+            "tipo_producto": "CP",
+            "largo": 5,
+            "ancho": 5,
+            "alto": 5,
+            "peso": 0.03,
+            "precio": 1000
+        }
     ]
 }
