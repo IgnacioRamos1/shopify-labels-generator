@@ -43,10 +43,10 @@
         {
         "nombre": "Aire Acondicionado Portatil",
         "tipo_producto": "CP",
-        "largo": 17,
-        "ancho": 10,
-        "alto": 10,
-        "peso": 0.4,
+        "largo": 20,
+        "ancho": 17,
+        "alto": 17,
+        "peso": 0.83,
         "precio": 1000
         }
     ]
