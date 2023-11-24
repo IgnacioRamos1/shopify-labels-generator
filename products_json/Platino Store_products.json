@@ -38,5 +38,16 @@
         "peso": 0.4,
         "precio": 1000
         }
+    ],
+    "6790218809416": [
+        {
+        "nombre": "Aire Acondicionado Portatil",
+        "tipo_producto": "CP",
+        "largo": 17,
+        "ancho": 10,
+        "alto": 10,
+        "peso": 0.4,
+        "precio": 1000
+        }
     ]
 }
