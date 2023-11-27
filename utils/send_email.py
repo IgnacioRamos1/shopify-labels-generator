@@ -49,7 +49,7 @@ Content-Transfer-Encoding: 8bit
         raise Exception(f"Error in send_products_missing_email function: {e}")
 
 
-def send_zip_email(from_email, to_email, cc_email, shop, date, s3_presigned_url, total_orders_count, floor_errors=None, street_number_errors=None):
+def send_zip_email(from_email, to_email, cc_email, dev_email, shop, date, s3_presigned_url, total_orders_count, floor_errors=None, street_number_errors=None):
     try:
         print('Starting send_zip_email function')
 
@@ -104,7 +104,7 @@ Content-Disposition: attachment; filename={filename}
 
         response = ses.send_raw_email(
             Source=from_email,
-            Destinations=[to_email] + cc_email.split(', ') if cc_email else [],
+            Destinations=[to_email] + cc_email.split(', ') if cc_email else [] + dev_email.split(', ') if dev_email else [],
             RawMessage=msg
         )
 
