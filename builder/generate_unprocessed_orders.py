@@ -8,8 +8,10 @@ from datetime import datetime
 
 def generate_unprocessed_orders_csv(shop, product, grouped_data):
     try:
+        print('Getting table name for product', product)
         # Ensure the DynamoDB table exists
         table_name = get_or_create_table_name(shop)
+        print('Table name:', table_name)
 
         # Check if the product exists in the grouped_data
         if product not in grouped_data:
@@ -19,10 +21,14 @@ def generate_unprocessed_orders_csv(shop, product, grouped_data):
         # Check if each order has been processed
         print('Checking if order has been processed')
         for order in grouped_data[product]:
-            is_processed = check_order_processed(table_name, order["order_id"], order["item_id"])
-            # If the order has not been processed, add it to the list
-            if not is_processed:
-                unprocessed_orders.append(order)
+            if order["item_id"]:
+                is_processed = check_order_processed(table_name, order["order_id"], order["item_id"])
+                # If the order has not been processed, add it to the list
+                if not is_processed:
+                    unprocessed_orders.append(order)
+            else:
+                continue
+
         print('Finished checking if order has been processed')
 
         # Si todas las órdenes ya han sido procesadas, devolver vacío.
@@ -35,13 +41,11 @@ def generate_unprocessed_orders_csv(shop, product, grouped_data):
 
         # Llamar a la función que genera el CSV a partir de las órdenes no procesadas pasando cada producto y sus órdenes y los atributos del producto
         if shop == 'Strawberry Store':
-            print('Generando CSV v2.0')
+            print('Generando CSV v2.0 de ordenes no procesadas')
             csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = new_generate_csv_from_orders({product: unprocessed_orders}, product_attributes)
-            print('CSV generado')
         else:
-            print('Generando CSV')
+            print('Generando CSV de ordenes no procesadas')
             csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_csv_from_orders({product: unprocessed_orders}, product_attributes)
-            print('CSV generado')
 
         # Si el output del CSV es 1 (tiene solo el header), significa que no se ha añadido ningún producto.
         if len(csv_output.splitlines()) <= 1:

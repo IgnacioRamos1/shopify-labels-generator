@@ -44,9 +44,7 @@ def process_orders(credentials):
 
         # Generate a CSV file for each product.
         for product in grouped_orders:
-            print('Generando CSV')
             csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop, product, grouped_orders)
-            print('CSV generado')
 
             # Add the products and orders not added to the global lists
             all_not_added_products.extend(not_added_products)
