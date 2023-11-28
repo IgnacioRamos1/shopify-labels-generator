@@ -82,7 +82,7 @@ def send_zip_email(from_email, to_email, cc_email, dev_email, shop, date, s3_pre
             'Data': f"""Subject: {subject}
 From: {from_email}
 To: {to_email}
-CC: {cc_email}
+CC: {cc_email}, {dev_email}
 MIME-Version: 1.0
 Content-type: multipart/mixed; boundary=boundary
 
@@ -104,7 +104,7 @@ Content-Disposition: attachment; filename={filename}
 
         response = ses.send_raw_email(
             Source=from_email,
-            Destinations=[to_email] + cc_email.split(', ') if cc_email else [] + dev_email.split(', ') if dev_email else [],
+            Destinations=[to_email] + [cc_email, dev_email],
             RawMessage=msg
         )
 
