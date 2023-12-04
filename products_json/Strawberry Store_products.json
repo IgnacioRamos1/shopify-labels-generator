@@ -89,5 +89,16 @@
             "peso": 0.12,
             "precio": 1000
         }
+    ],
+    "8642028077371": [
+        {
+            "nombre": "MiniMop",
+            "tipo_producto": "CP",
+            "largo": 25,
+            "ancho": 6,
+            "alto": 7,
+            "peso": 0.2,
+            "precio": 1000
+        }
     ]
 }
