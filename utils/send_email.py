@@ -55,7 +55,7 @@ def send_zip_email(from_email, to_email, cc_email, dev_email, shop, date, s3_pre
 
         if stage == 'dev':
             to_email = 'iramosibx@gmail.com'
-            cc_email = ''
+            cc_email = 'iramosibx@gmail.com'
 
         ses = boto3.client('ses', region_name='sa-east-1')
 
@@ -104,7 +104,7 @@ Content-Disposition: attachment; filename={filename}
 
         response = ses.send_raw_email(
             Source=from_email,
-            Destinations=[to_email] + [cc_email, dev_email],
+            Destinations=[to_email, cc_email, dev_email],
             RawMessage=msg
         )
 

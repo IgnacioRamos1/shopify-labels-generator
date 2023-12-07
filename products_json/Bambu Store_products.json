@@ -58,10 +58,10 @@
         {
             "nombre": "Mosquitos Killer Pro",
             "tipo_producto": "CP",
-            "largo": 10,
-            "ancho": 10,
-            "alto": 20,
-            "peso": 0.15,
+            "largo": 22,
+            "ancho": 14,
+            "alto": 14,
+            "peso": 0.4,
             "precio": 1000
         }
     ],
@@ -73,6 +73,17 @@
             "ancho": 5,
             "alto": 5,
             "peso": 0.12,
+            "precio": 1000
+        }
+    ],
+    "8257123549442": [
+        {
+            "nombre": "Cargador Inalambrico Plegable 3 en 1",
+            "tipo_producto": "CP",
+            "largo": 12,
+            "ancho": 12,
+            "alto": 6,
+            "peso": 0.2,
             "precio": 1000
         }
     ]

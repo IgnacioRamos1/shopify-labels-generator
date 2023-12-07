@@ -19,57 +19,77 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
             'limit': 250,
         }
 
+       # Loop through all pages of orders
         all_orders = []
-        # Loop through all pages of orders
-        all_orders = []
-        while endpoint:
-            response = requests.get(endpoint, headers=headers, params=params)
+        response = requests.get(endpoint, headers=headers, params=params)
 
-            # Check for errors
-            if response.status_code != 200:
-                raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
+        orders = response.json().get('orders', [])
+        all_orders.extend(orders)
 
-            orders = response.json().get('orders', [])
-            all_orders.extend(orders)
+        if response.status_code != 200:
+            raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
 
-            # Check for the next page link
-            link_header = response.headers.get('Link', '')
-            if 'rel="next"' in link_header:
-                print('Fetching next page')
-                # Extract the URL for the next page
-                endpoint = link_header.split(';')[0].strip('<>')
-                # Clear out the params since the next page URL already contains all the necessary information
+        flag = True
+        while flag:
+            if response.headers.get('link'):
                 params = {}
-            else:
-                print('No more pages')
-                endpoint = None
 
-        orders_list = []
-        print('Building orders list')
-        for order in all_orders:
-            for item in order.get('line_items', []):
-                order_dict = {}
-                order_dict['item'] = item['name']
-                order_dict['item_id'] = item['product_id']
-                order_dict['order_id'] = order['id']
-                order_dict['quantity'] = item['quantity']
-                order_dict['first_name'] = order['customer']['default_address']['first_name']
-                order_dict['last_name'] = order['customer']['default_address']['last_name']
-                order_dict['email'] = order['customer']['email']
-                order_dict['street'] = order['customer']['default_address']['company']
-                order_dict['number'] = order['customer']['default_address']['address1']
-                order_dict['apartment'] = order['customer']['default_address']['address2']
-                order_dict['city'] = order['customer']['default_address']['city']
-                order_dict['province_code'] = order['customer']['default_address']['province_code']
-                order_dict['country'] = order['customer']['default_address']['country']
-                order_dict['zip_code'] = order['customer']['default_address']['zip']
-                if not order['customer']['default_address']['phone']:
-                    order_dict['phone'] = '0'
+                # Usar el enlace con rel=next para obtener la página siguiente
+                link_header = requests.utils.parse_header_links(response.headers.get('link'))
+                next_link = link_header[0].get('next')
+                if next_link:
+                    endpoint = next_link['url']
                 else:
-                    order_dict['phone'] = order['customer']['default_address']['phone']
-                orders_list.append(order_dict)
-        print('Finished building orders list')
-        return orders_list
+                    flag = False # No hay más páginas
+
+                response = requests.get(endpoint, headers=headers, params=params)
+
+                # Check for errors
+                if response.status_code != 200:
+                    raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
+
+                orders = response.json().get('orders', [])
+                all_orders.extend(orders)
+            else:
+                flag = False
+
+        all_orders_info = []
+
+        for order in all_orders:
+            order_dict = {}
+            order_dict['first_name'] = order['shipping_address']['first_name']
+            order_dict['last_name'] = order['shipping_address']['last_name']
+            order_dict['street'] = order['shipping_address']['company']
+            order_dict['number'] = order['shipping_address']['address1']
+            order_dict['apartment'] = order['shipping_address']['address2']
+            order_dict['city'] = order['shipping_address']['city']
+            order_dict['province_code'] = order['shipping_address']['province_code']
+            order_dict['country'] = order['shipping_address']['country']
+            order_dict['zip_code'] = order['shipping_address']['zip']
+            
+            if not order['shipping_address']['phone']:
+                order_dict['phone'] = '0'
+            else:
+                order_dict['phone'] = order['shipping_address']['phone']
+
+            order_items = []  # Lista para almacenar los elementos de la orden
+
+            for item in order.get('line_items', []):
+                item_info = {
+                    'item': item['name'],
+                    'item_id': item['product_id'],
+                    'order_id': order['id'],
+                    'price': order['total_price'],
+                    'quantity': item['quantity'],
+                    'email': order['customer']['email']
+                }
+                order_items.append(item_info)
+
+            order_dict['items'] = order_items  # Agregar la lista de elementos al diccionario principal
+            all_orders_info.append(order_dict)  # Agregar el diccionario al listado de todas las órdenes
+
+        print('Finished fetch_orders_for_store function')
+        return all_orders_info
 
     except Exception as e:
         raise Exception(f"Error in fetch_orders_for_store function for {shop_name}: {e}")
