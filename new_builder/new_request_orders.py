@@ -1,9 +1,10 @@
 import requests
 from datetime import datetime
 from utils.utils import ApiException
+import re
 
 
-def new_fetch_orders_for_store(shop_name, shop_url, access_token, date):
+def fetch_orders_for_store(shop_name, shop_url, access_token, date):
     try:
         print('Starting fetch_orders_for_store function')
         date = datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%dT%H:%M:%S%z')
@@ -13,13 +14,13 @@ def new_fetch_orders_for_store(shop_name, shop_url, access_token, date):
             "Content-Type": "application/json"
         }
         params = {
-            'financial_status': 'paid',
+            'financial_status': 'paid, pending',
             'fulfillment_status': 'unfulfilled',
             'created_at_min': date,
             'limit': 250,
         }
 
-        # Loop through all pages of orders
+       # Loop through all pages of orders
         all_orders = []
         response = requests.get(endpoint, headers=headers, params=params)
 
@@ -29,29 +30,30 @@ def new_fetch_orders_for_store(shop_name, shop_url, access_token, date):
         if response.status_code != 200:
             raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
 
-        flag = True
-        while flag:
+        while True:
             if response.headers.get('link'):
-                params = {}
+                # Obtener el encabezado link de la respuesta
+                link_header = response.headers.get('link')
 
-                # Usar el enlace con rel=next para obtener la página siguiente
-                link_header = requests.utils.parse_header_links(response.headers.get('link'))
-                next_link = link_header[0].get('next')
+                # Usar una expresión regular para buscar el enlace con el atributo rel=next
+                next_link = re.search(r'<(.*?)>; rel="next"', link_header)
+
+                # Si hay un enlace con el atributo rel=next, obtener la URL
                 if next_link:
-                    endpoint = next_link['url']
+                    next_url = next_link.group(1)
+                    # Usar la URL de la página siguiente para hacer la solicitud
+                    response = requests.get(next_url, headers=headers)
+
+                    # Check for errors
+                    if response.status_code != 200:
+                        raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
+
+                    orders = response.json().get('orders', [])
+                    all_orders.extend(orders)
                 else:
-                    flag = False # No hay más páginas
-
-                response = requests.get(endpoint, headers=headers, params=params)
-
-                # Check for errors
-                if response.status_code != 200:
-                    raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
-
-                orders = response.json().get('orders', [])
-                all_orders.extend(orders)
+                    break # No hay más páginas
             else:
-                flag = False
+                break
 
         all_orders_info = []
 
