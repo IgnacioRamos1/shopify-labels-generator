@@ -20,16 +20,41 @@ sns_topic_arn = f'arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications-{s
 
 def trigger_shop_processing(event, context):
     try:
-        # Obtener la lista de tiendas desde Secrets Manager
-        shop_names = list_shop_secrets()
+        # Verificar si el stage es prod
+        if stage == 'prod':
+            # Obtener el día de la semana actual en UTC-3
+            today = datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3))).weekday()
 
-        # Enviar un mensaje a SQS por cada tienda
-        send_messages_to_sqs(shop_names)
+            # Verificar si el día es distinto de viernes o sábado
+            if today not in (4, 5):
+                # Obtener la lista de tiendas desde Secrets Manager
+                shop_names = list_shop_secrets()
 
-        return {
-            'statusCode': 200,
-            'body': f"Triggered processing for {len(shop_names)} shops."
-        }
+                # Enviar un mensaje a SQS por cada tienda
+                send_messages_to_sqs(shop_names)
+
+                return {
+                    'statusCode': 200,
+                    'body': f"Triggered processing for {len(shop_names)} shops."
+                }
+            else:
+                # No hacer nada si el día es viernes o sábado
+                return {
+                    'statusCode': 200,
+                    'body': f"No processing triggered for today."
+                }
+        else:
+            # Obtener la lista de tiendas desde Secrets Manager
+            shop_names = list_shop_secrets()
+
+            # Enviar un mensaje a SQS por cada tienda
+            send_messages_to_sqs(shop_names)
+
+            return {
+                'statusCode': 200,
+                'body': f"Triggered processing for {len(shop_names)} shops."
+            }
+
     except Exception as e:
         error_message = f'Error in trigger_shop_processing function: {e}'
         logger.error(error_message)
