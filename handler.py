@@ -6,6 +6,8 @@ import json
 import logging
 import boto3
 from datetime import datetime
+import pytz
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
@@ -23,7 +25,7 @@ def trigger_shop_processing(event, context):
         # Verificar si el stage es prod
         if stage == 'prod':
             # Obtener el día de la semana actual en UTC-3
-            today = datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3))).weekday()
+            today = datetime.now(tz=pytz.timezone('America/Argentina/Buenos_Aires')).weekday()
 
             # Verificar si el día es distinto de viernes o sábado
             if today not in (4, 5):

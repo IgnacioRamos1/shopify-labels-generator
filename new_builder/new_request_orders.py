@@ -4,7 +4,7 @@ from utils.utils import ApiException
 import re
 
 
-def fetch_orders_for_store(shop_name, shop_url, access_token, date):
+def new_fetch_orders_for_store(shop_name, shop_url, access_token, date):
     try:
         print('Starting fetch_orders_for_store function')
         date = datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%dT%H:%M:%S%z')
