@@ -14,7 +14,7 @@ def new_fetch_orders_for_store(shop_name, shop_url, access_token, date):
             "Content-Type": "application/json"
         }
         params = {
-            'financial_status': 'paid, pending',
+            'financial_status': 'paid',
             'fulfillment_status': 'unfulfilled',
             'created_at_min': date,
             'limit': 250,
