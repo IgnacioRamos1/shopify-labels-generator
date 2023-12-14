@@ -100,5 +100,16 @@
             "peso": 0.2,
             "precio": 1000
         }
+    ],
+    "8987644035387": [
+        {
+            "nombre": "Lluvia de Meteorito  Luz led con panel solar",
+            "tipo_producto": "CP",
+            "largo": 30,
+            "ancho": 6,
+            "alto": 6,
+            "peso": 0.18,
+            "precio": 1000
+        }
     ]
 }
