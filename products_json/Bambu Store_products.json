@@ -97,5 +97,16 @@
             "peso": 0.18,
             "precio": 1000
         }
+    ],
+    "8277471592706": [
+        {
+        "nombre": "Drone 4K Pro",
+        "tipo_producto": "CP",
+        "largo": 20,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.45,
+        "precio": 1000
+        }
     ]
 }
