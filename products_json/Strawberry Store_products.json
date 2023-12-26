@@ -111,5 +111,27 @@
             "peso": 0.18,
             "precio": 1000
         }
+    ],
+    "8988862447931": [
+        {
+            "nombre": "Anillo Abrazo Infinito",
+            "tipo_producto": "CP",
+            "largo": 5,
+            "ancho": 5,
+            "alto": 5,
+            "peso": 0.03,
+            "precio": 1000
+        }
+    ],
+    "9002619142459": [
+        {
+        "nombre": "The Retro Gamepad  2 Controles",
+        "tipo_producto": "CP",
+        "largo": 24,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.4,
+        "precio": 1000
+        }
     ]
 }

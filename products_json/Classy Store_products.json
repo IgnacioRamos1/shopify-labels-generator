@@ -71,5 +71,16 @@
         "peso": 0.83,
         "precio": 1000
         }
+    ],
+    "8886534013210": [
+        {
+        "nombre": "Giraffiti Table  Aprendizaje y diversion",
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 8,
+        "peso": 0.45,
+        "precio": 1000
+        }
     ]
 }

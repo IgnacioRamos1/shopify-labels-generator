@@ -108,5 +108,16 @@
         "peso": 0.45,
         "precio": 1000
         }
+    ],
+    "8264915976450": [
+        {
+            "nombre": "Soporte de Celular para Autos",
+            "tipo_producto": "CP",
+            "largo": 15,
+            "ancho": 5,
+            "alto": 5,
+            "peso": 0.12,
+            "precio": 1000
+        }
     ]
 }
