@@ -119,5 +119,27 @@
             "peso": 0.12,
             "precio": 1000
         }
+    ],
+    "8263786135810": [
+        {
+            "nombre": "Magic Board",
+            "tipo_producto": "CP",
+            "largo": 21,
+            "ancho": 17,
+            "alto": 2,
+            "peso": 0.11,
+            "precio": 1000
+        }
+    ],
+    "8277878440194": [
+        {
+            "nombre": "Corrector ortopedico de juanetes",
+            "tipo_producto": "CP",
+            "largo": 20,
+            "ancho": 11,
+            "alto": 4,
+            "peso": 0.065,
+            "precio": 1000
+        }
     ]
 }
