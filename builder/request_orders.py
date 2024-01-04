@@ -58,6 +58,8 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
 
         all_orders_info = []
 
+        print('all_orders: ', all_orders)
+
         for order in all_orders:
             order_dict = {}
             order_dict['first_name'] = order['shipping_address']['first_name']
@@ -84,7 +86,7 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
                     'order_id': order['id'],
                     'price': order['total_price'],
                     'quantity': item['quantity'],
-                    'email': order['customer']['email']
+                    'email': order['customer']['email'] if order.get('customer') else '',
                 }
                 order_items.append(item_info)
 

@@ -83,7 +83,7 @@ def new_fetch_orders_for_store(shop_name, shop_url, access_token, date):
                     'order_id': order['id'],
                     'price': order['total_price'],
                     'quantity': item['quantity'],
-                    'email': order['customer']['email']
+                    'email': order['customer']['email'] if order.get('customer') else '',
                 }
                 order_items.append(item_info)
 

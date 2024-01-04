@@ -141,5 +141,45 @@
             "peso": 0.065,
             "precio": 1000
         }
+    ],
+    "8284065726722": [
+        {
+        "nombre": "Magic Sticks  Impulsa la Creatividad  25 Piezas",
+        "tipo_producto": "CP",
+        "largo": 20,
+        "ancho": 18,
+        "alto": 7,
+        "peso": 0.3,
+        "precio": 1000
+    },
+    {
+        "nombre": "Magic Sticks  Impulsa la Creatividad  42 Piezas",
+        "tipo_producto": "CP",
+        "largo": 25,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.45,
+        "precio": 1000
+    },
+    {
+        "nombre": "Magic Sticks  Impulsa la Creatividad 64 piezas",
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.62,
+        "precio": 1000
+    }
+    ],
+    "8287798165762": [
+        {
+            "nombre": "Linterna Led Militar",
+            "tipo_producto": "CP",
+            "largo": 10,
+            "ancho": 3,
+            "alto": 4,
+            "peso": 0.09,
+            "precio": 1000
+        }
     ]
 }
