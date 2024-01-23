@@ -82,5 +82,16 @@
         "peso": 0.45,
         "precio": 1000
         }
+    ],
+    "8805240602906": [
+        {
+        "nombre": "Tv Box Consola retro  smart tv",
+        "tipo_producto": "CP",
+        "largo": 24,
+        "ancho": 20,
+        "alto": 10,
+        "peso": 0.4,
+        "precio": 1000
+        }
     ]
 }
