@@ -141,5 +141,16 @@
             "peso": 0.065,
             "precio": 1000
         }
+    ],
+   "8287798165762": [
+    {
+        "nombre": "LINTERNA LED TACTICA MILITAR",
+        "tipo_producto": "CP",
+        "largo": 10,
+        "ancho": 3,
+        "alto": 4,
+        "peso": 0.09,
+        "precio": 1000
+    } 
     ]
 }
