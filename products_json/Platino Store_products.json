@@ -1,64 +1,13 @@
 {
-    "6778639974472": [
+    "8287798165762": [
         {
-        "nombre": "Magic Sticks  Impulsa la Creatividad  25 piezas",
-        "tipo_producto": "CP",
-        "largo": 20,
-        "ancho": 18,
-        "alto": 7,
-        "peso": 0.3,
-        "precio": 1000
-    },
-    {
-        "nombre": "Magic Sticks  Impulsa la Creatividad  42 piezas",
-        "tipo_producto": "CP",
-        "largo": 25,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.45,
-        "precio": 1000
-    },
-    {
-        "nombre": "Magic Sticks  Impulsa la Creatividad  64 piezas",
-        "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
-        "precio": 1000
-    }
-    ],
-    "6780539600968": [
-        {
-        "nombre": "The Retro Gamepad  2 Controles",
-        "tipo_producto": "CP",
-        "largo": 24,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.4,
-        "precio": 1000
-        }
-    ],
-    "6790218809416": [
-        {
-        "nombre": "Aire Acondicionado Portatil",
-        "tipo_producto": "CP",
-        "largo": 20,
-        "ancho": 17,
-        "alto": 17,
-        "peso": 0.83,
-        "precio": 1000
-        }
-    ],
-    "6796082118728": [
-        {
-        "nombre": "Drone 4K Pro",
-        "tipo_producto": "CP",
-        "largo": 20,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.45,
-        "precio": 1000
-        }
-    ]
+            "nombre": "LINTERNA LED TACTICA MILITAR",
+            "tipo_producto": "CP",
+            "largo": 10,
+            "ancho": 3,
+            "alto": 4,
+            "peso": 0.09,
+            "precio": 1000
+        } 
+        ]
 }
