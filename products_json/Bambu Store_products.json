@@ -154,7 +154,7 @@
     } 
     ],
     "8318696292610": [
-        {
+    {
             "nombre": "SolarReflector PRO  Carga Solar y Sensor de Movimiento",
             "tipo_producto": "CP",
             "largo": 7.5,
@@ -162,6 +162,17 @@
             "alto": 2.5,
             "peso": 0.075,
             "precio": 1000
+    } 
+    ],
+    "8322545352962": [
+        {
+                "nombre": "Motosierra Electrica",
+                "tipo_producto": "CP",
+                "largo": 7.5,
+                "ancho": 5,
+                "alto": 2.5,
+                "peso": 0.075,
+                "precio": 1000
         } 
         ]
 }
