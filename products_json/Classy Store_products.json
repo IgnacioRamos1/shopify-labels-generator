@@ -93,5 +93,16 @@
         "peso": 0.4,
         "precio": 1000
         }
+    ],
+    "8930218574106": [
+        {
+        "nombre": "Pistola Hidrolavadora Portatil  Alta potencia y presion",
+        "tipo_producto": "CP",
+        "largo": 35,
+        "ancho": 17,
+        "alto": 11,
+        "peso": 2.15,
+        "precio": 1000
+        }
     ]
 }
