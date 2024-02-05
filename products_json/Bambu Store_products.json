@@ -174,5 +174,16 @@
                 "peso": 0.075,
                 "precio": 1000
         } 
-        ]
+    ],
+    "8327340753154": [
+        {
+                "nombre": "Paraguas Antisol Para Autos",
+                "tipo_producto": "CP",
+                "largo": 35,
+                "ancho": 5,
+                "alto": 5,
+                "peso": 0.4,
+                "precio": 1000
+        } 
+    ]
 }

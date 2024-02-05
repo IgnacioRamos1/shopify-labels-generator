@@ -21,7 +21,7 @@ provider:
           Action:
             - ses:SendEmail
             - ses:SendRawEmail
-          Resource: "*"
+          Resource: "*" 
         - Effect: Allow
           Action:
             - dynamodb:PutItem
