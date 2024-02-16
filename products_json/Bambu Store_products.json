@@ -168,10 +168,10 @@
         {
                 "nombre": "Motosierra Electrica",
                 "tipo_producto": "CP",
-                "largo": 7.5,
-                "ancho": 5,
-                "alto": 2.5,
-                "peso": 0.075,
+                "largo": 31,
+                "ancho": 16,
+                "alto": 12,
+                "peso": 1.5,
                 "precio": 1000
         } 
     ],
