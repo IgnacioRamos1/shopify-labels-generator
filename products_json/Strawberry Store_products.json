@@ -144,5 +144,16 @@
         "peso": 0.45,
         "precio": 1000
         }
+    ],
+    "9071010873659": [
+        {
+        "nombre": "Collar Para Mi Querida Hija",
+        "tipo_producto": "CP",
+        "largo": 5,
+        "ancho": 5,
+        "alto": 5,
+        "peso": 0.03,
+        "precio": 1000
+        }
     ]
 }
