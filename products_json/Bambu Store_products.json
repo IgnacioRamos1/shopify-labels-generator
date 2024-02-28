@@ -207,5 +207,16 @@
                 "peso": 1,
                 "precio": 1000
         } 
+    ],
+    "8348782166274": [
+        {
+                "nombre": "Aspersor Giratorio de Cesped 360",
+                "tipo_producto": "CP",
+                "largo": 20,
+                "ancho": 20,
+                "alto": 5,
+                "peso": 0.16,
+                "precio": 1000
+        } 
     ]
 }
