@@ -155,5 +155,16 @@
         "peso": 0.03,
         "precio": 1000
         }
+    ],
+    "9076790165819": [
+        {
+        "nombre": "Rociador de Cesped 360",
+        "tipo_producto": "CP",
+        "largo": 25,
+        "ancho": 15,
+        "alto": 2,
+        "peso": 0.05,
+        "precio": 1000
+        } 
     ]
 }
