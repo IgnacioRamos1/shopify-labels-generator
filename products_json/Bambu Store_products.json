@@ -218,5 +218,16 @@
                 "peso": 0.16,
                 "precio": 1000
         } 
+    ],
+    "8377134809346": [
+        {
+                "nombre": "Tobillera X pro",
+                "tipo_producto": "CP",
+                "largo": 18,
+                "ancho": 10,
+                "alto": 4,
+                "peso": 0.7,
+                "precio": 1000
+        } 
     ]
 }
