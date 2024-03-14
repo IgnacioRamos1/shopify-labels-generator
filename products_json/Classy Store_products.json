@@ -104,5 +104,16 @@
         "peso": 2.15,
         "precio": 1000
         }
+    ],
+    "8981612953882": [
+        {
+        "nombre": "Pistola para Pintar",
+        "tipo_producto": "CP",
+        "largo": 25,
+        "ancho": 25,
+        "alto": 12,
+        "peso": 1.22,
+        "precio": 1000
+        }
     ]
 }
