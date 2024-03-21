@@ -18,7 +18,7 @@ def process_orders(credentials):
         date = datetime.now().strftime('%Y-%m-%d')
         print('Inicio de recuperacion de ordenes')
     
-        if credentials['shop_name'] == 'Strawberry Store':
+        if credentials['fixy'] == 'True':
             total_orders = new_fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
         else:
             total_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
