@@ -1,119 +1,35 @@
 {
-    "8520180793626": [
+    "9169031070009": [
         {
-        "nombre": "Magic Sticks  Impulsa la Creatividad  25 Piezas",
-        "tipo_producto": "CP",
-        "largo": 20,
-        "ancho": 18,
-        "alto": 7,
-        "peso": 0.3,
-        "precio": 1000
-    },
-    {
-        "nombre": "Magic Sticks  Impulsa la Creatividad  42 Piezas",
+        "nombre": "Mini Camara Espia",
         "tipo_producto": "CP",
         "largo": 25,
         "ancho": 20,
-        "alto": 10,
-        "peso": 0.45,
-        "precio": 1000
-    },
-    {
-        "nombre": "Magic Sticks  Impulsa la Creatividad  64 Piezas",
-        "tipo_producto": "CP",
-        "largo": 30,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.62,
-        "precio": 1000
-    }
-    ],
-    "8486547095834": [
-        {
-        "nombre": "Head Pro LEDLIGHT",
-        "tipo_producto": "CP",
-        "largo": 10,
-        "ancho": 7,
-        "alto": 7,
+        "alto": 15,
         "peso": 0.1,
         "precio": 1000
     }
     ],
-    "8619089789210": [
+    "9168955605305": [
         {
-        "nombre": "Magic Blocks  Impulsa la Creatividad",
-        "tipo_producto": "CP",
-        "largo": 22,
-        "ancho": 18,
-        "alto": 10,
-        "peso": 1.5,
-        "precio": 1000
-        }
-    ],
-    "8644950786330": [
-        {
-        "nombre": "The Retro Gamepad  2 Controles",
-        "tipo_producto": "CP",
-        "largo": 24,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.4,
-        "precio": 1000
-        }
-    ],
-    "8879555445018": [
-        {
-        "nombre": "Aire Acondicionado Portatil",
+        "nombre": "Mini Shaver Pro",
         "tipo_producto": "CP",
         "largo": 20,
-        "ancho": 17,
-        "alto": 17,
-        "peso": 0.83,
+        "ancho": 15,
+        "alto": 15,
+        "peso": 0.15,
         "precio": 1000
-        }
+    }
     ],
-    "8886534013210": [
+    "9168950231353": [
         {
-        "nombre": "Giraffiti Table  Aprendizaje y diversion",
+        "nombre": "Aspiradora Portatil Premium",
         "tipo_producto": "CP",
         "largo": 30,
         "ancho": 20,
-        "alto": 8,
-        "peso": 0.45,
+        "alto": 15,
+        "peso": 0.3,
         "precio": 1000
-        }
-    ],
-    "8805240602906": [
-        {
-        "nombre": "Tv Box Consola retro  smart tv",
-        "tipo_producto": "CP",
-        "largo": 24,
-        "ancho": 20,
-        "alto": 10,
-        "peso": 0.4,
-        "precio": 1000
-        }
-    ],
-    "8930218574106": [
-        {
-        "nombre": "Pistola Hidrolavadora Portatil  Alta potencia y presion",
-        "tipo_producto": "CP",
-        "largo": 35,
-        "ancho": 17,
-        "alto": 11,
-        "peso": 2.15,
-        "precio": 1000
-        }
-    ],
-    "8981612953882": [
-        {
-        "nombre": "Pistola para Pintar",
-        "tipo_producto": "CP",
-        "largo": 25,
-        "ancho": 25,
-        "alto": 12,
-        "peso": 1.22,
-        "precio": 1000
-        }
-    ]
+    }
+    ]   
 }

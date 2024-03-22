@@ -58,37 +58,41 @@ def new_fetch_orders_for_store(shop_name, shop_url, access_token, date):
         all_orders_info = []
 
         for order in all_orders:
-            order_dict = {}
-            order_dict['first_name'] = order['shipping_address']['first_name']
-            order_dict['last_name'] = order['shipping_address']['last_name']
-            order_dict['street'] = order['shipping_address']['company']
-            order_dict['number'] = order['shipping_address']['address1']
-            order_dict['apartment'] = order['shipping_address']['address2']
-            order_dict['city'] = order['shipping_address']['city']
-            order_dict['province_code'] = order['shipping_address']['province_code']
-            order_dict['country'] = order['shipping_address']['country']
-            order_dict['zip_code'] = order['shipping_address']['zip']
+            try:
+                order_dict = {}
+                order_dict['first_name'] = order['shipping_address']['first_name']
+                order_dict['last_name'] = order['shipping_address']['last_name']
+                order_dict['street'] = order['shipping_address']['company']
+                order_dict['number'] = order['shipping_address']['address1']
+                order_dict['apartment'] = order['shipping_address']['address2']
+                order_dict['city'] = order['shipping_address']['city']
+                order_dict['province_code'] = order['shipping_address']['province_code']
+                order_dict['country'] = order['shipping_address']['country']
+                order_dict['zip_code'] = order['shipping_address']['zip']
+                
+                if not order['shipping_address'].get('phone'):
+                    order_dict['phone'] = '0'
+                else:
+                    order_dict['phone'] = order['shipping_address']['phone']
+
+                order_items = []  # Lista para almacenar los elementos de la orden
+
+                for item in order.get('line_items', []):
+                    item_info = {
+                        'item': item['name'],
+                        'item_id': item.get('product_id', ''),
+                        'order_id': order['id'],
+                        'price': order['total_price'],
+                        'quantity': item['quantity'],
+                        'email': order['customer']['email'] if order.get('customer') else '',
+                    }
+                    order_items.append(item_info)
+
+                order_dict['items'] = order_items  # Agregar la lista de elementos al diccionario principal
+                all_orders_info.append(order_dict)  # Agregar el diccionario al listado de todas las órdenes
             
-            if not order['shipping_address']['phone']:
-                order_dict['phone'] = '0'
-            else:
-                order_dict['phone'] = order['shipping_address']['phone']
-
-            order_items = []  # Lista para almacenar los elementos de la orden
-
-            for item in order.get('line_items', []):
-                item_info = {
-                    'item': item['name'],
-                    'item_id': item['product_id'],
-                    'order_id': order['id'],
-                    'price': order['total_price'],
-                    'quantity': item['quantity'],
-                    'email': order['customer']['email'] if order.get('customer') else '',
-                }
-                order_items.append(item_info)
-
-            order_dict['items'] = order_items  # Agregar la lista de elementos al diccionario principal
-            all_orders_info.append(order_dict)  # Agregar el diccionario al listado de todas las órdenes
+            except KeyError as e:
+                print(f"Error procesando el pedido {order.get('id', 'Desconocido')}: falta la clave {e}")
 
         print('Finished fetch_orders_for_store function')
         return all_orders_info
