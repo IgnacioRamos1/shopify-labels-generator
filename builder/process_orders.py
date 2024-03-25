@@ -19,6 +19,7 @@ def process_orders(credentials):
         print('Inicio de recuperacion de ordenes')
     
         if credentials['fixy'] == 'True':
+            print(f'Fixy activado para {credentials["shop_name"]}')
             total_orders = new_fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
         else:
             total_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
@@ -44,7 +45,7 @@ def process_orders(credentials):
 
         # Generate a CSV file for each product.
         for product in grouped_orders:
-            csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop, product, grouped_orders)
+            csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop, product, grouped_orders, credentials['fixy'])
 
             # Add the products and orders not added to the global lists
             all_not_added_products.extend(not_added_products)
