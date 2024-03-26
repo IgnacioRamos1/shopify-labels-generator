@@ -21,8 +21,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.11'
-    - name: Install Serverless
-      run: npm install serverless
     - name: Install dependencies
       run: npm install
     - name: Install Serverless plugins
