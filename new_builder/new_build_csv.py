@@ -4,7 +4,7 @@ from .new_clean_text import new_clean_phone
 from .new_fix_postal_code import new_correct_province_by_postal_code
 
 
-def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_service_id, fixy_company, fixy_sender):
+def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender):
     try:
         columns = [
             "productos.descripcion",
@@ -112,9 +112,9 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_servic
                 row_data = {
                     "tipo_operacion": "ENTREGA",
                     "sector": "OP",
-                    "cliente_id": "1009",
+                    "cliente_id": fixy_client_id,
                     "servicio_id": fixy_service_id,
-                    "codigo_sucursal": "1697740981",
+                    "codigo_sucursal": fixy_branch_code,
                     "datosEnvios.pago_en": "ORIGEN",
                     "datosEnvios.valor_declarado": round(attributes["precio"] * order["quantity"], 2),
                     "datosEnvios.confirmada": "1",

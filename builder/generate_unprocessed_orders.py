@@ -6,7 +6,7 @@ from storage.dynamodb_cache import check_order_processed, mark_order_as_processe
 from datetime import datetime
 
 
-def generate_unprocessed_orders_csv(shop, product, grouped_data, fixy_status, fixy_service_id, fixy_company, fixy_sender):
+def generate_unprocessed_orders_csv(shop, product, grouped_data, fixy_status, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender):
     try:
         print('Getting table name for product', product)
         # Ensure the DynamoDB table exists
@@ -42,7 +42,7 @@ def generate_unprocessed_orders_csv(shop, product, grouped_data, fixy_status, fi
         # Llamar a la función que genera el CSV a partir de las órdenes no procesadas pasando cada producto y sus órdenes y los atributos del producto
         if fixy_status == 'True':
             print('Generando CSV v2.0 de ordenes no procesadas')
-            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = new_generate_csv_from_orders({product: unprocessed_orders}, product_attributes, fixy_service_id, fixy_company, fixy_sender)
+            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = new_generate_csv_from_orders({product: unprocessed_orders}, product_attributes, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender)
         else:
             print('Generando CSV de ordenes no procesadas')
             csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_csv_from_orders({product: unprocessed_orders}, product_attributes)

@@ -33,6 +33,8 @@ def process_orders(credentials):
         
         fixy_status = credentials['fixy']
         fixy_service_id = credentials['fixy_service_id']
+        fixy_client_id = credentials['fixy_client_id']
+        fixy_branch_code = credentials['fixy_branch_code']
         fixy_company = credentials['fixy_company']
         fixy_sender = credentials['fixy_sender']
 
@@ -44,7 +46,7 @@ def process_orders(credentials):
 
         # Generate a CSV file for each product.
         for product in grouped_orders:
-            csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop, product, grouped_orders, fixy_status, fixy_service_id, fixy_company, fixy_sender)
+            csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop, product, grouped_orders, fixy_status, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender)
 
             # Add the products and orders not added to the global lists
             all_not_added_products.extend(not_added_products)
