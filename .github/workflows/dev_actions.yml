@@ -20,9 +20,7 @@ jobs:
     - name: Install dependencies
       run: npm install
     - name: Install Serverless plugins
-      run: npx serverless plugin install -n serverless-python-requirements
-    - name: Echo serverless deploy --stage dev
-      run: echo "npx serverless deploy --stage dev"
+      run: npx serverless plugin install -n serverless-python-requirements --stage dev
     - name: Deploy to dev
       if: github.ref == 'refs/heads/dev'
       run: npx serverless deploy --stage dev
