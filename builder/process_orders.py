@@ -38,6 +38,12 @@ def process_orders(credentials):
             fixy_branch_code = credentials['fixy_branch_code']
             fixy_company = credentials['fixy_company']
             fixy_sender = credentials['fixy_sender']
+        else:
+            fixy_service_id = None
+            fixy_client_id = None
+            fixy_branch_code = None
+            fixy_company = None
+            fixy_sender = None
 
         total_orders_count = 0
         all_not_added_products = []
