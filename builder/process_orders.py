@@ -16,36 +16,35 @@ def process_orders(credentials):
     try:
         print('Iniciando proceso de ordenes para', credentials['shop_name'])
         date = datetime.now().strftime('%Y-%m-%d')
-        print('Inicio de recuperacion de ordenes')
-    
-        if credentials['fixy'] == 'True':
-            print(f'Fixy activado para {credentials["shop_name"]}')
-            total_orders = new_fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
-        else:
-            total_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
-
+        
+        print('Inicio de recuperacion de ordenes')    
+        total_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
         print('Fin de recuperacion de ordenes')
+
         print('Agrupando ordenes')
         grouped_orders = filter_and_group_by_family(total_orders)
         print('Fin de agrupamiento de ordenes')
+
         from_email = get_parameter('from_email')
         to_email = credentials['to_email']
         cc_email = credentials['cc_email']
         dev_email = credentials['dev_email']
+        shop = credentials['shop_name']
+        
+        fixy_status = credentials['fixy']
+        fixy_service_id = credentials['fixy_service_id']
+        fixy_company = credentials['fixy_company']
+        fixy_sender = credentials['fixy_sender']
 
         total_orders_count = 0
-
         all_not_added_products = []
         all_not_added_floor_length = []
         all_not_added_missing_street_or_number = []
-
         in_memory_csvs = {}
-
-        shop = credentials['shop_name']
 
         # Generate a CSV file for each product.
         for product in grouped_orders:
-            csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop, product, grouped_orders, credentials['fixy'])
+            csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop, product, grouped_orders, fixy_status, fixy_service_id, fixy_company, fixy_sender)
 
             # Add the products and orders not added to the global lists
             all_not_added_products.extend(not_added_products)
@@ -70,7 +69,7 @@ def process_orders(credentials):
             print('No hay un csv generado', shop, date)
             return
 
-        # Continue with the process of creating the zip file and sending it via WhatsApp if we get to this point.
+        # Continue with the process of creating the zip file and sending it via email.
         print('Creando ZIP')
         zip_buffer = create_zip_in_memory(in_memory_csvs)
         print('ZIP creado')
@@ -92,6 +91,7 @@ def process_orders(credentials):
         print('Enviando email con ZIP')
         send_zip_email(from_email, to_email, cc_email, dev_email, shop, date, s3_presigned_url, total_orders_count, all_not_added_floor_length, all_not_added_missing_street_or_number)
         print('Email enviado')
+
         print('Se ha terminado de procesar las ordenes', shop, date)
 
     except Exception as e:

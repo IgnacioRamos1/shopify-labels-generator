@@ -4,7 +4,7 @@ from .new_clean_text import new_clean_phone
 from .new_fix_postal_code import new_correct_province_by_postal_code
 
 
-def new_generate_csv_from_orders(grouped_orders, product_attributes):
+def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_service_id, fixy_company, fixy_sender):
     try:
         columns = [
             "productos.descripcion",
@@ -113,15 +113,15 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes):
                     "tipo_operacion": "ENTREGA",
                     "sector": "OP",
                     "cliente_id": "1009",
-                    "servicio_id": "2",
+                    "servicio_id": fixy_service_id,
                     "codigo_sucursal": "1697740981",
                     "datosEnvios.pago_en": "ORIGEN",
                     "datosEnvios.valor_declarado": round(attributes["precio"] * order["quantity"], 2),
                     "datosEnvios.confirmada": "1",
                     "trabajo": "",
                     "remito": "",
-                    "sender.empresa": "Strawberry Store",
-                    "sender.remitente": "Bautista Gonzalez Blanco",
+                    "sender.empresa": fixy_company,
+                    "sender.remitente": fixy_sender,
                     "sender.calle": "Albarellos",
                     "sender.altura": "1916",
                     "sender.localidad": "MARTINEZ",

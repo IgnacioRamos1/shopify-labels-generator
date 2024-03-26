@@ -27,7 +27,7 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
         orders = response.json().get('orders', [])
         all_orders.extend(orders)
 
-        if response.status_code != 200:
+        if response.status_code != 200 or not orders:
             raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
 
         while True:
@@ -57,6 +57,7 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
                 break
 
         all_orders_info = []
+        error_counter = 0
 
         for order in all_orders:
             try:
@@ -93,8 +94,10 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
                 all_orders_info.append(order_dict)  # Agregar el diccionario al listado de todas las órdenes
             
             except KeyError as e:
+                error_counter += 1
                 print(f"Error procesando el pedido {order.get('id', 'Desconocido')}: falta la clave {e}")
 
+        print(f"Total errors: {error_counter}")
         print('Finished fetch_orders_for_store function')
         return all_orders_info
 

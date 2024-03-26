@@ -115,5 +115,16 @@
         "peso": 1.22,
         "precio": 1000
         }
+    ],
+    "9022046732570": [
+        {
+        "nombre": "Tabla Push Ups",
+        "tipo_producto": "CP",
+        "largo": 30,
+        "ancho": 20,
+        "alto": 11,
+        "peso": 1,
+        "precio": 1000
+        }
     ]
 }
