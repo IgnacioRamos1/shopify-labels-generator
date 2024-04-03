@@ -66,6 +66,10 @@ provider:
                     - "-"
                     - - "LambdaErrorNotifications"
                       - ${self:provider.stage}
+        - Effect: Allow
+          Action:
+            - "lambda:InvokeFunction"
+          Resource: "*"
 
 functions:
   triggerProcessing:
@@ -76,7 +80,7 @@ functions:
       STAGE: ${self:provider.stage}
       SQS_QUEUE_NAME: shop-processor-queue-${self:provider.stage}
     events:
-      ${self:custom.cronEvent.${self:provider.stage}}
+      ${self:custom.weeklyCronEvent.${self:provider.stage}}
 
   processShop:
     handler: handler.process_shop
@@ -91,6 +95,16 @@ functions:
               - ShopProcessorQueue
               - Arn
           batchSize: 1  # Procesa un mensaje (tienda) a la vez.
+  
+  triggerSundayProcessing:
+    handler: cron_handler.trigger_processing
+    timeout: 30
+    logRetentionInDays: 5
+    environment:
+      STAGE: ${self:provider.stage}
+      SQS_QUEUE_NAME: shop-processor-queue-${self:provider.stage}
+    events:
+      ${self:custom.sundayCronEvent.${self:provider.stage}}
 
 resources:
   Resources:
@@ -129,7 +143,11 @@ plugins:
 custom:
   pythonRequirements:
     requirementsFile: requirements.txt
-  cronEvent:
+  weeklyCronEvent:
     prod:
-      - schedule: cron(0 20 * * ? *)
+      - schedule: cron(0 20 ? * MON-SAT *)
+    dev: []
+  sundayCronEvent:
+    prod:
+      - schedule: cron(0 18 ? * SUN *)
     dev: []
