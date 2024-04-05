@@ -7,7 +7,7 @@ import re
 def fetch_orders_for_store(shop_name, shop_url, access_token, date):
     try:
         print('Starting fetch_orders_for_store function')
-        date = datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%dT%H:%M:%S%z')
+        date = date.strftime('%Y-%m-%dT%H:%M:%S%z')
         endpoint = f"https://{shop_url}/admin/api/2022-01/orders.json"
         headers = {
             "X-Shopify-Access-Token": access_token,

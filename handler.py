@@ -1,5 +1,5 @@
 from builder.process_orders import process_orders
-from utils.utils import get_secret, list_shop_secrets, send_messages_to_sqs
+from utils.utils import send_messages_to_sqs
 
 import os
 import json
@@ -7,6 +7,9 @@ import logging
 import boto3
 from datetime import datetime
 import pytz
+
+from db.get_store_uuid import get_all_stores_uuid
+from db.get_store import get_store
 
 
 logger = logging.getLogger()
@@ -22,6 +25,7 @@ sns_topic_arn = f'arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications-{s
 
 def trigger_shop_processing(event, context):
     try:
+        print('Inicio de trigger_shop_processing')
         # Verificar si el stage es prod
         if stage == 'prod':
             # Obtener el día de la semana actual en UTC-3
@@ -29,15 +33,15 @@ def trigger_shop_processing(event, context):
 
             # Verificar si el día es distinto de viernes o sábado
             if today not in (4, 5):
-                # Obtener la lista de tiendas desde Secrets Manager
-                shop_names = list_shop_secrets()
+                # Obtener la lista de tiendas de la base de datos
+                shop_uuids = get_all_stores_uuid()
 
                 # Enviar un mensaje a SQS por cada tienda
-                send_messages_to_sqs(shop_names)
+                send_messages_to_sqs(shop_uuids)
 
                 return {
                     'statusCode': 200,
-                    'body': f"Triggered processing for {len(shop_names)} shops."
+                    'body': f"Triggered processing for {len(shop_uuids)} shops."
                 }
             else:
                 # No hacer nada si el día es viernes o sábado
@@ -46,15 +50,15 @@ def trigger_shop_processing(event, context):
                     'body': f"No processing triggered for today."
                 }
         else:
-            # Obtener la lista de tiendas desde Secrets Manager
-            shop_names = list_shop_secrets()
+            # Obtener la lista de tiendas de la base de datos
+            shop_uuids = get_all_stores_uuid()
 
             # Enviar un mensaje a SQS por cada tienda
-            send_messages_to_sqs(shop_names)
+            send_messages_to_sqs(shop_uuids)
 
             return {
                 'statusCode': 200,
-                'body': f"Triggered processing for {len(shop_names)} shops."
+                'body': f"Triggered processing for {len(shop_uuids)} shops."
             }
 
     except Exception as e:
@@ -80,12 +84,12 @@ def process_shop(event, context):
         for record in event['Records']:
             print('Inicio de procesamiento de tienda')
             message_body = json.loads(record['body'])
-            shop_name = message_body['shop_name']
+            shop_uuid = message_body['shop_uuid']
 
-            # Recuperar las credenciales para esta tienda específica
-            credentials = get_secret(f'shop_secret_{shop_name}')
+            store = get_store(shop_uuid)
+
             # Procesar órdenes para esta tienda
-            process_orders(credentials)
+            process_orders(store)
             print('Fin de procesamiento de tienda')
 
         return {
@@ -100,7 +104,7 @@ def process_shop(event, context):
         sns_client.publish(
             TopicArn=sns_topic_arn,
             Message=error_message,
-            Subject=f'Error in process_shop function {date} - {shop_name}'
+            Subject=f'Error in process_shop function {date} - {store.name}'
         )
         return {
             'statusCode': 500,
