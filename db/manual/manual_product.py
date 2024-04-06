@@ -21,5 +21,3 @@ class Product(Base):
     length = Column(Integer)
     weight = Column(Float)
     price = Column(Integer)
-
-

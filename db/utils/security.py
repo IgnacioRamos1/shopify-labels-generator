@@ -1,9 +1,16 @@
 import os
 from nacl import secret
 import binascii
-from utils.utils import get_parameter
 
-hex_key = get_parameter('secret_key')
+
+if 'AWS_EXECUTION_ENV' in os.environ:
+    from utils.utils import get_parameter
+    hex_key = get_parameter('secret_key')
+
+else:
+    from dotenv import load_dotenv
+    load_dotenv()
+    hex_key = os.getenv('SECRET_KEY')
 
 
 key = binascii.unhexlify(hex_key)
