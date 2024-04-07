@@ -2,12 +2,12 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 
 from manual_store import Store
-from utils.db_connection import engine
+from utils.db_connection import dev_engine
 from utils.str_to_bool import str_to_bool
 from utils.security import encrypt_string
 
 
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=dev_engine)
 session = Session()
 
 choice = str(input("Do you want to add a new store? (y/n): "))

@@ -13,18 +13,41 @@ jobs:
         node-version: [14.x]
     steps:
     - uses: actions/checkout@v2
+    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.11'
+    
     - name: Install dependencies
       run: npm install
+    
     - name: Install Serverless plugins
       run: npx serverless plugin install -n serverless-python-requirements --stage prod
+
+    # Agregar paso para instalar dependencias de Python
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install sqlalchemy psycopg2-binary
+
+    # Agregar paso para ejecutar el script de migración
+    - name: Run data migration script
+      run: python rds/migrate.py
+      env:
+        STAGE: prod
+        # Asegúrate de tener todas las variables de entorno necesarias para tu script aquí
+        DB_HOST: ${{ secrets.PROD_DB_HOST }}
+        DB_PORT: ${{ secrets.PROD_DB_PORT }}
+        DB_NAME: ${{ secrets.PROD_DB_NAME }}
+        DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+
     - name: Deploy to prod
       if: github.ref == 'refs/heads/prod'
       run: npx serverless deploy --stage prod

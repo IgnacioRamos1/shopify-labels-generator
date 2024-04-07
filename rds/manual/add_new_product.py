@@ -5,10 +5,10 @@ import os
 sys.path.append(os.path.abspath('..'))
 
 from manual_product import Product
-from utils.db_connection import engine
+from utils.db_connection import dev_engine
 from select_store import seleccionar_tienda
 
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=dev_engine)
 
 # Se solicita el ID de la tienda una vez al principio
 with Session() as session:
