@@ -11,3 +11,13 @@ requests==2.31.0
 six==1.16.0
 tzdata==2023.3
 urllib3==2.0.4
+cffi==1.16.0
+greenlet==3.0.3
+psycopg2-binary==2.9.9
+pycparser==2.22
+SQLAlchemy==2.0.29
+typing_extensions==4.10.0
+python-dotenv==1.0.1
+cffi==1.16.0
+pycparser==2.22
+PyNaCl==1.5.0

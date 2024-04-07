@@ -79,7 +79,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     attributes = attributes_list[0]
                 else:
                     # Check if the product name matches the JSON
-                    attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
+                    attributes = next((attr for attr in attributes_list if attr['name'] == clean_text(order['item'])), None)
                     if not attributes:
                         reason = "No matching attribute found for product name"
                         product = {
@@ -96,12 +96,12 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                         continue
 
                 row_data = {
-                    "tipo_producto(obligatorio)": attributes["tipo_producto"],
-                    "largo(obligatorio en CM)": round(attributes["largo"] * order["quantity"], 2),
-                    "ancho(obligatorio en CM)": round(attributes["ancho"] * order["quantity"], 2),
-                    "altura(obligatorio en CM)": round(attributes["alto"] * order["quantity"], 2),
-                    "peso(obligatorio en KG)": round(attributes["peso"] * order["quantity"], 2),
-                    "valor_del_contenido(obligatorio en pesos argentinos)": round(attributes["precio"] * order["quantity"], 2),
+                    "tipo_producto(obligatorio)": attributes["type"],
+                    "largo(obligatorio en CM)": round(attributes["length"] * order["quantity"], 2),
+                    "ancho(obligatorio en CM)": round(attributes["width"] * order["quantity"], 2),
+                    "altura(obligatorio en CM)": round(attributes["height"] * order["quantity"], 2),
+                    "peso(obligatorio en KG)": round(attributes["weight"] * order["quantity"], 2),
+                    "valor_del_contenido(obligatorio en pesos argentinos)": round(attributes["price"] * order["quantity"], 2),
                     "provincia_destino(obligatorio)": correct_province_by_postal_code(order["province_code"], clean_zip_code(order["zip_code"])),
                     "sucursal_destino(obligatorio solo en caso de no ingresar localidad de destino)": "",
                     "localidad_destino(obligatorio solo en caso de no ingresar sucursal de destino)": clean_text(order["city"]),

@@ -2,9 +2,9 @@ from builder.request_orders import fetch_orders_for_store
 from utils.filter_orders import filter_and_group_by_family
 from utils.send_email import send_products_missing_email, send_zip_email
 from utils.utils import create_zip_in_memory, get_parameter, generate_presigned_url
-from storage.save_to_bucket import save_to_s3
+from dynamo_db.save_to_bucket import save_to_s3
 from builder.generate_unprocessed_orders import generate_unprocessed_orders_csv
-from new_builder.new_request_orders import new_fetch_orders_for_store
+from rds.utils.security import decrypt_string
 
 from datetime import datetime
 import os
@@ -12,13 +12,15 @@ import os
 stage = os.environ['STAGE']
 
 
-def process_orders(credentials):
+def process_orders(store):
     try:
-        print('Iniciando proceso de ordenes para', credentials['shop_name'])
+        print('Iniciando proceso de ordenes para', store.name)
         date = datetime.now().strftime('%Y-%m-%d')
+
+        access_token = decrypt_string(store.access_token.encode())
         
         print('Inicio de recuperacion de ordenes')    
-        total_orders = fetch_orders_for_store(credentials['shop_name'], credentials['shop_url'], credentials['access_token'], credentials['date'])
+        total_orders = fetch_orders_for_store(store.name, store.url, access_token, store.date)
         print('Fin de recuperacion de ordenes')
 
         print('Agrupando ordenes')
@@ -26,18 +28,19 @@ def process_orders(credentials):
         print('Fin de agrupamiento de ordenes')
 
         from_email = get_parameter('from_email')
-        to_email = credentials['to_email']
-        cc_email = credentials['cc_email']
-        dev_email = credentials['dev_email']
-        shop = credentials['shop_name']
+        to_email = store.to_email
+        cc_email = store.cc_email
+        dev_email = store.dev_email
+        shop = store.name
+        shop_id = store.id
         
-        fixy_status = credentials['fixy']
-        if fixy_status == 'True':
-            fixy_service_id = credentials['fixy_service_id']
-            fixy_client_id = credentials['fixy_client_id']
-            fixy_branch_code = credentials['fixy_branch_code']
-            fixy_company = credentials['fixy_company']
-            fixy_sender = credentials['fixy_sender']
+        fixy_status = store.fixy
+        if fixy_status == True:
+            fixy_service_id = store.fixy_service_id
+            fixy_client_id = store.fixy_client_id
+            fixy_branch_code = store.fixy_branch_code
+            fixy_company = store.fixy_company
+            fixy_sender = store.fixy_sender
         else:
             fixy_service_id = None
             fixy_client_id = None
@@ -53,18 +56,19 @@ def process_orders(credentials):
 
         # Generate a CSV file for each product.
         for product in grouped_orders:
-            csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop, product, grouped_orders, fixy_status, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender)
+            outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop_id, shop, product, grouped_orders, fixy_status, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender)
 
             # Add the products and orders not added to the global lists
             all_not_added_products.extend(not_added_products)
             all_not_added_floor_length.extend(not_added_floor_length)
             all_not_added_missing_street_or_number.extend(not_added_missing_street_or_number)
 
-            # If there is generated CSV, add it to the in-memory CSVs dictionary.
-            if csv_data and file_name:
-                in_memory_csvs[file_name] = csv_data
-                # Add the number of orders in the CSV to the total orders count
-                total_orders_count += len(csv_data.splitlines()) - 1  # Subtracting 1 for header
+            # Iterate through each output CSV from the current product and add it to the in-memory CSVs dictionary.
+            for csv_output, file_name in outputs:
+                in_memory_csvs[file_name] = csv_output
+                # Add the number of orders in each CSV to the total orders count
+                total_orders_count += len(csv_output.splitlines()) - 1  # Subtracting 1 for header
+
 
         missing_products_email = get_parameter('to_email')
         # Send the unadded products by email.

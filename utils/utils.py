@@ -13,18 +13,6 @@ class ApiException(Exception):
     pass
 
 
-def load_product_attributes(shop_name):
-    try:
-        base_path = os.path.dirname(os.path.abspath(__file__))
-        filename = os.path.join(base_path, '..', 'products_json', f"{shop_name}_products.json")
-
-        with open(filename, 'r') as f:
-            return json.load(f)
-
-    except Exception as e:
-        raise Exception(f"Error in load_product_attributes function: {e}")
-
-
 def bucket_exists(bucket_name):
     try:
         s3 = boto3.client('s3', region_name='sa-east-1')
@@ -91,24 +79,6 @@ def generate_presigned_url(bucket_name, object_name, expiration=3600):
         raise Exception('Credentials not available')
 
 
-def list_shop_secrets():
-    try:
-        client = boto3.client('secretsmanager', region_name='sa-east-1')
-        paginator = client.get_paginator('list_secrets')
-        shop_secrets = []
-
-        # Itera a través de todas las páginas de la respuesta paginada
-        for page in paginator.paginate():
-            for secret in page['SecretList']:
-                if secret['Name'].startswith('shop_secret_'):
-                    shop_secrets.append(secret['Name'].replace('shop_secret_', ''))
-
-        return shop_secrets
-
-    except Exception as e:
-        raise Exception(f"Error in list_shop_secrets function: {e}")
-
-
 def get_sqs_queue_url(queue_name):
     try:
         sqs = boto3.client('sqs')
@@ -119,32 +89,22 @@ def get_sqs_queue_url(queue_name):
         raise Exception(f"Error in get_sqs_queue_url function: {e}")
 
 
-def send_messages_to_sqs(shop_names):
+def send_messages_to_sqs(shop_uuids):
     try:
         sqs = boto3.client('sqs')
         queue_name = os.environ['SQS_QUEUE_NAME']
         queue_url = get_sqs_queue_url(queue_name)
 
         # Dividir shop_names en grupos de 10
-        batches = [shop_names[i:i + 10] for i in range(0, len(shop_names), 10)]
+        batches = [shop_uuids[i:i + 10] for i in range(0, len(shop_uuids), 10)]
 
         for batch in batches:
             entries = [{
                 'Id': str(i),
-                'MessageBody': json.dumps({"shop_name": name})
-            } for i, name in enumerate(batch)]
+                'MessageBody': json.dumps({"shop_uuid": uuid})
+            } for i, uuid in enumerate(batch)]
 
             sqs.send_message_batch(QueueUrl=queue_url, Entries=entries)
 
     except Exception as e:
         raise Exception(f"Error in send_messages_to_sqs function: {e}")
-
-
-def get_secret(shop_name):
-    try:
-        client = boto3.client('secretsmanager', region_name='sa-east-1')
-        response = client.get_secret_value(SecretId=shop_name)
-        return json.loads(response['SecretString'])
-
-    except Exception as e:
-        raise Exception(f"Error in get_secret function: {e}")

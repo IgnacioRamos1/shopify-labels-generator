@@ -1,10 +1,10 @@
 import pandas as pd
 from utils.clean_text import clean_text, clean_zip_code, clean_email
-from .new_clean_text import new_clean_phone
-from .new_fix_postal_code import new_correct_province_by_postal_code
+from .fixy_clean_text import fixy_clean_phone
+from .fix_postal_code_for_fixy import correct_province_by_postal_code_for_fixy
 
 
-def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender):
+def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender):
     try:
         columns = [
             "productos.descripcion",
@@ -70,7 +70,6 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_servic
                     not_added_missing_street_or_number.append(product)
                     order['exclude'] = True
                     continue
-
                 # Check if the product is in the JSON
                 attributes_list = product_attributes.get(str(order['item_id']))
                 if not attributes_list:
@@ -86,12 +85,11 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_servic
                     for single_order in grouped_orders[product['item']]:
                         single_order['exclude'] = True
                     continue
-
                 if len(attributes_list) == 1:
                     attributes = attributes_list[0]
                 else:
                     # Check if the product name matches the JSON
-                    attributes = next((attr for attr in attributes_list if attr['nombre'] == clean_text(order['item'])), None)
+                    attributes = next((attr for attr in attributes_list if print("Comparando con:", attr['name']) or attr['name'] == clean_text(order['item'])), None)
                     if not attributes:
                         reason = "No matching attribute found for product name"
                         product = {
@@ -116,7 +114,7 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_servic
                     "servicio_id": fixy_service_id,
                     "codigo_sucursal": fixy_branch_code,
                     "datosEnvios.pago_en": "ORIGEN",
-                    "datosEnvios.valor_declarado": round(attributes["precio"] * order["quantity"], 2),
+                    "datosEnvios.valor_declarado": round(attributes["price"] * order["quantity"], 2),
                     "datosEnvios.confirmada": "1",
                     "trabajo": "",
                     "remito": "",
@@ -132,16 +130,16 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_servic
                     "comprador.altura": clean_text(str(order["number"])),
                     "comprador.dpto": "",
                     "comprador.localidad": clean_text(order["city"]),
-                    "comprador.provincia": new_correct_province_by_postal_code(order["province_code"], clean_zip_code(order["zip_code"])),
+                    "comprador.provincia": correct_province_by_postal_code_for_fixy(order["province_code"], clean_zip_code(order["zip_code"])),
                     "comprador.cp": clean_zip_code(order["zip_code"]),
-                    "comprador.celular": new_clean_phone(order["phone"]),
+                    "comprador.celular": fixy_clean_phone(order["phone"]),
                     "comprador.email": clean_email(order["email"]),
                     "comprador.fecha_servicio": "",
                     "comprador.hora_desde": "",
                     "comprador.hora_hasta": "",
                     "comprador.obs1": "",
                     "datosEnvios.bultos": "1",
-                    "datosEnvios.peso": round(attributes["peso"] * order["quantity"], 2),
+                    "datosEnvios.peso": round(attributes["weight"] * order["quantity"], 2),
                     "datosEnvios.observaciones": "",
                     "datosEnvios.guiaAgente": order_counter,
                     "datosEnvios.contrareembolso": (order["price"]).split(".")[0],

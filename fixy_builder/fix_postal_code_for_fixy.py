@@ -33,7 +33,7 @@ new_province_code = {
 }
 
 
-def new_correct_province_by_postal_code(province, postal_code):
+def correct_province_by_postal_code_for_fixy(province, postal_code):
     try:
         # Convert the postal_code to integer
         postal_code_int = int(postal_code)

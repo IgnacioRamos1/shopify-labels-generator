@@ -71,6 +71,11 @@ provider:
             - "lambda:InvokeFunction"
           Resource: "*"
 
+package:
+  exclude:
+    - .env
+    - DEPRECATED/**
+
 functions:
   triggerProcessing:
     handler: handler.trigger_shop_processing
@@ -81,6 +86,9 @@ functions:
       SQS_QUEUE_NAME: shop-processor-queue-${self:provider.stage}
     events:
       ${self:custom.weeklyCronEvent.${self:provider.stage}}
+    package:
+      include:
+        - db/**
 
   processShop:
     handler: handler.process_shop
@@ -136,6 +144,19 @@ resources:
               Fn::GetAtt:
                 - "ProcessShopLambdaFunction"
                 - "Arn"
+    postgresInstance:
+      Type: 'AWS::RDS::DBInstance'
+      Properties:
+        DBInstanceIdentifier: postgres-shopify-db
+        PubliclyAccessible: true
+        Engine: postgres
+        EngineVersion: '14.6'
+        DBInstanceClass: db.t4g.micro
+        AllocatedStorage: 20
+        DBName: ${ssm:/db_name}
+        MasterUsername: ${ssm:/db_username}
+        MasterUserPassword: ${ssm:/db_password}
+
 
 plugins:
   - serverless-python-requirements
