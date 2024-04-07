@@ -1,7 +1,6 @@
 from sqlalchemy.orm import sessionmaker
-from manual.manual_product import Product
-from manual.manual_store import Store
 from utils.db_connection import dev_engine, prod_engine
+from manual_store import Store
 
 DevSession = sessionmaker(bind=dev_engine)
 ProdSession = sessionmaker(bind=prod_engine)
@@ -10,7 +9,7 @@ dev_session = DevSession()
 prod_session = ProdSession()
 
 
-def migrate():
+def migrate(Product):
     # Sincronizar la tabla Store
     store_ids_dev = {store_instance.id for store_instance in dev_session.query(Store).all()}
     store_ids_prod = {store_instance.id for store_instance in prod_session.query(Store).all()}

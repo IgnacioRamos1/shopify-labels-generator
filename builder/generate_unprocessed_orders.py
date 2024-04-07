@@ -35,22 +35,24 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
             print('Todas las ordenes ya han sido procesadas')
             return [], [], [], []
 
-        # Dividir a las órdenes en grupos de 60
-        print('Dividiendo ordenes en grupos de 60')
-        order_groups = [unprocessed_orders[i:i + 60] for i in range(0, len(unprocessed_orders), 60)]
+        # Solo dividir a las órdenes en grupos de 60 si no son Fixy
+        if fixy_status:
+            order_groups = [unprocessed_orders]  # Procesa todas las órdenes juntas para Fixy
+        else:
+            print('Dividiendo ordenes en grupos de 60')
+            order_groups = [unprocessed_orders[i:i + 60] for i in range(0, len(unprocessed_orders), 60)]
 
         # Cargar los atributos del producto
         product_attributes = get_all_products_for_store(shop_id)
         print('Atributos del producto:', product_attributes)
 
-        # Llamar a la función que genera el CSV a partir de las órdenes no procesadas pasando cada producto y sus órdenes y los atributos del producto
         outputs = []
         not_added_products = []
         not_added_floor_length = []
         not_added_missing_street_or_number = []
 
         for index, orders_group in enumerate(order_groups):
-            if fixy_status == True:
+            if fixy_status:
                 print('Generando CSV v2.0 de ordenes no procesadas')
                 csv_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number = generate_csv_from_orders_for_fixy(
                     {product: orders_group},
@@ -75,7 +77,6 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
 
             # Verificar si se debería continuar para generar un archivo CSV.
             if len(csv_output.splitlines()) > 1:
-                # Define filename based on shop, date, and product
                 date_str = datetime.now().strftime('%Y-%m-%d')
                 file_name = f"{shop} - {date_str} - {product} - {index + 1}.csv"
                 outputs.append((csv_output, file_name))
@@ -92,3 +93,4 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
 
     except Exception as e:
         raise Exception(f"Error en la función generate_unprocessed_orders_csv: {e}")
+
