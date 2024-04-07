@@ -147,16 +147,15 @@ resources:
     postgresInstance:
       Type: 'AWS::RDS::DBInstance'
       Properties:
-        DBInstanceIdentifier: postgres-shopify-db
+        DBInstanceIdentifier: postgres-shopify-db-${self:provider.stage}
         PubliclyAccessible: true
         Engine: postgres
         EngineVersion: '14.6'
         DBInstanceClass: db.t4g.micro
         AllocatedStorage: 20
-        DBName: ${ssm:/db_name}
-        MasterUsername: ${ssm:/db_username}
-        MasterUserPassword: ${ssm:/db_password}
-
+        DBName: ${ssm:/${self:provider.stage}_db_name}
+        MasterUsername: ${ssm:/${self:provider.stage}_db_username}
+        MasterUserPassword: ${ssm:/${self:provider.stage}_db_password}
 
 plugins:
   - serverless-python-requirements

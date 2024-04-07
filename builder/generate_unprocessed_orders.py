@@ -16,7 +16,7 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
 
         # Check if the product exists in the grouped_data
         if product not in grouped_data:
-            return None, None, [], [], []
+            return [], [], [], []
 
         unprocessed_orders = []
         # Check if each order has been processed
@@ -35,7 +35,7 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
         # Si todas las órdenes ya han sido procesadas, devolver vacío.
         if not unprocessed_orders:
             print('Todas las ordenes ya han sido procesadas')
-            return None, None, [], [], []
+            return [], [], [], []
 
         # Dividir a las órdenes en grupos de 60
         print('Dividiendo ordenes en grupos de 60')

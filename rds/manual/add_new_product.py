@@ -5,10 +5,10 @@ import os
 sys.path.append(os.path.abspath('..'))
 
 from manual_product import Product
-from utils.db_connection import engine
+from utils.db_connection import dev_engine
 from select_store import seleccionar_tienda
 
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=dev_engine)
 
 # Se solicita el ID de la tienda una vez al principio
 with Session() as session:
@@ -23,12 +23,12 @@ with Session() as session:
         # Solicita los datos del nuevo producto
         product_id = int(input("Enter the product ID: "))
         name = str(input("Enter the name of the product: "))
-        type = str(input("Enter the type of the product: "))
+        type = "CP"
         width = int(input("Enter the width of the product: "))
         height = int(input("Enter the height of the product: "))
         length = int(input("Enter the length of the product: "))
         weight = float(input("Enter the weight of the product: "))
-        price = int(input("Enter the price of the product: "))
+        price = 1000
 
         # Crea una nueva instancia de la clase Product con los datos proporcionados
         new_product = Product(
