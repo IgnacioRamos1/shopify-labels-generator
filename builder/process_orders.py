@@ -2,7 +2,7 @@ from builder.request_orders import fetch_orders_for_store
 from utils.filter_orders import filter_and_group_by_family
 from utils.send_email import send_products_missing_email, send_zip_email
 from utils.utils import create_zip_in_memory, get_parameter, generate_presigned_url
-from storage.save_to_bucket import save_to_s3
+from dynamo_db.save_to_bucket import save_to_s3
 from builder.generate_unprocessed_orders import generate_unprocessed_orders_csv
 from rds.utils.security import decrypt_string
 
@@ -56,18 +56,19 @@ def process_orders(store):
 
         # Generate a CSV file for each product.
         for product in grouped_orders:
-            csv_data, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop_id, shop, product, grouped_orders, fixy_status, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender)
+            outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(shop_id, shop, product, grouped_orders, fixy_status, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender)
 
             # Add the products and orders not added to the global lists
             all_not_added_products.extend(not_added_products)
             all_not_added_floor_length.extend(not_added_floor_length)
             all_not_added_missing_street_or_number.extend(not_added_missing_street_or_number)
 
-            # If there is generated CSV, add it to the in-memory CSVs dictionary.
-            if csv_data and file_name:
-                in_memory_csvs[file_name] = csv_data
-                # Add the number of orders in the CSV to the total orders count
-                total_orders_count += len(csv_data.splitlines()) - 1  # Subtracting 1 for header
+            # Iterate through each output CSV from the current product and add it to the in-memory CSVs dictionary.
+            for csv_output, file_name in outputs:
+                in_memory_csvs[file_name] = csv_output
+                # Add the number of orders in each CSV to the total orders count
+                total_orders_count += len(csv_output.splitlines()) - 1  # Subtracting 1 for header
+
 
         missing_products_email = get_parameter('to_email')
         # Send the unadded products by email.

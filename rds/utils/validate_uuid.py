@@ -3,8 +3,6 @@ import uuid
 
 def is_valid_uuid(uuid_to_test, version=4):
     try:
-        print('uuid_to_test:', uuid_to_test)
-        print('uuid_type:', type(uuid_to_test))
         # Si uuid_to_test ya es un objeto UUID, no es necesario convertirlo.
         if isinstance(uuid_to_test, uuid.UUID):
             uuid_obj = uuid_to_test

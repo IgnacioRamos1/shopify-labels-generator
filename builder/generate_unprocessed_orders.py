@@ -37,47 +37,62 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
             print('Todas las ordenes ya han sido procesadas')
             return None, None, [], [], []
 
+        # Dividir a las órdenes en grupos de 60
+        print('Dividiendo ordenes en grupos de 60')
+        order_groups = [unprocessed_orders[i:i + 60] for i in range(0, len(unprocessed_orders), 60)]
+
         # Cargar los atributos del producto
         product_attributes = get_all_products_for_store(shop_id)
         print('Atributos del producto:', product_attributes)
 
         # Llamar a la función que genera el CSV a partir de las órdenes no procesadas pasando cada producto y sus órdenes y los atributos del producto
+        outputs = []
+        not_added_products = []
+        not_added_floor_length = []
+        not_added_missing_street_or_number = []
 
-        if fixy_status == True:
-            print('Generando CSV v2.0 de ordenes no procesadas')
-            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_csv_from_orders_for_fixy(
-                {product: unprocessed_orders},
-                product_attributes,
-                fixy_service_id,
-                fixy_client_id,
-                fixy_branch_code,
-                fixy_company,
-                fixy_sender
-                )
-        else:
-            print('Generando CSV de ordenes no procesadas')
-            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_csv_from_orders(
-                {product: unprocessed_orders},
-                product_attributes
-                )
+        for index, orders_group in enumerate(order_groups):
+            if fixy_status == True:
+                print('Generando CSV v2.0 de ordenes no procesadas')
+                csv_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number = generate_csv_from_orders_for_fixy(
+                    {product: orders_group},
+                    product_attributes,
+                    fixy_service_id,
+                    fixy_client_id,
+                    fixy_branch_code,
+                    fixy_company,
+                    fixy_sender
+                    )
+            else:
+                print('Generando CSV de ordenes no procesadas')
+                csv_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number = generate_csv_from_orders(
+                    {product: orders_group},
+                    product_attributes
+                    )
 
-        # Si el output del CSV es 1 (tiene solo el header), significa que no se ha añadido ningún producto.
-        if len(csv_output.splitlines()) <= 1:
-            return None, None, not_added_products, not_added_floor_length, not_added_missing_street_or_number
+            # Si el output del CSV es 1 (tiene solo el header), significa que no se ha añadido ningún producto.
+            if len(csv_output.splitlines()) <= 1:
+                continue
 
-        # Define filename based on shop, date, and product
-        date_str = datetime.now().strftime('%Y-%m-%d')
-        file_name = f"{shop} - {date_str} - {product}.csv"
+            # Define filename based on shop, date, and product
+            date_str = datetime.now().strftime('%Y-%m-%d')
+            file_name = f"{shop} - {date_str} - {product} - {index + 1}.csv"
 
-        # Mark each order as processed only if it's not marked as 'exclude'
-        print('Marcando ordenes como procesadas')
-        for order in unprocessed_orders:
-            if not order.get('exclude', False):
-                mark_order_as_processed(table_name, order["order_id"], order["item_id"])
-        print('Ordenes marcadas como procesadas')
+            outputs.append((csv_output, file_name))
+            not_added_products.extend(_not_added_products)
+            not_added_floor_length.extend(_not_added_floor_length)
+            not_added_missing_street_or_number.extend(_not_added_missing_street_or_number)
+            
+            # Mark each order as processed only if it's not marked as 'exclude'
+            print('Marcando ordenes como procesadas')
+            for order in orders_group:
+                if not order.get('exclude', False):
+                    mark_order_as_processed(table_name, order["order_id"], order["item_id"])
+            print('Ordenes marcadas como procesadas')
 
         print('Finalizado generación de CSV de ordenes no procesadas')
-        return csv_output, file_name, not_added_products, not_added_floor_length, not_added_missing_street_or_number
+        print('Outputs:', outputs)
+        return outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number
 
     except Exception as e:
         raise Exception(f"Error en la función generate_unprocessed_orders_csv: {e}")
