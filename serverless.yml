@@ -153,9 +153,9 @@ resources:
         EngineVersion: '14.6'
         DBInstanceClass: db.t4g.micro
         AllocatedStorage: 20
-        DBName: ${ssm:/${self:provider.stage}/db_name}
-        MasterUsername: ${ssm:/${self:provider.stage}/db_username}
-        MasterUserPassword: ${ssm:/${self:provider.stage}/db_password}
+        DBName: ${ssm:/${self:provider.stage}_db_name}
+        MasterUsername: ${ssm:/${self:provider.stage}_db_username}
+        MasterUserPassword: ${ssm:/${self:provider.stage}_db_password}
 
 plugins:
   - serverless-python-requirements
