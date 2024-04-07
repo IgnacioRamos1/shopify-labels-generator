@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
-from db.utils.db_connection import engine
-from db.domain.store import Store  # Asume que este es tu modelo SQLAlchemy para la tienda
+from rds.utils.db_connection import engine
+from rds.domain.store import Store  # Asume que este es tu modelo SQLAlchemy para la tienda
 
 
 Session = sessionmaker(bind=engine)

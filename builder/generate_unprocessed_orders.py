@@ -1,9 +1,8 @@
 from builder.build_csv import generate_csv_from_orders
-from new_builder.new_build_csv import new_generate_csv_from_orders
-from utils.utils import load_product_attributes
-from storage.dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
+from fixy_builder.build_fixy_csv import generate_csv_from_orders_for_fixy
+from dynamo_db.dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
 
-from db.get_all_products import get_all_products_for_store
+from rds.get_all_products import get_all_products_for_store
 
 from datetime import datetime
 
@@ -46,7 +45,7 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
 
         if fixy_status == True:
             print('Generando CSV v2.0 de ordenes no procesadas')
-            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = new_generate_csv_from_orders(
+            csv_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_csv_from_orders_for_fixy(
                 {product: unprocessed_orders},
                 product_attributes,
                 fixy_service_id,

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
-from db.utils.db_connection import engine
-from db.domain.store import Store  
+from rds.utils.db_connection import engine
+from rds.domain.store import Store  
 
 
 def get_store(store_id):

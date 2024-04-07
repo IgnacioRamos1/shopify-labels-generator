@@ -4,7 +4,7 @@ from utils.send_email import send_products_missing_email, send_zip_email
 from utils.utils import create_zip_in_memory, get_parameter, generate_presigned_url
 from storage.save_to_bucket import save_to_s3
 from builder.generate_unprocessed_orders import generate_unprocessed_orders_csv
-from db.utils.security import decrypt_string
+from rds.utils.security import decrypt_string
 
 from datetime import datetime
 import os

@@ -74,6 +74,7 @@ provider:
 package:
   exclude:
     - .env
+    - DEPRECATED/**
 
 functions:
   triggerProcessing:

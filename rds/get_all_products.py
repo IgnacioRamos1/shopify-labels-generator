@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker
-from db.utils.db_connection import engine
-from db.domain.product import Product
-from db.utils.validate_uuid import is_valid_uuid
+from rds.utils.db_connection import engine
+from rds.domain.product import Product
+from rds.utils.validate_uuid import is_valid_uuid
 
 
 Session = sessionmaker(bind=engine)

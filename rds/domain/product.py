@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, BigInteger
 import uuid
 
-from db.utils.base import Base, GUID
+from rds.utils.base import Base, GUID
 
 
 class Product(Base):

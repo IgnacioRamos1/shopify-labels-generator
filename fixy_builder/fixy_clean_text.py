@@ -1,7 +1,7 @@
 import re
 
 
-def new_clean_phone(phone):
+def fixy_clean_phone(phone):
     """
     Clean the phone number by removing prefixes, non-numeric characters,
     and handling special cases.

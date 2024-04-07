@@ -1,10 +1,10 @@
 import pandas as pd
 from utils.clean_text import clean_text, clean_zip_code, clean_email
-from .new_clean_text import new_clean_phone
-from .new_fix_postal_code import new_correct_province_by_postal_code
+from .fixy_clean_text import fixy_clean_phone
+from .fix_postal_code_for_fixy import correct_province_by_postal_code_for_fixy
 
 
-def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender):
+def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender):
     try:
         columns = [
             "productos.descripcion",
@@ -130,9 +130,9 @@ def new_generate_csv_from_orders(grouped_orders, product_attributes, fixy_servic
                     "comprador.altura": clean_text(str(order["number"])),
                     "comprador.dpto": "",
                     "comprador.localidad": clean_text(order["city"]),
-                    "comprador.provincia": new_correct_province_by_postal_code(order["province_code"], clean_zip_code(order["zip_code"])),
+                    "comprador.provincia": correct_province_by_postal_code_for_fixy(order["province_code"], clean_zip_code(order["zip_code"])),
                     "comprador.cp": clean_zip_code(order["zip_code"]),
-                    "comprador.celular": new_clean_phone(order["phone"]),
+                    "comprador.celular": fixy_clean_phone(order["phone"]),
                     "comprador.email": clean_email(order["email"]),
                     "comprador.fecha_servicio": "",
                     "comprador.hora_desde": "",

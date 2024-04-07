@@ -8,8 +8,8 @@ import boto3
 from datetime import datetime
 import pytz
 
-from db.get_store_uuid import get_all_stores_uuid
-from db.get_store import get_store
+from rds.get_store_uuid import get_all_stores_uuid
+from rds.get_store import get_store
 
 
 logger = logging.getLogger()
