@@ -69,7 +69,6 @@ def process_orders(store):
                 # Add the number of orders in each CSV to the total orders count
                 total_orders_count += len(csv_output.splitlines()) - 1  # Subtracting 1 for header
 
-
         missing_products_email = get_parameter('to_email')
         # Send the unadded products by email.
         if all_not_added_products:

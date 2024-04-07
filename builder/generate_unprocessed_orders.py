@@ -9,10 +9,8 @@ from datetime import datetime
 
 def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_status, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender):
     try:
-        print('Getting table name for product', product)
         # Ensure the DynamoDB table exists
         table_name = get_or_create_table_name(shop)
-        print('Table name:', table_name)
 
         # Check if the product exists in the grouped_data
         if product not in grouped_data:
@@ -62,27 +60,26 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
                     fixy_branch_code,
                     fixy_company,
                     fixy_sender
-                    )
+                )
             else:
                 print('Generando CSV de ordenes no procesadas')
                 csv_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number = generate_csv_from_orders(
                     {product: orders_group},
                     product_attributes
-                    )
+                )
 
-            # Si el output del CSV es 1 (tiene solo el header), significa que no se ha añadido ningún producto.
-            if len(csv_output.splitlines()) <= 1:
-                continue
-
-            # Define filename based on shop, date, and product
-            date_str = datetime.now().strftime('%Y-%m-%d')
-            file_name = f"{shop} - {date_str} - {product} - {index + 1}.csv"
-
-            outputs.append((csv_output, file_name))
+            # Actualizar las listas independientemente de si el CSV se va a generar o no.
             not_added_products.extend(_not_added_products)
             not_added_floor_length.extend(_not_added_floor_length)
             not_added_missing_street_or_number.extend(_not_added_missing_street_or_number)
-            
+
+            # Verificar si se debería continuar para generar un archivo CSV.
+            if len(csv_output.splitlines()) > 1:
+                # Define filename based on shop, date, and product
+                date_str = datetime.now().strftime('%Y-%m-%d')
+                file_name = f"{shop} - {date_str} - {product} - {index + 1}.csv"
+                outputs.append((csv_output, file_name))
+
             # Mark each order as processed only if it's not marked as 'exclude'
             print('Marcando ordenes como procesadas')
             for order in orders_group:
@@ -91,7 +88,6 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
             print('Ordenes marcadas como procesadas')
 
         print('Finalizado generación de CSV de ordenes no procesadas')
-        print('Outputs:', outputs)
         return outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number
 
     except Exception as e:

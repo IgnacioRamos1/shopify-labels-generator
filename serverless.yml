@@ -103,9 +103,9 @@ functions:
               - ShopProcessorQueue
               - Arn
           batchSize: 1  # Procesa un mensaje (tienda) a la vez.
-  
+
   triggerSundayProcessing:
-    handler: cron_handler.trigger_processing
+    handler: sunday_handler.trigger_processing
     timeout: 30
     logRetentionInDays: 5
     environment:
