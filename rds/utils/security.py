@@ -24,4 +24,3 @@ def encrypt_string(string):
 def decrypt_string(encrypted_string_hex):
     encrypted_bytes = binascii.unhexlify(encrypted_string_hex)  # Convertir de hex a bytes
     return box.decrypt(encrypted_bytes).decode()
-

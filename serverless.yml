@@ -86,9 +86,6 @@ functions:
       SQS_QUEUE_NAME: shop-processor-queue-${self:provider.stage}
     events:
       ${self:custom.weeklyCronEvent.${self:provider.stage}}
-    package:
-      include:
-        - db/**
 
   processShop:
     handler: handler.process_shop
