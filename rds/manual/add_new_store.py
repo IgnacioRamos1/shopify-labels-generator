@@ -18,6 +18,7 @@ while choice != "y" and choice != "n":
 while choice == "y":
     # Solicita los datos de la nueva tienda
     name = str(input("Enter the name of the store: "))
+    owner = str(input("Enter the owner of the store: "))
     url = str(input("Enter the URL of the store: "))
     access_token = encrypt_string(str(input("Enter the access token of the store: ")))
     date_input = input("Enter the date of the store (DD-MM-YYYY): ")
@@ -42,6 +43,7 @@ while choice == "y":
     # Crea una nueva instancia de la clase Store con los datos proporcionados
     nueva_tienda = Store(
         name=name,
+        owner=owner,
         url=url,
         access_token=access_token,
         date=date,
