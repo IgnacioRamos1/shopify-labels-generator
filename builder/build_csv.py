@@ -25,7 +25,8 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
             "cod_area_tel(opcional)",
             "tel(opcional)",
             "cod_area_cel(obligatorio)",
-            "cel(obligatorio)"
+            "cel(obligatorio)",
+            "numero_orden(opcional)"
         ]
         not_added_floor_length = []
         not_added_missing_street_or_number = []
