@@ -2,15 +2,15 @@ from builder.build_csv import generate_csv_from_orders
 from fixy_builder.build_fixy_csv import generate_csv_from_orders_for_fixy
 from dynamo_db.dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
 
-from rds.get_all_products import get_all_products_for_store
+from utils.get_all_products import get_all_products_for_store
 
 from datetime import datetime
 
 
-def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_status, fixy_service_id, fixy_client_id, fixy_branch_code, fixy_company, fixy_sender):
+def generate_unprocessed_orders_csv(store, product, grouped_data):
     try:
         # Ensure the DynamoDB table exists
-        table_name = get_or_create_table_name(shop)
+        table_name = get_or_create_table_name(store["name"])
 
         # Check if the product exists in the grouped_data
         if product not in grouped_data:
@@ -36,14 +36,13 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
             return [], [], [], []
 
         # Solo dividir a las órdenes en grupos de 60 si no son Fixy
-        if fixy_status:
+        if store["fixy"]:
             order_groups = [unprocessed_orders]  # Procesa todas las órdenes juntas para Fixy
         else:
             print('Dividiendo ordenes en grupos de 60')
             order_groups = [unprocessed_orders[i:i + 60] for i in range(0, len(unprocessed_orders), 60)]
-
         # Cargar los atributos del producto
-        product_attributes = get_all_products_for_store(shop_id)
+        product_attributes = get_all_products_for_store(store)
         print('Atributos del producto:', product_attributes)
 
         outputs = []
@@ -52,16 +51,16 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
         not_added_missing_street_or_number = []
 
         for index, orders_group in enumerate(order_groups):
-            if fixy_status:
+            if store["fixy"]:
                 print('Generando CSV v2.0 de ordenes no procesadas')
                 csv_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number = generate_csv_from_orders_for_fixy(
                     {product: orders_group},
                     product_attributes,
-                    fixy_service_id,
-                    fixy_client_id,
-                    fixy_branch_code,
-                    fixy_company,
-                    fixy_sender
+                    store["fixy_service_id"],
+                    store["fixy_client_id"],
+                    store["fixy_branch_code"],
+                    store["fixy_company"],
+                    store["fixy_sender"]
                 )
             else:
                 print('Generando CSV de ordenes no procesadas')
@@ -78,7 +77,7 @@ def generate_unprocessed_orders_csv(shop_id, shop, product, grouped_data, fixy_s
             # Verificar si se debería continuar para generar un archivo CSV.
             if len(csv_output.splitlines()) > 1:
                 date_str = datetime.now().strftime('%Y-%m-%d')
-                file_name = f"{shop} - {date_str} - {product} - {index + 1}.csv"
+                file_name = f"{store['name']} - {date_str} - {product} - {index + 1}.csv"
                 outputs.append((csv_output, file_name))
 
             # Mark each order as processed only if it's not marked as 'exclude'

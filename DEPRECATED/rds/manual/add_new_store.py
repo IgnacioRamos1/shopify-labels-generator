@@ -3,8 +3,8 @@ from datetime import datetime
 
 from manual_store import Store
 from utils.db_connection import dev_engine
-from utils.str_to_bool import str_to_bool
-from utils.security import encrypt_string
+from mongo_db.utils.str_to_bool import str_to_bool
+from mongo_db.utils.security import encrypt_string
 
 
 Session = sessionmaker(bind=dev_engine)

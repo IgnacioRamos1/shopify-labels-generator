@@ -8,9 +8,8 @@ import boto3
 from datetime import datetime
 import pytz
 
-from rds.get_store_uuid import get_all_stores_uuid
-from rds.get_store import get_store
-
+from mongo_db.get_stores_id import get_stores_id
+from mongo_db.get_store import get_store
 
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
@@ -34,14 +33,14 @@ def trigger_shop_processing(event, context):
             # Verificar si el día es distinto de viernes o sábado
             if today not in (4, 5):
                 # Obtener la lista de tiendas de la base de datos
-                shop_uuids = get_all_stores_uuid()
+                shop_ids = get_stores_id()
 
                 # Enviar un mensaje a SQS por cada tienda
-                send_messages_to_sqs(shop_uuids)
+                send_messages_to_sqs(shop_ids)
 
                 return {
                     'statusCode': 200,
-                    'body': f"Triggered processing for {len(shop_uuids)} shops."
+                    'body': f"Triggered processing for {len(shop_ids)} shops."
                 }
             else:
                 # No hacer nada si el día es viernes o sábado
@@ -51,14 +50,14 @@ def trigger_shop_processing(event, context):
                 }
         else:
             # Obtener la lista de tiendas de la base de datos
-            shop_uuids = get_all_stores_uuid()
+            shop_ids = get_stores_id()
 
             # Enviar un mensaje a SQS por cada tienda
-            send_messages_to_sqs(shop_uuids)
+            send_messages_to_sqs(shop_ids)
 
             return {
                 'statusCode': 200,
-                'body': f"Triggered processing for {len(shop_uuids)} shops."
+                'body': f"Triggered processing for {len(shop_ids)} shops."
             }
 
     except Exception as e:
@@ -84,9 +83,9 @@ def process_shop(event, context):
         for record in event['Records']:
             print('Inicio de procesamiento de tienda')
             message_body = json.loads(record['body'])
-            shop_uuid = message_body['shop_uuid']
+            shop_id = message_body['shop_id']
 
-            store = get_store(shop_uuid)
+            store = get_store(shop_id)
 
             # Procesar órdenes para esta tienda
             process_orders(store)
@@ -104,7 +103,7 @@ def process_shop(event, context):
         sns_client.publish(
             TopicArn=sns_topic_arn,
             Message=error_message,
-            Subject=f'Error in process_shop function {date} - {store.name}'
+            Subject=f'Error in process_shop function {date} - {store["name"]}'
         )
         return {
             'statusCode': 500,

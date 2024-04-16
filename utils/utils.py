@@ -89,20 +89,20 @@ def get_sqs_queue_url(queue_name):
         raise Exception(f"Error in get_sqs_queue_url function: {e}")
 
 
-def send_messages_to_sqs(shop_uuids):
+def send_messages_to_sqs(shop_ids):
     try:
         sqs = boto3.client('sqs')
         queue_name = os.environ['SQS_QUEUE_NAME']
         queue_url = get_sqs_queue_url(queue_name)
 
         # Dividir shop_names en grupos de 10
-        batches = [shop_uuids[i:i + 10] for i in range(0, len(shop_uuids), 10)]
+        batches = [shop_ids[i:i + 10] for i in range(0, len(shop_ids), 10)]
 
         for batch in batches:
             entries = [{
                 'Id': str(i),
-                'MessageBody': json.dumps({"shop_uuid": uuid})
-            } for i, uuid in enumerate(batch)]
+                'MessageBody': json.dumps({"shop_id": shop_id})
+            } for i, shop_id in enumerate(batch)]
 
             sqs.send_message_batch(QueueUrl=queue_url, Entries=entries)
 

@@ -1,19 +1,9 @@
 import boto3
 from botocore.exceptions import ClientError
-from sqlalchemy.orm import sessionmaker
 
 import sys
 import os
 sys.path.append(os.path.abspath('..'))
-
-
-from manual_store import Store
-from rds.utils.db_connection import dev_engine
-
-Session = sessionmaker(bind=dev_engine)
-
-session = Session()
-
 
 dynamodb_client = boto3.client('dynamodb', region_name='sa-east-1')
 
@@ -53,7 +43,6 @@ def delete_store_dynamo_db(store_name):
             print('------------------------------------')
     
 
-
 def delete_s3_bucket_contents(bucket_name):
     bucket = s3.Bucket(bucket_name)
     bucket.objects.all().delete()
@@ -82,8 +71,6 @@ def delete_store_s3_resources(store_name):
         print('------------------------------------')
 
 
-def delete_aws_resources(session, store_id):
-    store = session.get(Store, store_id)
-
-    delete_store_dynamo_db(store.name)
-    delete_store_s3_resources(store.name)
+def delete_aws_resources(store_name):
+    delete_store_dynamo_db(store_name)
+    delete_store_s3_resources(store_name)
