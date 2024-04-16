@@ -2,7 +2,7 @@ from builder.request_orders import fetch_orders_for_store
 from utils.filter_orders import filter_and_group_by_family
 from utils.send_email import send_products_missing_email, send_zip_email
 from utils.utils import create_zip_in_memory, get_parameter, generate_presigned_url
-from dynamo_db.save_to_bucket import save_to_s3
+from utils.save_to_bucket import save_to_s3
 from builder.generate_unprocessed_orders import generate_unprocessed_orders_csv
 from mongo_db.utils.security import decrypt_string
 

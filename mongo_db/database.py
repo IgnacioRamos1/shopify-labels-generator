@@ -1,6 +1,8 @@
 import pymongo
 import os
 from bson import ObjectId
+from datetime import datetime, timedelta
+
 
 import sys
 import os
@@ -18,6 +20,8 @@ else:
 
     ATLAS_URI = os.getenv('ATLAS_URI')
     DB_NAME = os.getenv('DB_NAME')
+
+stage = os.environ['STAGE']
 
 
 class Database:
@@ -84,4 +88,53 @@ class Database:
     
     def close_connection(self):
         self.client.close()
+
+
+class CacheDatabase:
+    _instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+    def __init__(self):
+        if CacheDatabase._instance is not None:
+            raise Exception("This class is a singleton!")
+        else:
+            CacheDatabase._instance = self
+            self.client = pymongo.MongoClient(ATLAS_URI)
+            self.db = self.client[DB_NAME]
+            self.stores = self.db[f'orders-cache-{stage}']
+            self.ensure_ttl()
+
+    def ensure_ttl(self):
+        # Create TTL index for automatically deleting documents after 30 days
+        self.stores.create_index("orders.expiry_date", expireAfterSeconds=30*24*3600)
+
+    def check_store_exists(self, store_name):
+        return self.stores.find_one({'store_name': store_name}) is not None
+
+    def add_store(self, store_name):
+        self.stores.insert_one({'store_name': store_name, 'orders': []})
+        print('Store added successfully')
     
+    def check_order_processed(self, store_name, order_id, product_id):
+        store = self.stores.find_one({'store_name': store_name, 'orders.order_id': order_id, 'orders.product_id': product_id})
+        return bool(store)
+
+    def mark_order_as_processed(self, store_name, order_id, product_id):
+        # Preparar la fecha de expiración para la orden
+        expiry_date = datetime.now() + timedelta(days=30)
+        # Preparamos el objeto de la orden que queremos insertar
+        order_data = {
+            'order_id': order_id,
+            'product_id': product_id,
+            'expiry_date': expiry_date
+        }
+        # Intentamos actualizar el documento de la tienda con la nueva orden
+        update_result = self.stores.update_one(
+            {'store_name': store_name},  # Filtro por el nombre de la tienda
+            {'$push': {'orders': order_data}}  # Usamos $push para añadir la orden al array 'orders'
+        )
