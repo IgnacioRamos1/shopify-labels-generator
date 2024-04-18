@@ -72,9 +72,11 @@ class Database:
         self.stores.update_one({'_id': store_id}, {'$push': {'products': product}})
         print(f'Product {product["name"]} added successfully')
     
-    def update_product(self, product_name, product):
-        self.stores.update_one({'products.name': product_name}, {'$set': {'products.$': product}})
-        print(f'Product {product["name"]} updated successfully')
+    def update_product(self, store_id, product):
+        if isinstance(store_id, str):
+            store_id = ObjectId(store_id)
+        self.stores.update_one({'_id': store_id, 'products.name': product['name']}, {'$set': {'products.$': product}})
+        print('Product updated successfully')
 
     def delete_product(self, store_id, product_name):
         if isinstance(store_id, str):
