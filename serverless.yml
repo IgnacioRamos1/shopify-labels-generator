@@ -38,14 +38,6 @@ provider:
           Resource: "*"
         - Effect: Allow
           Action:
-            - secretsmanager:GetSecretValue
-            - secretsmanager:ListSecrets
-            - sqs:SendMessage
-            - sqs:ReceiveMessage
-            - sqs:DeleteMessage
-          Resource: "*"
-        - Effect: Allow
-          Action:
             - sqs:SendMessage
             - sqs:ReceiveMessage
             - sqs:DeleteMessage
@@ -141,18 +133,6 @@ resources:
               Fn::GetAtt:
                 - "ProcessShopLambdaFunction"
                 - "Arn"
-    postgresInstance:
-      Type: 'AWS::RDS::DBInstance'
-      Properties:
-        DBInstanceIdentifier: postgres-shopify-db-${self:provider.stage}
-        PubliclyAccessible: true
-        Engine: postgres
-        EngineVersion: '14.6'
-        DBInstanceClass: db.t4g.micro
-        AllocatedStorage: 20
-        DBName: ${ssm:/${self:provider.stage}_db_name}
-        MasterUsername: ${ssm:/${self:provider.stage}_db_username}
-        MasterUserPassword: ${ssm:/${self:provider.stage}_db_password}
 
 plugins:
   - serverless-python-requirements
