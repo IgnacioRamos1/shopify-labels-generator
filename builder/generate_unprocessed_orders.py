@@ -1,8 +1,6 @@
 from builder.build_csv import generate_csv_from_orders
 from fixy_builder.build_fixy_csv import generate_csv_from_orders_for_fixy
-# from dynamo_db.dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
-from mongo_db.cache.get_or_create_table_name import get_or_create_table_name
-from mongo_db.database import CacheDatabase
+from dynamo_db.dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
 
 from utils.get_all_products import get_all_products_for_store
 
@@ -11,12 +9,8 @@ from datetime import datetime
 
 def generate_unprocessed_orders_csv(store, product, grouped_data):
     try:
-
-        db = CacheDatabase.get_instance()
-
         # Ensure the DynamoDB table exists
         table_name = get_or_create_table_name(store["name"])
-        print('Table name:', table_name)
 
         # Check if the product exists in the grouped_data
         if product not in grouped_data:
@@ -27,7 +21,7 @@ def generate_unprocessed_orders_csv(store, product, grouped_data):
         print('Checking if order has been processed')
         for order in grouped_data[product]:
             if order["item_id"]:
-                is_processed = db.check_order_processed(table_name, order["order_id"], order["item_id"])
+                is_processed = check_order_processed(table_name, order["order_id"], order["item_id"])
                 # If the order has not been processed, add it to the list
                 if not is_processed:
                     unprocessed_orders.append(order)
@@ -42,7 +36,7 @@ def generate_unprocessed_orders_csv(store, product, grouped_data):
             return [], [], [], []
 
         # Solo dividir a las órdenes en grupos de 60 si no son Fixy
-        if store["fixy"]:
+        if store["fixy"] == "True":
             order_groups = [unprocessed_orders]  # Procesa todas las órdenes juntas para Fixy
         else:
             print('Dividiendo ordenes en grupos de 60')
@@ -56,7 +50,7 @@ def generate_unprocessed_orders_csv(store, product, grouped_data):
         not_added_missing_street_or_number = []
 
         for index, orders_group in enumerate(order_groups):
-            if store["fixy"]:
+            if store["fixy"] == "True":
                 print('Generando CSV v2.0 de ordenes no procesadas')
                 csv_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number = generate_csv_from_orders_for_fixy(
                     {product: orders_group},
@@ -89,7 +83,7 @@ def generate_unprocessed_orders_csv(store, product, grouped_data):
             print('Marcando ordenes como procesadas')
             for order in orders_group:
                 if not order.get('exclude', False):
-                    db.mark_order_as_processed(table_name, order["order_id"], order["item_id"])
+                    mark_order_as_processed(table_name, order["order_id"], order["item_id"])
             print('Ordenes marcadas como procesadas')
 
         print('Finalizado generación de CSV de ordenes no procesadas')

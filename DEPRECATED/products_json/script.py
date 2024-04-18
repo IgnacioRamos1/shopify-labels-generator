@@ -6,18 +6,11 @@ import sys
 import os
 sys.path.append(os.path.abspath('..'))
 
+from dotenv import load_dotenv
+load_dotenv()
 
-if 'AWS_EXECUTION_ENV' in os.environ:
-    from utils.utils import get_parameter
-    ATLAS_URI = get_parameter('shopify_atlas_uri')
-    DB_NAME = get_parameter('shopify_db_name')
-
-else:
-    from dotenv import load_dotenv
-    load_dotenv()
-
-    ATLAS_URI = os.getenv('ATLAS_URI')
-    DB_NAME = os.getenv('DB_NAME')
+ATLAS_URI = os.getenv('ATLAS_URI')
+DB_NAME = os.getenv('DB_NAME')
 
 
 class Database:
@@ -84,4 +77,37 @@ class Database:
     
     def close_connection(self):
         self.client.close()
-    
+
+
+
+
+# We need to access the aws_secrets.json file
+import json
+
+
+with open('Zafiro Store_products.json') as f:
+    secrets = json.load(f)
+
+
+# Secrets is a dictionary that has the product id as the key and as the value it has a list of dictionaries with the product information
+# We need to iterate over the dictionary and add each product to the database
+
+store_id = '661effd6999ddeea6cee4e5e'
+
+database = Database.get_instance()
+
+for product_id, product_list in secrets.items():
+    for product in product_list:
+        new_product = {
+            'id': product_id,
+            'name': product['nombre'],
+            'type': product['tipo_producto'],
+            'width': product['largo'],
+            'height': product['ancho'],
+            'length': product['alto'],
+            'weight': product['peso'],
+            'price': product['precio']
+        }
+        database.add_product(store_id, new_product)
+
+

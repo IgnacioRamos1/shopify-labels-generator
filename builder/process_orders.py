@@ -7,6 +7,7 @@ from builder.generate_unprocessed_orders import generate_unprocessed_orders_csv
 from mongo_db.utils.security import decrypt_string
 
 from datetime import datetime
+import time
 import os
 
 stage = os.environ['STAGE']
@@ -40,6 +41,8 @@ def process_orders(store):
         all_not_added_missing_street_or_number = []
         in_memory_csvs = {}
 
+        time1 = time.time()
+
         # Generate a CSV file for each product.
         for product in grouped_orders:
             outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(store, product, grouped_orders)
@@ -54,6 +57,8 @@ def process_orders(store):
                 in_memory_csvs[file_name] = csv_output
                 # Add the number of orders in each CSV to the total orders count
                 total_orders_count += len(csv_output.splitlines()) - 1  # Subtracting 1 for header
+        
+        print('Tiempo de generacion de CSVs:', time.time() - time1)
 
         missing_products_email = get_parameter('to_email')
         # Send the unadded products by email.
