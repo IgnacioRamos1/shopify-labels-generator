@@ -1,10 +1,10 @@
 from datetime import datetime
-from database import Database
 
 import sys
 import os
 sys.path.append(os.path.abspath('..'))
 
+from database import Database
 from utils.security import encrypt_string
 from utils.str_to_bool import str_to_bool
 

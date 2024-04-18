@@ -1,10 +1,10 @@
-from database import Database
-from select_store import select_store
 
 import sys
 import os
 sys.path.append(os.path.abspath('../..'))
 
+from database import Database
+from select_store import select_store
 
 from resources.delete_aws_resources_for_store import delete_aws_resources
 
