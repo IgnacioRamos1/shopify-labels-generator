@@ -28,10 +28,8 @@ def filter_and_group_by_family(orders):
 
             # Iterate through items in the order
             for item in order['items']:
-                item_name = clean_text(item['item'])
-                if item_name not in family_group:
-                    # If the item name is not in the dictionary, add it and initialize it as an empty list
-                    family_group[item_name] = []
+                if item['item_id'] not in family_group:
+                    family_group[item['item_id']] = []
 
                 # Append the order information to the list
                 order_info = {
@@ -44,7 +42,7 @@ def filter_and_group_by_family(orders):
                     **customer_info,  # Include customer information in the order details
                 }
 
-                family_group[item_name].append(order_info)
+                family_group[item['item_id']].append(order_info)
 
         print('Finished filter_and_group_by_family function')
         return family_group

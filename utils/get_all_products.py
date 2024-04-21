@@ -1,8 +1,6 @@
 
 
 def get_all_products_for_store(store):
-    print("Getting all products for store with ID:", store["name"])
-
     products_dict = {}
     products = store["products"]
     for product in products:
@@ -32,5 +30,4 @@ def get_all_products_for_store(store):
                 "weight": product["weight"],
                 "price": product["price"]
             })
-    print("Products retrieved successfully!")
     return products_dict

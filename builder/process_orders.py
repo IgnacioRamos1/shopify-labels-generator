@@ -44,8 +44,8 @@ def process_orders(store):
         time1 = time.time()
 
         # Generate a CSV file for each product.
-        for product in grouped_orders:
-            outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(store, product, grouped_orders)
+        for product_id in grouped_orders:
+            outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(store, product_id, grouped_orders)
 
             # Add the products and orders not added to the global lists
             all_not_added_products.extend(not_added_products)

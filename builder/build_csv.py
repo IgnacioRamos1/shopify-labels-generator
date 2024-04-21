@@ -33,7 +33,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
         not_added_products = []
         formatted_data = pd.DataFrame(columns=columns)
         # Iterate over each product and its orders
-        for product, orders in grouped_orders.items():
+        for product_id, orders in grouped_orders.items():
             # Iterate over each order
             for order in orders:
                 # Check if street or number is missing
@@ -72,10 +72,10 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                     }
                     not_added_products.append(product)
                     # Mark all orders for this product as 'exclude'
-                    for single_order in grouped_orders[product['item']]:
+                    for single_order in grouped_orders[product['item_id']]:
                         single_order['exclude'] = True
                     continue
-
+                
                 if len(attributes_list) == 1:
                     attributes = attributes_list[0]
                 else:
@@ -92,7 +92,7 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                         not_added_products.append(product)
 
                         # Mark all orders for this product as 'exclude'
-                        for single_order in grouped_orders[product['item']]:
+                        for single_order in grouped_orders[product['item_id']]:
                             single_order['exclude'] = True
                         continue
 
@@ -123,7 +123,14 @@ def generate_csv_from_orders(grouped_orders, product_attributes):
                 formatted_data.loc[len(formatted_data)] = row_data
 
         output = formatted_data.to_csv(index=False, sep=';')
-        return output, not_added_products, not_added_floor_length, not_added_missing_street_or_number
+
+        for product_id, orders in grouped_orders.items():
+            for order in orders:
+                product_name = f"{clean_text(order['item'])}"
+                break
+            break
+        
+        return output, not_added_products, not_added_floor_length, not_added_missing_street_or_number, product_name
 
     except Exception as e:
         raise Exception(f"Error in generate_csv_from_orders function: {e}")
