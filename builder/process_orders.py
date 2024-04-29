@@ -26,7 +26,6 @@ def process_orders(store):
 
         print('Agrupando ordenes')
         grouped_orders = filter_and_group_by_family(total_orders)
-        print(grouped_orders)
         print('Fin de agrupamiento de ordenes')
 
         from_email = get_parameter('from_email')
