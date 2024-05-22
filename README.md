@@ -1,20 +1,20 @@
 # Shopify Labels Generator
 
-### Introduction
+## Introduction
 
 This project aims to automate the process of creating CSV files for Correo Argentino and Fixy containing the orders for all Shopify stores. Additionally, it includes new store additions to enhance the functionality of the project.
 
-### Workflow Diagram
+## Workflow Diagram
 
 To visualize the workflow of the project, refer to the following diagram: [Workflow Diagram](https://app.eraser.io/workspace/ZBk8qkWx9FUNUjj43sqO)
 
-### Automated Order Processing Software
+## Automated Order Processing Software
 
 I developed a software that handles the daily task of retrieving unfulfilled orders from each business and generates labels for each order. This automation streamlines a process that was previously done manually. I successfully scaled this project to work with 12 local businesses currently.
 
 For the development of this project, I utilized AWS cloud services. Specifically, I used Lambdas with cron jobs for daily execution due to their low costs and high scalability. I utilized SQS to send messages with all the stores to execute, ensuring that each store runs on a separate instance of each Lambda. CloudWatch logs were employed for logging purposes, while S3 buckets served as backups for each store. DynamoDB acted as a cache to prevent the repetition of labels that had already been processed. IAM roles were utilized for Lambda permissions, and MongoDB was used to securely store encrypted information for each store. Finally, the deployment was facilitated using Serverless.
 
-### New Store Additions
+## New Store Additions
 
 1. **Company Field Addition**: A new field, "Company," has been added to the page.
 2. **Checkout Placeholder Modification**:
