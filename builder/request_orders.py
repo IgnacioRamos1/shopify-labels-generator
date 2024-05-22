@@ -62,15 +62,23 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
         for order in all_orders:
             try:
                 order_dict = {}
-                order_dict['first_name'] = order['shipping_address']['first_name']
-                order_dict['last_name'] = order['shipping_address']['last_name']
-                order_dict['street'] = order['shipping_address']['company']
-                order_dict['number'] = order['shipping_address']['address1']
-                order_dict['apartment'] = order['shipping_address']['address2']
-                order_dict['city'] = order['shipping_address']['city']
-                order_dict['province_code'] = order['shipping_address']['province_code']
-                order_dict['country'] = order['shipping_address']['country']
-                order_dict['zip_code'] = order['shipping_address']['zip']
+                shipping_address = order.get('shipping_address', {})
+                customer = order.get('customer', {})
+
+                if not shipping_address or not customer:
+                    error_counter += 1
+                    print(f"Error procesando el pedido {order.get('id', 'Desconocido')}: falta información de dirección o cliente")
+                    continue
+                
+                order_dict['first_name'] = customer.get('first_name', '')
+                order_dict['last_name'] = customer.get('last_name', '')
+                order_dict['street'] = shipping_address.get('company', '')
+                order_dict['number'] = shipping_address.get('address1', '')
+                order_dict['apartment'] = shipping_address.get('address2', '')
+                order_dict['city'] = shipping_address.get('city', '')
+                order_dict['province_code'] = shipping_address.get('province_code', '')
+                order_dict['country'] = shipping_address.get('country', '')
+                order_dict['zip_code'] = shipping_address.get('zip', '')
                 
                 if not order['shipping_address'].get('phone'):
                     order_dict['phone'] = '0'

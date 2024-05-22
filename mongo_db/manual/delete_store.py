@@ -1,11 +1,11 @@
 
 import sys
 import os
-sys.path.append(os.path.abspath('../..'))
+sys.path.append(os.path.abspath('..'))
 
 from database import Database
 from select_store import select_store
-
+sys.path.append(os.path.abspath('../..'))
 from resources.delete_aws_resources_for_store import delete_aws_resources
 
 
@@ -15,9 +15,8 @@ def delete_store(database):
     choice = input(f'Are you sure you want to delete the store {store["name"]}? (y/n): ')
 
     if choice == 'y':
-        database.delete_store(store['_id'])
         delete_aws_resources(store['name'])
-
+        database.delete_store(store['_id'])
 
 
 if __name__ == '__main__':

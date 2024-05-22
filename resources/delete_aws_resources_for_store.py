@@ -23,6 +23,8 @@ def table_exists(table_name):
 
 
 def delete_store_dynamo_db(store_name):
+    store_name = store_name.replace(" ", "_")
+
     table_names = [
         f"{store_name}_order_cache_dev",
         f"{store_name}_order_cache_prod"
