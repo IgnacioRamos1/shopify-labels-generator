@@ -55,7 +55,7 @@ def send_zip_email(from_email, to_email, cc_email, dev_email, shop, date, s3_pre
 
         if stage == 'dev':
             to_email = 'iramosibx@gmail.com'
-            cc_email = 'iramosibx@gmail.com'
+            cc_email = ['iramosibx@gmail.com']
 
         ses = boto3.client('ses', region_name='sa-east-1')
 
@@ -78,7 +78,9 @@ def send_zip_email(from_email, to_email, cc_email, dev_email, shop, date, s3_pre
             body += "\nErrores en la calle o número:\n"
             body += "\n".join([f"{order['person']} - {order['item']} - {order['reason']}" for order in street_number_errors])
         
-
+        if isinstance(cc_email, str):
+            cc_email = [cc_email]
+        
         cc_email_str = ', '.join(cc_email)
 
         msg = {
