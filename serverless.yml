@@ -93,16 +93,6 @@ functions:
               - Arn
           batchSize: 1  # Procesa un mensaje (tienda) a la vez.
 
-  triggerSundayProcessing:
-    handler: sunday_handler.trigger_processing
-    timeout: 30
-    logRetentionInDays: 5
-    environment:
-      STAGE: ${self:provider.stage}
-      SQS_QUEUE_NAME: shop-processor-queue-${self:provider.stage}
-    events:
-      ${self:custom.sundayCronEvent.${self:provider.stage}}
-
 resources:
   Resources:
     ShopProcessorQueue:
@@ -118,9 +108,5 @@ custom:
     requirementsFile: requirements.txt
   weeklyCronEvent:
     prod:
-      - schedule: cron(0 20 ? * MON-SAT *)
-    dev: []
-  sundayCronEvent:
-    prod:
-      - schedule: cron(0 18 ? * SUN *)
+      - schedule: cron(0 18 * * *)
     dev: []
