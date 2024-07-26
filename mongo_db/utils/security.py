@@ -1,26 +1,31 @@
 import os
-from nacl import secret
-import binascii
-
+import base64
+from cryptography.fernet import Fernet
 
 if 'AWS_EXECUTION_ENV' in os.environ:
     from utils.utils import get_parameter
-    hex_key = get_parameter('secret_key')
-
+    key = get_parameter('secret_key')
 else:
     from dotenv import load_dotenv
     load_dotenv()
-    hex_key = os.getenv('SECRET_KEY')
+    key = os.getenv('SECRET_KEY')
 
+if key:
+    key = base64.urlsafe_b64decode(key)
 
-key = binascii.unhexlify(hex_key)
+class TokenEncryptor:
+    def __init__(self, key):
+        self._key = key
+        self.fernet = Fernet(self._key)
 
-box = secret.SecretBox(key)
+    def encrypt_token(self, token):
+        return self.fernet.encrypt(token.encode()).decode()
 
-def encrypt_string(string):
-    encrypted = box.encrypt(string.encode())
-    return binascii.hexlify(encrypted).decode()  # Convertir a hexadecimal para almacenar como str
+    def decrypt_token(self, encrypted_token):
+        return self.fernet.decrypt(encrypted_token.encode()).decode()
 
-def decrypt_string(encrypted_string_hex):
-    encrypted_bytes = binascii.unhexlify(encrypted_string_hex)  # Convertir de hex a bytes
-    return box.decrypt(encrypted_bytes).decode()
+    @property
+    def key(self):
+        return self._key
+
+encryptor = TokenEncryptor(key)

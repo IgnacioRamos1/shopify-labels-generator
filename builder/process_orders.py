@@ -4,7 +4,7 @@ from utils.send_email import send_products_missing_email, send_zip_email
 from utils.utils import create_zip_in_memory, get_parameter, generate_presigned_url
 from utils.save_to_bucket import save_to_s3
 from builder.generate_unprocessed_orders import generate_unprocessed_orders_csv
-from mongo_db.utils.security import decrypt_string
+from mongo_db.utils.security import encryptor
 
 from datetime import datetime
 import time
@@ -18,7 +18,7 @@ def process_orders(store):
         print('Iniciando proceso de ordenes para', store["name"])
         date = datetime.now().strftime('%Y-%m-%d')
 
-        access_token = decrypt_string(store["access_token"])
+        access_token = encryptor.decrypt_token(store["access_token"])
         
         print('Inicio de recuperacion de ordenes')    
         total_orders = fetch_orders_for_store(store["name"], store["url"], access_token, store["date"])

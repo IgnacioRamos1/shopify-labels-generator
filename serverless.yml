@@ -5,6 +5,9 @@ provider:
   runtime: python3.11
   stage: ${opt:stage}
   region: sa-east-1
+  layers:
+    - arn:aws:lambda:sa-east-1:770693421928:layer:Klayers-p311-pandas:11
+    - arn:aws:lambda:sa-east-1:770693421928:layer:Klayers-p311-cryptography:9
   iam:
     role:
       statements:
@@ -67,6 +70,7 @@ package:
   exclude:
     - .env
     - DEPRECATED/**
+    - mongo_db/manual
 
 functions:
   triggerProcessing:
@@ -81,7 +85,7 @@ functions:
 
   processShop:
     handler: handler.process_shop
-    timeout: 30
+    timeout: 120
     logRetentionInDays: 5
     environment:
       STAGE: ${self:provider.stage}
@@ -99,6 +103,7 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: shop-processor-queue-${self:provider.stage}
+        VisibilityTimeout: 150
 
 plugins:
   - serverless-python-requirements
