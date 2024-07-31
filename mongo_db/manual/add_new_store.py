@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.abspath('..'))
 
 from database import Database
-from utils.security import encrypt_string
+from utils.security import encryptor
 from utils.str_to_bool import str_to_bool
 
 
@@ -18,7 +18,7 @@ def add_new_store():
         store_name = input('Enter the name of the store: ')
         owner_name = input('Enter the name of the store owner: ')
         store_url = input('Enter the URL of the store: ')
-        access_token = encrypt_string(input('Enter the access token of the store: '))
+        access_token = encryptor.encrypt_token(input('Enter the access token of the store: '))
         date_input = input('Enter the date of creation (DD-MM-YYYY): ')
         date = datetime.strptime(date_input, '%d-%m-%Y')
         to_email = input('Enter the email to send notifications to: ')
