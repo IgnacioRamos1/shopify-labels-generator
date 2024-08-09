@@ -30,8 +30,8 @@ def trigger_shop_processing(event, context):
             # Obtener el día de la semana actual en UTC-3
             today = datetime.now(tz=pytz.timezone('America/Argentina/Buenos_Aires')).weekday()
 
-            # Verificar si el día es distinto de viernes o sábado
-            if today not in (4, 5):
+            # Verificar si el día es distinto de sábado
+            if today != 5:
                 # Obtener la lista de tiendas de la base de datos
                 shop_ids = get_stores_id()
 
