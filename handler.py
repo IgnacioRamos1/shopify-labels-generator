@@ -5,7 +5,7 @@ import os
 import json
 import logging
 import boto3
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 
 from mongo_db.get_stores_id import get_stores_id
@@ -25,29 +25,39 @@ sns_topic_arn = f'arn:aws:sns:sa-east-1:421852645480:LambdaErrorNotifications-{s
 def trigger_shop_processing(event, context):
     try:
         print('Inicio de trigger_shop_processing')
-        # Verificar si el stage es prod
         if stage == 'prod':
-            # Obtener el día de la semana actual en UTC-3
-            today = datetime.now(tz=pytz.timezone('America/Argentina/Buenos_Aires')).weekday()
+            # Obtener la fecha y hora actuales en UTC-3 (Buenos Aires)
+            now = datetime.now(tz=pytz.timezone('America/Argentina/Buenos_Aires'))
+            today = now.weekday()  # 0: Lunes, ..., 6: Domingo
+            current_time = now.strftime('%H:%M')
+            current_time_obj = datetime.strptime(current_time, '%H:%M')
+            
+            # Obtener la lista de tiendas de la base de datos
+            shop_ids = get_stores_id()
 
-            # Verificar si el día es distinto de sábado
-            if today != 5:
-                # Obtener la lista de tiendas de la base de datos
-                shop_ids = get_stores_id()
+            shops_to_process = []
+            
+            for shop_id in shop_ids:
+                store = get_store(shop_id)
+                execution_schedule = store.get('execution_schedule', [])
+                
+                for schedule in execution_schedule:
+                    # Verificar si hoy es uno de los días de ejecución
+                    if schedule['day'] == today:
+                        for hour in schedule['hours']:
+                            scheduled_time_obj = datetime.strptime(hour, '%H:%M')
+                            time_difference = current_time_obj - scheduled_time_obj
+                            if timedelta(minutes=0) <= time_difference <= timedelta(minutes=10): # 10 minutos de margen
+                                shops_to_process.append(shop_id)
+                                break
+            
+            # Enviar un mensaje a SQS por cada tienda a procesar
+            send_messages_to_sqs(shops_to_process)
 
-                # Enviar un mensaje a SQS por cada tienda
-                send_messages_to_sqs(shop_ids)
-
-                return {
-                    'statusCode': 200,
-                    'body': f"Triggered processing for {len(shop_ids)} shops."
-                }
-            else:
-                # No hacer nada si el día es viernes o sábado
-                return {
-                    'statusCode': 200,
-                    'body': f"No processing triggered for today."
-                }
+            return {
+                'statusCode': 200,
+                'body': f"Triggered processing for {len(shops_to_process)} shops."
+            }
         else:
             # Obtener la lista de tiendas de la base de datos
             shop_ids = get_stores_id()
@@ -77,7 +87,7 @@ def trigger_shop_processing(event, context):
         }
 
 
-def process_shop(event, context):
+def process_shop(event, context): 
     try:
         # Procesar cada mensaje en el evento de SQS
         for record in event['Records']:

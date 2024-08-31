@@ -113,5 +113,5 @@ custom:
     requirementsFile: requirements.txt
   weeklyCronEvent:
     prod:
-      - schedule: cron(0 18 * * ? *)
+      - schedule: cron(0 * * * ? *)
     dev: []
