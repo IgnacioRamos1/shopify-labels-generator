@@ -1,5 +1,4 @@
 import requests
-from datetime import datetime
 from utils.utils import ApiException
 import re
 
@@ -27,8 +26,10 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
         orders = response.json().get('orders', [])
         all_orders.extend(orders)
 
-        if response.status_code != 200 or not orders:
+        if response.status_code != 200:
             raise ApiException(f"Error fetching orders for {shop_name}: {response.text}")
+        if not orders:
+            return None        
 
         while True:
             if response.headers.get('link'):

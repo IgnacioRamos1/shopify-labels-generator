@@ -24,6 +24,10 @@ def process_orders(store):
         total_orders = fetch_orders_for_store(store["name"], store["url"], access_token, store["date"])
         print('Fin de recuperacion de ordenes')
 
+        if not total_orders:
+            print('No hay ordenes para procesar')
+            return
+
         print('Agrupando ordenes')
         grouped_orders = filter_and_group_by_family(total_orders)
         # Manejo de la familia "multiple_orders"
