@@ -26,6 +26,20 @@ def process_orders(store):
 
         print('Agrupando ordenes')
         grouped_orders = filter_and_group_by_family(total_orders)
+        # Manejo de la familia "multiple_orders"
+        if "multiple_orders" in grouped_orders:
+            multiple_orders_list = grouped_orders.pop("multiple_orders")
+            grouped_orders_with_id = {**grouped_orders}  # Clonar el diccionario existente
+
+            # Asegúrate de que "multiple_orders" sea un diccionario antes de fusionarlo
+            if isinstance(multiple_orders_list, list):
+                multiple_orders_dict = {"multiple_orders": multiple_orders_list}
+                grouped_orders_with_id = {**grouped_orders_with_id, **multiple_orders_dict}
+            else:
+                raise ValueError(f"Expected 'multiple_orders' to be a list, but got {type(multiple_orders_list).__name__}")
+        else:
+            grouped_orders_with_id = grouped_orders  # Usar el diccionario original si no hay "multiple_orders"
+
         print('Fin de agrupamiento de ordenes')
 
         from_email = get_parameter('from_email')
@@ -42,21 +56,25 @@ def process_orders(store):
 
         time1 = time.time()
 
-        # Generate a CSV file for each product.
-        for product_id in grouped_orders:
-            outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number = generate_unprocessed_orders_csv(store, product_id, grouped_orders)
+        # Generate a CSV file for each product, incluyendo la familia "multiple_orders".
+        if isinstance(grouped_orders_with_id, dict):
+            for product_id, orders in grouped_orders_with_id.items():
+                outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number, product_name = generate_unprocessed_orders_csv(store, product_id, {product_id: orders})
 
-            # Add the products and orders not added to the global lists
-            all_not_added_products.extend(not_added_products)
-            all_not_added_floor_length.extend(not_added_floor_length)
-            all_not_added_missing_street_or_number.extend(not_added_missing_street_or_number)
+                # Add the products and orders not added to the global lists
+                all_not_added_products.extend(not_added_products)
+                all_not_added_floor_length.extend(not_added_floor_length)
+                all_not_added_missing_street_or_number.extend(not_added_missing_street_or_number)
 
-            # Iterate through each output CSV from the current product and add it to the in-memory CSVs dictionary.
-            for csv_output, file_name in outputs:
-                in_memory_csvs[file_name] = csv_output
-                # Add the number of orders in each CSV to the total orders count
-                total_orders_count += len(csv_output.splitlines()) - 1  # Subtracting 1 for header
-        
+                # Iterate through each output CSV from the current product and add it to the in-memory CSVs dictionary.
+                for csv_output, file_name in outputs:
+                    in_memory_csvs[file_name] = csv_output
+                    # Add the number of orders in each CSV to the total orders count
+                    total_orders_count += len(csv_output.splitlines()) - 1  # Subtracting 1 for header
+        else:
+            raise ValueError(f"Expected grouped_orders_with_id to be a dictionary, but got {type(grouped_orders_with_id).__name__}")
+
+
         print('Tiempo de generacion de CSVs:', time.time() - time1)
 
         missing_products_email = get_parameter('to_email')

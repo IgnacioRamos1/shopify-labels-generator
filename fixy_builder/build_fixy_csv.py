@@ -52,12 +52,12 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
         not_added_missing_street_or_number = []
         not_added_products = []
         formatted_data = pd.DataFrame(columns=columns)
+        multiple_orders_data = pd.DataFrame(columns=columns)
 
         order_counter = 0
 
         # Iterate over each product and its orders
         for product_id, orders in grouped_orders.items():
-            # Iterate over each order
             for order in orders:
                 # Check if street or number is missing
                 if not clean_text(order.get("street")) or not clean_text(order.get("number")):
@@ -70,6 +70,7 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                     not_added_missing_street_or_number.append(product)
                     order['exclude'] = True
                     continue
+
                 # Check if the product is in the JSON
                 attributes_list = product_attributes.get(str(order['item_id']))
                 if not attributes_list:
@@ -85,11 +86,11 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                     for single_order in grouped_orders[product['item_id']]:
                         single_order['exclude'] = True
                     continue
+
                 if len(attributes_list) == 1:
                     attributes = attributes_list[0]
                 else:
-                    # Check if the product name matches the JSON
-                    attributes = next((attr for attr in attributes_list if print("Comparando con:", attr['name']) or attr['name'] == clean_text(order['item'])), None)
+                    attributes = next((attr for attr in attributes_list if attr['name'] == clean_text(order['item'])), None)
                     if not attributes:
                         reason = "No matching attribute found for product name"
                         product = {
@@ -99,14 +100,13 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                             'reason': reason
                         }
                         not_added_products.append(product)
-
-                        # Mark all orders for this product as 'exclude'
                         for single_order in grouped_orders[product['item_id']]:
                             single_order['exclude'] = True
                         continue
 
                 order_counter += 1
 
+                # Prepare the row for a single product
                 row_data = {
                     "tipo_operacion": "ENTREGA",
                     "sector": "OP",
@@ -153,18 +153,40 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                     row_data["comprador.other_info"] = ""
                     row_data["comprador.piso"] = apartment
 
-                # Add the row to the DataFrame
+                # Add the row to the single-product DataFrame
                 formatted_data.loc[len(formatted_data)] = row_data
 
-        output = formatted_data.to_csv(index=False, sep=';')
+                # Handle multiple orders for the same buyer
+                buyer_orders = multiple_orders_data[
+                    (multiple_orders_data['comprador.apellido_nombre'] == row_data['comprador.apellido_nombre']) &
+                    (multiple_orders_data['comprador.calle'] == row_data['comprador.calle']) &
+                    (multiple_orders_data['comprador.altura'] == row_data['comprador.altura'])
+                ]
+
+                if not buyer_orders.empty:
+                    # If there are existing orders for the buyer, update the existing row
+                    existing_index = buyer_orders.index[0]
+                    multiple_orders_data.at[existing_index, 'datosEnvios.peso'] = round(
+                        multiple_orders_data.at[existing_index, 'datosEnvios.peso'] + row_data['datosEnvios.peso'],
+                        2
+                    )
+                    multiple_orders_data.at[existing_index, 'datosEnvios.observaciones'] += f", {order['item']}"
+                else:
+                    # Otherwise, add a new row for the buyer
+                    row_data['datosEnvios.observaciones'] = order['item']
+                    multiple_orders_data.loc[len(multiple_orders_data)] = row_data
+
+        # Convert DataFrames to CSV strings
+        single_product_output = formatted_data.to_csv(index=False, sep=';')
+        multiple_orders_output = multiple_orders_data.to_csv(index=False, sep=';')
 
         for product_id, orders in grouped_orders.items():
             for order in orders:
                 product_name = f"{clean_text(order['item'])}"
                 break
             break
-        
-        return output, not_added_products, not_added_floor_length, not_added_missing_street_or_number, product_name
+
+        return single_product_output, multiple_orders_output, not_added_products, not_added_floor_length, not_added_missing_street_or_number, product_name
 
     except Exception as e:
         raise Exception(f"Error in generate_csv_from_orders function: {e}")
