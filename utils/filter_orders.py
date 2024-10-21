@@ -26,6 +26,7 @@ def filter_and_group_by_family(orders):
                 'country': order['country'],
                 'zip_code': order['zip_code'],
                 'phone': order['phone'],
+                'order_number': order['order_number'],
             }
 
             # Check if the order contains multiple items

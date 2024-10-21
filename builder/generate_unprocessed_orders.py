@@ -1,4 +1,5 @@
 from builder.build_csv import generate_csv_from_orders
+from builder.build_oca_csv import generate_csv_from_orders_for_oca
 from fixy_builder.build_fixy_csv import generate_csv_from_orders_for_fixy
 from dynamo_db.dynamodb_cache import check_order_processed, mark_order_as_processed, get_or_create_table_name
 
@@ -36,7 +37,7 @@ def generate_unprocessed_orders_csv(store, product_id, grouped_data):
         if not unprocessed_orders:
             return [], [], [], [], product_name
 
-        if store["fixy"] == "True":
+        if store["type"] == "Fixy":
             order_groups = [unprocessed_orders]
         else:
             order_groups = [unprocessed_orders[i:i + 60] for i in range(0, len(unprocessed_orders), 60)]
@@ -47,9 +48,10 @@ def generate_unprocessed_orders_csv(store, product_id, grouped_data):
         not_added_products = []
         not_added_floor_length = []
         not_added_missing_street_or_number = []
+        print('type', store["type"])
 
         for index, orders_group in enumerate(order_groups):
-            if store["fixy"] == "True":
+            if store["type"] == "Fixy":
                 csv_output, multiple_orders_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number, product_name = generate_csv_from_orders_for_fixy(
                     {product_id: orders_group},
                     product_attributes,
@@ -59,7 +61,15 @@ def generate_unprocessed_orders_csv(store, product_id, grouped_data):
                     store["fixy_company"],
                     store["fixy_sender"]
                 )
+            elif store["type"] == "Oca":
+                print('entre a oca')
+                csv_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number, product_name = generate_csv_from_orders_for_oca(
+                    {product_id: orders_group},
+                    product_attributes
+                )
+                multiple_orders_output = ""
             else:
+                print('entre a otros')
                 csv_output, _not_added_products, _not_added_floor_length, _not_added_missing_street_or_number, product_name = generate_csv_from_orders(
                     {product_id: orders_group},
                     product_attributes

@@ -60,6 +60,8 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
         all_orders_info = []
         error_counter = 0
 
+        print(all_orders[0])
+
         for order in all_orders:
             try:
                 order_dict = {}
@@ -98,6 +100,7 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
                         'email': order['customer']['email'] if order.get('customer') else '',
                     }
                     order_items.append(item_info)
+                order_dict['order_number'] = order.get('order_number', '')
 
                 order_dict['items'] = order_items  # Agregar la lista de elementos al diccionario principal
                 all_orders_info.append(order_dict)  # Agregar el diccionario al listado de todas las órdenes

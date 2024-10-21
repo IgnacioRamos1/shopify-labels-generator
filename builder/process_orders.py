@@ -24,6 +24,8 @@ def process_orders(store):
         total_orders = fetch_orders_for_store(store["name"], store["url"], access_token, store["date"])
         print('Fin de recuperacion de ordenes')
 
+        print(total_orders)
+
         if not total_orders:
             print('No hay ordenes para procesar')
             return
