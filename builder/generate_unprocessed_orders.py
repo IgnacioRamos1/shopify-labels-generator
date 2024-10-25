@@ -48,7 +48,6 @@ def generate_unprocessed_orders_csv(store, product_id, grouped_data):
         not_added_products = []
         not_added_floor_length = []
         not_added_missing_street_or_number = []
-        print('type', store["type"])
 
         for index, orders_group in enumerate(order_groups):
             if store["type"] == "Fixy":

@@ -60,8 +60,6 @@ def fetch_orders_for_store(shop_name, shop_url, access_token, date):
         all_orders_info = []
         error_counter = 0
 
-        print(all_orders[0])
-
         for order in all_orders:
             try:
                 order_dict = {}

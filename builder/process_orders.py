@@ -24,8 +24,6 @@ def process_orders(store):
         total_orders = fetch_orders_for_store(store["name"], store["url"], access_token, store["date"])
         print('Fin de recuperacion de ordenes')
 
-        print(total_orders)
-
         if not total_orders:
             print('No hay ordenes para procesar')
             return
@@ -65,7 +63,11 @@ def process_orders(store):
         # Generate a CSV file for each product, incluyendo la familia "multiple_orders".
         if isinstance(grouped_orders_with_id, dict):
             for product_id, orders in grouped_orders_with_id.items():
-                outputs, not_added_products, not_added_floor_length, not_added_missing_street_or_number, product_name = generate_unprocessed_orders_csv(store, product_id, {product_id: orders})
+                result = generate_unprocessed_orders_csv(store, product_id, {product_id: orders})
+                outputs = result[0]
+                not_added_products = result[1]
+                not_added_floor_length = result[2]
+                not_added_missing_street_or_number = result[3]
 
                 # Add the products and orders not added to the global lists
                 all_not_added_products.extend(not_added_products)
@@ -79,7 +81,6 @@ def process_orders(store):
                     total_orders_count += len(csv_output.splitlines()) - 1  # Subtracting 1 for header
         else:
             raise ValueError(f"Expected grouped_orders_with_id to be a dictionary, but got {type(grouped_orders_with_id).__name__}")
-
 
         print('Tiempo de generacion de CSVs:', time.time() - time1)
 
