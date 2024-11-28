@@ -46,6 +46,7 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
             "datosEnvios.peso",
             "datosEnvios.observaciones",
             "datosEnvios.guiaAgente",
+            "datosEnvios.is_dropoff"
         ]
 
         not_added_floor_length = []
@@ -132,7 +133,6 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                         continue
 
                 order_counter += 1
-
                 # Prepare the row for a single product
                 row_data = {
                     "tipo_operacion": "ENTREGA",
@@ -169,7 +169,8 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                     "datosEnvios.bultos": "1",
                     "datosEnvios.peso": round(attributes["weight"] * order["quantity"], 2),
                     "datosEnvios.observaciones": "",
-                    "datosEnvios.guiaAgente": order_counter
+                    "datosEnvios.guiaAgente": order_counter,
+                    "datosEnvios.is_dropoff": "1"
                 }
 
                 apartment = clean_text(order.get("apartment", ""))

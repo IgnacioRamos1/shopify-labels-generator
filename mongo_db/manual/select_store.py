@@ -8,7 +8,7 @@ def select_store():
     print('Select a store:')
     print('---------------------------------')
     for i, store in enumerate(stores):
-        print(f"{i + 1}. {store['name']}")
+        print(f"{i + 1}. {store['name']} - {store['owner']}")
     print('---------------------------------')
     store_number = int(input('Enter the number of the store: '))
     print('---------------------------------')
