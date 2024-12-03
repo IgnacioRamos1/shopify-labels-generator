@@ -1,6 +1,6 @@
 import boto3
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 
 # Constantes
@@ -9,22 +9,6 @@ stage = os.environ['STAGE']
 
 # Crea el cliente de DynamoDB
 dynamodb_client = boto3.client('dynamodb', region_name=REGION)
-
-
-def set_ttl_for_table(table_name):
-    try:
-        print(f"Setting TTL for table {table_name}...")
-        dynamodb_client.update_time_to_live(
-            TableName=table_name,
-            TimeToLiveSpecification={
-                'Enabled': True,
-                'AttributeName': 'expiry_date'
-            }
-        )
-        print('TTL set successfully!')
-    except Exception as e:
-        raise Exception(f"Error in set_ttl_for_table function: {e}")
-
 
 def create_table(table_name):
     try:
@@ -68,18 +52,13 @@ def create_table(table_name):
             time.sleep(5)  # Pause for 5 seconds before checking again
 
         print('Table created successfully!')
-        # Set TTL for the table
-        set_ttl_for_table(table_name)
-
         return table_name
 
     except Exception as e:
         raise Exception(f"Error in create_table function: {e}")
 
-
 def check_order_processed(table_name, order_id, product_id):
     try:
-        # Check if the item exists in the table
         response = dynamodb_client.get_item(
             TableName=table_name,
             Key={
@@ -87,30 +66,27 @@ def check_order_processed(table_name, order_id, product_id):
                 'product_id': {'S': str(product_id)}
             }
         )
-
-        # Return True if the item exists, False otherwise
+        
         return 'Item' in response
 
     except Exception as e:
         raise Exception(f"Error in check_order_processed function: {e}")
 
-
 def mark_order_as_processed(table_name, order_id, product_id):
     try:
-        # Add the item to the table
-        expiry_date = int((datetime.now() + timedelta(days=30)).timestamp())  # TTL set for 30 days from now
+        current_time = datetime.now()
+        
         dynamodb_client.put_item(
             TableName=table_name,
             Item={
                 'order_id': {'S': str(order_id)},
                 'product_id': {'S': str(product_id)},
-                'expiry_date': {'N': str(expiry_date)}  # New TTL attribute
+                'processed_date': {'S': current_time.isoformat()}
             }
         )
 
     except Exception as e:
         raise Exception(f"Error in mark_order_as_processed function: {e}")
-
 
 def check_table_exists(shop_name):
     try:
@@ -125,7 +101,6 @@ def check_table_exists(shop_name):
 
     except Exception as e:
         raise Exception(f"Error in check_table_exists function: {e}")
-
 
 def get_or_create_table_name(shop_name):
     try:
