@@ -133,6 +133,9 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                         continue
 
                 order_counter += 1
+                # Get the product name for the remito field
+                product_name = clean_text(order['item'])
+                
                 # Prepare the row for a single product
                 row_data = {
                     "tipo_operacion": "ENTREGA",
@@ -145,7 +148,7 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                     "datosEnvios.contrareembolso": str(order["price"]).split(".")[0],
                     "datosEnvios.confirmada": "1",
                     "trabajo": "",
-                    "remito": "",
+                    "remito": product_name,  # Add the product name here
                     "sender.empresa": fixy_company,
                     "sender.remitente": fixy_sender,
                     "sender.calle": "Albarellos",
@@ -200,6 +203,9 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                             2
                         )
                         multiple_orders_data.at[existing_index, 'datosEnvios.observaciones'] += f", {order['item']}"
+                        # Update remito to include all product names
+                        current_remito = multiple_orders_data.at[existing_index, 'remito']
+                        multiple_orders_data.at[existing_index, 'remito'] = f"{current_remito}, {product_name}" if current_remito else product_name
                     else:
                         # Otherwise, add a new row for the buyer
                         row_data['datosEnvios.observaciones'] = order['item']
