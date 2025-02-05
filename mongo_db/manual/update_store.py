@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath('..'))
 
 from database import Database
 from manual.select_store import select_store
-from utils.security import encrypt_string, decrypt_string
+from utils.security import encryptor
 
 
 def update_store():
@@ -17,8 +17,8 @@ def update_store():
 
     while choice != 'q':
         if choice == '1':
-            print(decrypt_string(store['access_token']))
-            new_access_token = encrypt_string(input('Enter the new access token of the store: '))
+            print(encryptor.decrypt_string(store['access_token']))
+            new_access_token = encryptor.encrypt_string(input('Enter the new access token of the store: '))
             print('---------------------------------')
 
             store['access_token'] = new_access_token
