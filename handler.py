@@ -40,6 +40,9 @@ def trigger_shop_processing(event, context):
             for shop_id in shop_ids:
                 store = get_store(shop_id)
                 execution_schedule = store.get('execution_schedule', [])
+
+                if not store['is_active']:
+                    continue
                 
                 for schedule in execution_schedule:
                     # Verificar si hoy es uno de los días de ejecución
