@@ -4,6 +4,7 @@ provider:
   name: aws
   runtime: python3.11
   stage: ${opt:stage}
+  profile: personal
   region: sa-east-1
   layers:
     - arn:aws:lambda:sa-east-1:770693421928:layer:Klayers-p311-pandas:11
@@ -85,7 +86,7 @@ functions:
 
   processShop:
     handler: handler.process_shop
-    timeout: 120
+    timeout: 900
     logRetentionInDays: 5
     environment:
       STAGE: ${self:provider.stage}
@@ -113,5 +114,5 @@ custom:
     requirementsFile: requirements.txt
   weeklyCronEvent:
     prod:
-      - schedule: cron(0 * * * ? *)
+      - schedule: cron(0/10 * * * ? *)
     dev: []

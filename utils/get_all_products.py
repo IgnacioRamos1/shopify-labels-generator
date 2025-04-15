@@ -1,4 +1,4 @@
-
+# utils/get_all_products.py
 
 def get_all_products_for_store(store):
     products_dict = {}

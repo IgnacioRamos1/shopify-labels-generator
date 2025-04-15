@@ -1,3 +1,5 @@
+# mongo_db/database.py
+
 import pymongo
 import os
 from bson import ObjectId

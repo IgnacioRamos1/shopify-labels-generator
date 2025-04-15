@@ -1,3 +1,5 @@
+# utils/send_email.py
+
 import boto3
 from botocore.exceptions import NoCredentialsError
 import requests
