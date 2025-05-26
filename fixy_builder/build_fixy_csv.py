@@ -48,7 +48,8 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
             "datosEnvios.peso",
             "datosEnvios.observaciones",
             "datosEnvios.guiaAgente",
-            "datosEnvios.is_dropoff"
+            "datosEnvios.is_dropoff",
+            "item.descripcion"
         ]
 
         not_added_floor_length = []
@@ -152,7 +153,7 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                     "trabajo": "",
                     "remito": product_name,  # Add the product name here
                     "sender.empresa": fixy_company,
-                    "sender.remitente": fixy_sender,
+                    "sender.remitente": "Comprando en Casa",  # Cambiado según la solicitud
                     "sender.calle": "Albarellos",
                     "sender.altura": "1916",
                     "sender.localidad": "MARTINEZ",
@@ -175,7 +176,8 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                     "datosEnvios.peso": round(attributes["weight"] * order["quantity"], 2),
                     "datosEnvios.observaciones": "",
                     "datosEnvios.guiaAgente": order_counter,
-                    "datosEnvios.is_dropoff": "1"
+                    "datosEnvios.is_dropoff": "1",
+                    "item.descripcion": product_name  # Agregar el nombre del producto de Shopify en la columna item.descripcion
                 }
 
                 apartment = clean_text(order.get("apartment", ""))
@@ -208,6 +210,9 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                         # Update remito to include all product names
                         current_remito = multiple_orders_data.at[existing_index, 'remito']
                         multiple_orders_data.at[existing_index, 'remito'] = f"{current_remito}, {product_name}" if current_remito else product_name
+                        # Update item.descripcion to include all product names
+                        current_descripcion = multiple_orders_data.at[existing_index, 'item.descripcion']
+                        multiple_orders_data.at[existing_index, 'item.descripcion'] = f"{current_descripcion}, {product_name}" if current_descripcion else product_name
                     else:
                         # Otherwise, add a new row for the buyer
                         row_data['datosEnvios.observaciones'] = order['item']
