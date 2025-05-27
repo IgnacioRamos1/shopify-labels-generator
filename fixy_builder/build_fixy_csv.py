@@ -151,7 +151,7 @@ def generate_csv_from_orders_for_fixy(grouped_orders, product_attributes, fixy_s
                     "datosEnvios.contrareembolso": str(order["price"]).split(".")[0],
                     "datosEnvios.confirmada": "1",
                     "trabajo": "",
-                    "remito": product_name,  # Add the product name here
+                    "remito": "",
                     "sender.empresa": fixy_company,
                     "sender.remitente": "Comprando en Casa",  # Cambiado según la solicitud
                     "sender.calle": "Albarellos",
